@@ -1,3 +1,5 @@
+[![Coverage Status](https://coveralls.io/repos/github/andela/neon-ah-backend/badge.svg)](https://coveralls.io/github/andela/neon-ah-backend)
+
 Authors Haven - A Social platform for the creative at heart.
 =======
 
