@@ -1,3 +1,6 @@
+## Badges
+[![Build Status](https://travis-ci.org/andela/neon-ah-backend.svg?branch=dev)](https://travis-ci.org/andela/neon-ah-backend)
+
 Authors Haven - A Social platform for the creative at heart.
 =======
 
