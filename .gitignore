@@ -29,6 +29,7 @@ build/Release
 # Dependency directory
 node_modules
 package-lock.json
+.nyc_output/
 
 # Optional npm cache directory
 .npm
