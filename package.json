@@ -4,7 +4,7 @@
   "description": "A Social platform for the creative at heart",
   "main": "index.js",
   "scripts": {
-    "test": "nyc --reporter=html --reporter=text --require @babel/register mocha",
+    "test": "nyc --reporter=html --reporter=text --require @babel/register mocha --exit --timeout=20000",
     "coverage": "nyc report --reporter=text-lcov | coveralls"
   },
   "author": "Andela Simulations Programme",
