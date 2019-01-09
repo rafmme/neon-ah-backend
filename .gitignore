@@ -26,6 +26,10 @@ coverage
 # Compiled binary addons (http://nodejs.org/api/addons.html)
 build/Release
 
+
+# Babel compilation
+*build/
+
 # Dependency directory
 node_modules
 package-lock.json
