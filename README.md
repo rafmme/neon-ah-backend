@@ -1,9 +1,4 @@
-
-[![Build Status](https://travis-ci.org/andela/neon-ah-backend.svg?branch=dev)](https://travis-ci.org/andela/neon-ah-backend)
-
-[![Coverage Status](https://coveralls.io/repos/github/andela/neon-ah-backend/badge.svg)](https://coveralls.io/github/andela/neon-ah-backend)
-
-[![Reviewed by Hound](https://img.shields.io/badge/Reviewed_by-Hound-8E64B0.svg)](https://houndci.com)
+[![Build Status](https://travis-ci.org/andela/neon-ah-backend.svg?branch=dev)](https://travis-ci.org/andela/neon-ah-backend) [![Coverage Status](https://coveralls.io/repos/github/andela/neon-ah-backend/badge.svg)](https://coveralls.io/github/andela/neon-ah-backend) [![Reviewed by Hound](https://img.shields.io/badge/Reviewed_by-Hound-8E64B0.svg)](https://houndci.com)
 
 # Authors Haven - A Social platform for the creative at heart.
 
