@@ -40,3 +40,6 @@ package-lock.json
 # packege-lock file
 package-lock.json
 
+# dotenv file
+.env
+
