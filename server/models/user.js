@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable func-names */
 module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define('User', {
     firstName: DataTypes.STRING,
@@ -41,21 +43,12 @@ module.exports = (sequelize, DataTypes) => {
             throw new Error('Password should be at least 8 characters');
           }
         },
-        is: (value) => {
-          if (!/[a-z]/.test(value)) {
-            return 'Your password must contain at least one lowercase letter';
-          } if (!/[A-Z]/.test(value)) {
-            return 'Your password must contain at least one uppercase letter';
-          } if (!/\d/.test(value)) {
-            return 'Your password must contain at least one number';
-          } if (!/[@$!%*?&]/.test(value)) {
-            return 'Your password must contain at least one of these special characters: @, $, !, %, *, ?, &';
-          } if (value.length < 6) {
-            return 'Your password must be composed of at least 6 characters';
+        isUpperCase: (value) => {
+          if (!/[A-Z]/.test(value)) {
+            return 'Password should contain at least one uppercase letter';
           }
-          return 'true';
-        }
-      },
+        },
+      }
     },
     bio: DataTypes.STRING,
     image: DataTypes.STRING,
