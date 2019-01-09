@@ -4,12 +4,12 @@
   "description": "A Social platform for the creative at heart",
   "main": "index.js",
   "scripts": {
-    "test": "nyc --reporter=html --reporter=text --require @babel/register mocha --exit --timeout=20000",
-    "coverage": "nyc report --reporter=text-lcov | coveralls",
     "comp": "babel index.js -d build",
     "clear": "rimraf build && babel index.js -d build",
     "start": "npm run comp && node build/index.js",
-    "dev-start": "nodemon -w src --exec npm run start"
+    "dev-start": "nodemon -w src --exec npm run start",
+    "test": "nyc --reporter=html --reporter=text --require @babel/register mocha --exit --timeout=20000",
+    "coverage": "nyc report --reporter=text-lcov | coveralls"
   },
   "author": "Andela Simulations Programme",
   "license": "MIT",
