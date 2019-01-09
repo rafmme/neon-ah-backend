@@ -1,0 +1,357 @@
+openapi: '3.0.0'
+info:
+  title: Author's Haven
+  version: '1.0.0'
+  description: A Social platform for the creative at heart.
+  contact:
+    name: Andela Cohort 43 Team Neon
+servers:
+  - url: http://localhost:3000/
+tags:
+  - name: Authentication
+    description: Authentication-related endpoints
+  - name: Users
+    description: User-related endpoints
+  - name: Profile
+    description: Profile-related endpoints
+  - name: Articles
+    description: Article-related endpoints
+  - name: Comments
+    description: Comment-related endpoints
+components:
+  schemas:
+    Error:
+      errors:
+        body:
+          - can't be empty
+
+    Profile:
+      title: User Profile
+      type: object
+      properties:
+        bio:
+          type: string
+        image:
+          type: string
+      additionalProperties: false
+    User:
+      title: User Schema
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+        profile:
+          $ref: '#/components/schemas/Profile'
+      additionalProperties: false
+      required:
+        - email
+        - username
+        - password
+      example:
+        email: me@mandela.mail
+        password:
+        profile:
+          bio: We run through mountainsa and walk on sea. Conquering the very depths and leaving glory in our wake.
+          image: https://picsum.photos/200/300/?random
+    Articles:
+      title: Articles
+      description: All User Articles
+      properties:
+        title:
+          type: string
+        content:
+          type: longtext
+        tags:
+          $ref: '#/components/schemas/Tags'
+        comments:
+          $ref: '#/components/schemas/Comments'
+        author:
+          $ref: '#/components/schemas/User'
+      additionalProperties: false
+    Tags:
+      title: Tags
+      description: All User Tags
+      properties:
+        id:
+          type: string
+        tags:
+          type: string
+      additionalProperties: false
+    Comments:
+      title: Articles
+      description: All Usewr Articles
+      properties:
+        username:
+          type: string
+        comment:
+          type: string
+      additionalProperties: false
+  responses:
+    Success:
+      description: Success
+    UserCreated:
+      description: New User Created
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/User'
+    LoginSuccess:
+      description: Logged In Successfully
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/User'
+    OwnUserRetrieved:
+      description: User sees own profile
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/User'
+    UserRetrieved:
+      description: One User Retrieved
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UserStripped'
+    UsersRetrieved:
+      description: All Users Retrieved from Search Operation
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/UserStripped'
+    UserFollowed:
+      description: One User Followed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UserStripped'
+    UserUnFollowed:
+      description: One User Unfollowed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UserStripped'
+    ErrorBadRequest:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    ErrorUnauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    ErrorForbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    ErrorNotFound:
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    ErrorUnsupportedMediaType:
+      description: Unsupported Media Type
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    ErrorInternalServer:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  securitySchemes:
+    token:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+paths:
+  /users/login/:
+    post:
+      tags:
+        - Authentication
+      summary: Perform password-based authentication
+      description: Returns a JWT upon success
+      requestBody:
+        description: User Credentials
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/LoginSuccess'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '403':
+          $ref: '#/components/responses/ErrorNotFound'
+        '500':
+          $ref: '#/components/responses/ErrorInternalServer'
+  /user:
+    get:
+      tags:
+        - Users
+      summary: Get Current User
+      parameters:
+        - token: query
+          in: query
+          description: The term to query for
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/UsersRetrieved'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '500':
+          $ref: '#/components/responses/ErrorInternalServer'
+    put:
+      tags:
+        - Users
+      summary: Updates a User account
+      requestBody:
+        description: The updated User object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          $ref: '#/components/responses/OwnUserRetrieved'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '404':
+          $ref: '#/components/responses/ErrorNotFound'
+        '403':
+          $ref: '#/components/responses/ErrorForbidden'
+        '500':
+          $ref: '#/components/responses/ErrorInternalServer'
+  /users:
+    post:
+      tags:
+        - Users
+      summary: New User Registration
+      requestBody:
+        description: The New User object
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '201':
+          $ref: '#/components/responses/UserCreated'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '500':
+          $ref: '#/components/responses/ErrorInternalServer'
+  /profiles/{username}:
+    get:
+      tags:
+        - Profile
+      summary: Retrieves details of a single User
+      parameters:
+        - name: username
+          in: path
+          description: username of the User to retrieve
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/UserRetrieved'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '404':
+          $ref: '#/components/responses/ErrorNotFound'
+        '500':
+          $ref: '#/components/responses/ErrorInternalServer'
+  /profiles/{username}/follow:
+    post:
+      tags:
+        - Profile
+      summary: Follow a User
+      security:
+        - token: []
+      parameters:
+        - name: username
+          in: path
+          description: username of the User
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: An object representing the fields in the requested Profile
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          $ref: '#/components/responses/UserFollowed'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '404':
+          $ref: '#/components/responses/ErrorNotFound'
+        '415':
+          $ref: '#/components/responses/ErrorUnsupportedMediaType'
+        '500':
+          $ref: '#/components/responses/ErrorInternalServer'
+    delete:
+      tags:
+        - Profile
+      summary: Unfollow a User
+      security:
+        - token: []
+      parameters:
+        - name: username
+          in: path
+          description: username of the User
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: An object representing the fields in the requested Profile
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          $ref: '#/components/responses/UserUnFollowed'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '404':
+          $ref: '#/components/responses/ErrorNotFound'
+        '415':
+          $ref: '#/components/responses/ErrorUnsupportedMediaType'
+        '500':
+          $ref: '#/components/responses/ErrorInternalServer'
