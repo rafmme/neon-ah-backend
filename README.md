@@ -1,4 +1,3 @@
-
 [![Build Status](https://travis-ci.org/andela/neon-ah-backend.svg?branch=dev)](https://travis-ci.org/andela/neon-ah-backend)
 
 [![Coverage Status](https://coveralls.io/repos/github/andela/neon-ah-backend/badge.svg)](https://coveralls.io/github/andela/neon-ah-backend)
@@ -22,6 +21,10 @@ The preferred JSON object to be returned by the API should be structured as foll
 
 [FullStack](https://www.pivotaltracker.com/n/projects/2180879)
 [Frontend](https://www.pivotaltracker.com/n/projects/2180886)
+
+## Documentation
+
+Swagger (http://localhost:3000/docs/#/)
 
 ### Users (for authentication)
 

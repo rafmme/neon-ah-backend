@@ -26,6 +26,10 @@ coverage
 # Compiled binary addons (http://nodejs.org/api/addons.html)
 build/Release
 
+
+# Babel compilation
+*build/
+
 # Dependency directory
 node_modules
 package-lock.json
@@ -37,9 +41,11 @@ package-lock.json
 # Optional REPL history
 .node_repl_history
 
-# packege-lock file
+# package-lock file
 package-lock.json
 
 # dotenv file
 .env
 
+# personal files
+swagger.1.yaml
