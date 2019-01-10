@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import server from '../index';
+
 
 describe('set up unit test', () => {
   it('Sample test', () => {
