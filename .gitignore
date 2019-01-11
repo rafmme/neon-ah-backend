@@ -41,8 +41,11 @@ package-lock.json
 # Optional REPL history
 .node_repl_history
 
-# packege-lock file
+# package-lock file
 package-lock.json
+
+# dotenv file
+.env
 
 # personal files
 swagger.1.yaml
