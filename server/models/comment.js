@@ -1,24 +1,25 @@
 export default (sequelize, DataTypes) => {
-  const Comment = sequelize.define('Comment', {
-    content: {
-      type: DataTypes.TEXT,
-      allowNull: false
+  const Comment = sequelize.define(
+    'Comment',
+    {
+      content: {
+        type: DataTypes.TEXT,
+        allowNull: false
+      },
+      userId: {
+        type: DataTypes.UUID,
+        allowNull: false
+      },
+      articleId: {
+        type: DataTypes.UUID,
+        allowNull: false
+      }
     },
-    userId: {
-      type: DataTypes.UUID,
-      allowNull: false
-    },
-    articleId: {
-      type: DataTypes.UUID,
-      allowNull: false
-    }
-  }, {});
+    {}
+  );
   Comment.associate = (models) => {
     const {
-      Reply,
-      Article,
-      User,
-      CommentLike,
+      Reply, Article, User, CommentLike
     } = models;
     Comment.hasMany(Reply, {
       foreignKey: 'commentId',

@@ -5,6 +5,12 @@ node_js:
 cache:
 directories:
   - node_modules
+services:
+  - postgresql
+before_script:
+  - psql -c 'create user neon with superuser createdb createrole;' -U postgres
+  - psql -c 'create database haven_test;' -U postgres
+  - psql -c 'GRANT ALL PRIVILEGES ON DATABASE haven_test TO neon;' -U postgres
 script:
   - npm test
 after_success:

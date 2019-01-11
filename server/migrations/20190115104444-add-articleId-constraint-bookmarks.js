@@ -9,6 +9,5 @@ export default {
     onDelete: 'cascade',
     onUpdate: 'cascade'
   }),
-
   down: (queryInterface, Sequelize) => queryInterface.removeConstraint('Bookmarks', 'BookmarksArticleId_FK')
 };
