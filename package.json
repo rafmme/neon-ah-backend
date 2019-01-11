@@ -11,6 +11,7 @@
     "node": "10.14.1"
   },
   "scripts": {
+    "db:undomigrate": "node_modules/.bin/sequelize db:migrate:undo:all",
     "db:migrate": "node_modules/.bin/sequelize db:migrate:undo:all && node_modules/.bin/sequelize db:migrate",
     "db:seed": "node_modules/.bin/sequelize db:seed:all",
     "build": "rimraf build/* && babel ./ -d build --ignore 'node_modules','coverage' ",

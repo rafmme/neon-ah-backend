@@ -1,4 +1,3 @@
-/*eslint-disable */
 module.exports = {
   up: (queryInterface, Sequelize) => {
     return queryInterface.createTable('Users', {
@@ -13,38 +12,42 @@ module.exports = {
         type: Sequelize.STRING
       },
       username: {
-        allowNull: false,
-        type: Sequelize.STRING,
-        unique: true
+        type: Sequelize.STRING
       },
       email: {
-        allowNull: false,
-        type: Sequelize.STRING,
-        unique: true
+        type: Sequelize.STRING
+      },
+      password: {
+        type: Sequelize.STRING
+      },
+      isverified: {
+        type: Sequelize.BOOLEAN
       },
       bio: {
         type: Sequelize.STRING
       },
-      image: {
+      img: {
         type: Sequelize.STRING
       },
-      following: {
-        type: Sequelize.BOOLEAN,
-        defaultValue: false
+      notifysettings: {
+        type: Sequelize.BOOLEAN
       },
-      password: {
-        allowNull: false,
-        type: Sequelize.STRING
+      roleid: {
+        type: Sequelize.INTEGER
+      },
+      authtypeid: {
+        type: Sequelize.INTEGER
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE(3),
-        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP(3)')
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE(3),
-        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP(3)')
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
       }
     });
   },
