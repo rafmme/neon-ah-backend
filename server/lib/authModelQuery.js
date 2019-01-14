@@ -17,6 +17,7 @@ class authQuery {
         where: { email }
       });
       if (emailUser) {
+        console.log('authQuery', emailUser);
         return emailUser;
       }
       return null;

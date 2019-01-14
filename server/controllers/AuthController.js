@@ -1,28 +1,37 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import authQuery from '../lib/authModelQuery';
-import config from '../config/config';
+import db from '../models';
 
-const Auth = {
+const { Users } = db;
+/**
+ *
+ *
+ * @class Auth
+ */
+class Auth {
   /**
-   * Login a user
-   * @param {object} req
-   * @param {object} res
-   * @returns {object} user object
+   * @static
+   * @param {*} req
+   * @param {*} res
+   * @returns {object} Json response
+   * @memberof Auth
    */
-  async logIn(req, res) {
-    const { email, password } = req.body;
-
+  static async logIn(req, res) {
     try {
-      const user = await authQuery.findUser(email);
+      const { email, password } = req.body;
 
-      if (!user) return res.status(404).json({ message: 'user not found' });
+      const user = await Users.findOne({ where: { email } });
 
-      const passwordTrue = bcrypt.compareSync(
+      if (!user) {
+        return res.status(404).json({ message: 'user not found' });
+      }
+
+      const isValidPassword = bcrypt.compareSync(
         password,
         user.dataValues.password
       );
-      if (!passwordTrue) {
+
+      if (!isValidPassword) {
         return res
           .status(401)
           .json({ auth: false, token: null, message: 'Password is wrong' });
@@ -31,20 +40,18 @@ const Auth = {
       const payload = {
         id: user.id,
         userName: user.username,
-        role: user.role
+        role: user.roleId
       };
       // Create JWT Payload
       // Sign Token
       jwt.sign(
         payload,
-        config.JWT_SECRET,
+        process.env.JWT_SECRET,
         { expiresIn: 10800 },
         (err, token) => {
           res.json({
             token: `${token}`,
-            userName: `${user.username}`,
-            userId: `${user.id}`,
-            userPriviledge: `${user.userpriviledge}`
+            payload
           });
         }
       );
@@ -52,6 +59,6 @@ const Auth = {
       return res.status(400).json(error);
     }
   }
-};
+}
 
 export default Auth;
