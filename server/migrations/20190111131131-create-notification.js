@@ -1,5 +1,4 @@
-/* eslint-disable no-unused-vars */
-module.exports = {
+export default {
   up: (queryInterface, Sequelize) => queryInterface.createTable('Notifications', {
     id: {
       allowNull: false,
@@ -7,14 +6,17 @@ module.exports = {
       primaryKey: true,
       type: Sequelize.INTEGER
     },
-    senderid: {
-      type: Sequelize.INTEGER
+    senderId: {
+      type: Sequelize.INTEGER,
+      allowNull: false
     },
-    type: {
-      type: Sequelize.STRING
+    typeId: {
+      type: Sequelize.INTEGER,
+      allowNull: false
     },
-    receiverid: {
-      type: Sequelize.INTEGER
+    receiverId: {
+      type: Sequelize.INTEGER,
+      allowNull: false
     },
     createdAt: {
       allowNull: false,

@@ -1,18 +1,27 @@
-module.exports = (sequelize, DataTypes) => {
+export default (sequelize, DataTypes) => {
   const Notification = sequelize.define('Notification', {
-    senderid: DataTypes.INTEGER,
-    type: DataTypes.STRING,
-    receiverid: DataTypes.INTEGER
+    senderId: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    typeId: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    receiverId: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    }
   }, {});
   Notification.associate = (models) => {
-    Notification.belongsTo(models.Users, {
+    Notification.belongsTo(models.User, {
       as: 'sender',
-      foreignKey: 'senderid',
+      foreignKey: 'senderId',
       onDelete: 'CASCADE'
     });
-    Notification.belongsTo(models.Users, {
+    Notification.belongsTo(models.User, {
       as: 'receiver',
-      foreignKey: 'receiverid',
+      foreignKey: 'receiverId',
       onDelete: 'CASCADE'
     });
   };

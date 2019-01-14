@@ -1,5 +1,4 @@
-/* eslint-disable no-unused-vars */
-module.exports = {
+export default {
   up: (queryInterface, Sequelize) => queryInterface.createTable('Users', {
     id: {
       allowNull: false,
@@ -7,24 +6,27 @@ module.exports = {
       primaryKey: true,
       type: Sequelize.INTEGER
     },
-    fullname: {
+    fullName: {
       type: Sequelize.STRING,
       allowNull: false,
     },
-    username: {
+    userName: {
       type: Sequelize.STRING,
       allowNull: false,
       unique: true
     },
     email: {
       type: Sequelize.STRING,
+      allowNull: false,
       unique: true
     },
     password: {
-      type: Sequelize.STRING
+      type: Sequelize.STRING,
+      allowNull: false
     },
-    isverified: {
-      type: Sequelize.BOOLEAN
+    isVerified: {
+      type: Sequelize.BOOLEAN,
+      defaultValue: false
     },
     bio: {
       type: Sequelize.STRING
@@ -32,15 +34,18 @@ module.exports = {
     img: {
       type: Sequelize.STRING
     },
-    notifysettings: {
+    notifySettings: {
       type: Sequelize.BOOLEAN,
       defaultValue: true
     },
-    role: {
-      type: Sequelize.STRING,
+    roleId: {
+      type: Sequelize.INTEGER,
+      allowNull: false,
+      defaultValue: 1,
     },
-    authtype: {
-      type: Sequelize.STRING,
+    authTypeId: {
+      type: Sequelize.INTEGER,
+      allowNull: false
     },
     createdAt: {
       allowNull: false,

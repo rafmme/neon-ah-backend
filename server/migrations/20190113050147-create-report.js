@@ -1,7 +1,4 @@
-/* eslint-disable no-unused-vars */
-
-
-module.exports = {
+export default {
   up: (queryInterface, Sequelize) => queryInterface.createTable('Reports', {
     id: {
       allowNull: false,
@@ -9,11 +6,13 @@ module.exports = {
       primaryKey: true,
       type: Sequelize.INTEGER
     },
-    articleid: {
-      type: Sequelize.INTEGER
+    articleId: {
+      type: Sequelize.INTEGER,
+      allowNull: false
     },
-    userid: {
-      type: Sequelize.INTEGER
+    userId: {
+      type: Sequelize.INTEGER,
+      allowNull: false
     },
     createdAt: {
       allowNull: false,

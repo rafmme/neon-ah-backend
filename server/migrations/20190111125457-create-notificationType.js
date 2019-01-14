@@ -1,6 +1,5 @@
-/* eslint-disable no-unused-vars */
-module.exports = {
-  up: (queryInterface, Sequelize) => queryInterface.createTable('Authtypes', {
+export default {
+  up: (queryInterface, Sequelize) => queryInterface.createTable('NotificationTypes', {
     id: {
       allowNull: false,
       autoIncrement: true,
@@ -8,7 +7,9 @@ module.exports = {
       type: Sequelize.INTEGER
     },
     type: {
-      type: Sequelize.STRING
+      type: Sequelize.STRING,
+      allowNull: false,
+      unique: true
     },
     createdAt: {
       allowNull: false,
@@ -21,5 +22,5 @@ module.exports = {
       defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
     }
   }),
-  down: (queryInterface, Sequelize) => queryInterface.dropTable('Authtypes')
+  down: (queryInterface, Sequelize) => queryInterface.dropTable('NotificationTypes')
 };

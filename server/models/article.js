@@ -1,4 +1,4 @@
-module.exports = (sequelize, DataTypes) => {
+export default (sequelize, DataTypes) => {
   const Article = sequelize.define('Article', {
     slug: {
       type: DataTypes.STRING,
@@ -20,57 +20,61 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false
     },
-    ispublished: {
+    isPublished: {
       type: DataTypes.BOOLEAN,
       defaultValue: false
     },
-    isreported: {
+    isReported: {
       type: DataTypes.BOOLEAN,
       defaultValue: false
     },
+    userId: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    }
   }, {});
   Article.associate = (models) => {
     const {
-      Users,
+      User,
       Tag,
       Comment,
-      Articlelikesdislike,
+      ArticleLikesDislike,
       Bookmark,
       Rating,
       Share
     } = models;
-    Article.belongsTo(Users, {
-      foreignKey: 'userid',
+    Article.belongsTo(User, {
+      foreignKey: 'userId',
       onDelete: 'CASCADE'
     });
-    Article.belongsToMany(Users, {
+    Article.belongsToMany(User, {
       through: 'Report',
       as: 'reports',
-      foreignKey: 'articleid',
+      foreignKey: 'articleId',
     });
     Article.belongsToMany(Tag, {
-      through: 'Articletag',
+      through: 'ArticleTag',
       as: 'tags',
-      foreignKey: 'articleid',
+      foreignKey: 'articleId',
     });
     Article.hasMany(Comment, {
-      foreignKey: 'articleid',
+      foreignKey: 'articleId',
       as: 'comments'
     });
-    Article.hasMany(Articlelikesdislike, {
-      foreignKey: 'articleid',
+    Article.hasMany(ArticleLikesDislike, {
+      foreignKey: 'articleId',
       as: 'likes'
     });
     Article.hasOne(Bookmark, {
-      foreignKey: 'articleid',
+      foreignKey: 'articleId',
       as: 'bookmark',
     });
     Article.hasOne(Rating, {
-      foreignKey: 'articleid',
+      foreignKey: 'articleId',
       as: 'rating',
     });
     Article.hasMany(Share, {
-      foreignKey: 'articleid',
+      foreignKey: 'articleId',
       as: 'share',
     });
   };

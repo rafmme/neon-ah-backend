@@ -1,14 +1,12 @@
-/* eslint-disable no-unused-vars */
-module.exports = {
+export default {
   up: (queryInterface, Sequelize) => queryInterface.bulkInsert('Users', [{
-    fullname: 'John Doe',
-    username: 'johndoe',
+    fullName: 'John Doe',
+    userName: 'johndoe',
     email: 'johndoe@gmail.com',
     password: 'password',
     bio: 'I am cool',
     img: 'img_url',
-    role: 'user',
-    authtype: 'regular'
+    authTypeId: 1
   }], {}),
 
   down: (queryInterface, Sequelize) => queryInterface.bulkDelete('Users', null, {})
