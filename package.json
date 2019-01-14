@@ -8,16 +8,17 @@
     "migrate": "babel-node node_modules/.bin/sequelize db:migrate:undo:all && babel-node node_modules/.bin/sequelize db:migrate",
     "seed": "babel-node node_modules/.bin/sequelize db:seed:all",
     "undoseed": "babel-node node_modules/.bin/sequelize db:seed:undo:all",
-    "comp": "babel index.js -d build",
-    "clear": "rimraf build && babel index.js -d build",
-    "start": "npm run comp && node build/index.js",
-    "dev-start": "nodemon -w src --exec npm run start",
-    "test": "nyc --reporter=html --reporter=text --require @babel/register mocha --exit --timeout=20000",
+    "build": "rimraf build/* && babel ./ -d build --ignore 'node_modules','coverage'",
+    "start": "npm run comp && babel-node index.js",
+    "dev": "nodemon --exec babel-node index.js --env",
+    "test": "nyc mocha ./server/test --exit --timeout=20000",
     "coverage": "nyc report --reporter=text-lcov | coveralls"
   },
   "author": "Andela Simulations Programme",
   "license": "MIT",
   "dependencies": {
+    "@babel/node": "^7.2.2",
+    "bcrypt": "^3.0.3",
     "body-parser": "^1.18.3",
     "cors": "^2.8.4",
     "coveralls": "^3.0.2",
@@ -27,6 +28,7 @@
     "express": "^4.16.3",
     "express-jwt": "^5.3.1",
     "express-session": "^1.15.6",
+    "jsonwebtoken": "^8.4.0",
     "method-override": "^2.3.10",
     "methods": "^1.1.2",
     "mocha": "^5.2.0",
@@ -55,10 +57,19 @@
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-plugin-import": "^2.14.0",
     "mocha": "^5.2.0",
-    "nyc": "^13.1.0",
     "sequelize-cli": "^5.4.0",
     "nodemon": "^1.18.9",
     "rimraf": "^2.6.3",
     "yamljs": "^0.3.0"
+  },
+  "nyc": {
+    "require": [
+      "@babel/register"
+    ],
+    "reporter": [
+      "lcov",
+      "text",
+      "html"
+    ]
   }
 }
