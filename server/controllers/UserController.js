@@ -35,14 +35,16 @@ class UserController {
         password: hashedPassword
       });
       const token = await authentication.createToken(createdUser);
-      res.status(201).json({
-        token,
-        status: 'success',
-        fullname,
-        data: createdUser,
-        id: createdUser.id,
-        message: 'Inserted a new user'
-      });
+      res
+        .status(201)
+        .json({
+          token,
+          status: 'success',
+          fullname,
+          data: createdUser,
+          id: createdUser.id,
+          message: 'Inserted a new user'
+        });
     } catch (err) {
       res.status(400).json({ error: err });
     }
