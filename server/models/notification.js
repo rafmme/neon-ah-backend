@@ -1,12 +1,29 @@
-'use strict';
-module.exports = (sequelize, DataTypes) => {
+export default (sequelize, DataTypes) => {
   const Notification = sequelize.define('Notification', {
-    senderid: DataTypes.INTEGER,
-    type: DataTypes.STRING,
-    receiverid: DataTypes.INTEGER
+    senderId: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    typeId: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    receiverId: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    }
   }, {});
-  Notification.associate = function(models) {
-    // associations can be defined here
+  Notification.associate = (models) => {
+    Notification.belongsTo(models.User, {
+      as: 'sender',
+      foreignKey: 'senderId',
+      onDelete: 'CASCADE'
+    });
+    Notification.belongsTo(models.User, {
+      as: 'receiver',
+      foreignKey: 'receiverId',
+      onDelete: 'CASCADE'
+    });
   };
   return Notification;
 };
