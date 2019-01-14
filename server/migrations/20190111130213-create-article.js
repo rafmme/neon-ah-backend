@@ -1,5 +1,4 @@
-/* eslint-disable no-unused-vars */
-module.exports = {
+export default {
   up: (queryInterface, Sequelize) => queryInterface.createTable('Articles', {
     id: {
       allowNull: false,
@@ -8,26 +7,34 @@ module.exports = {
       type: Sequelize.INTEGER
     },
     slug: {
-      type: Sequelize.STRING
+      type: Sequelize.STRING,
+      allowNull: false,
+      unique: true
     },
     title: {
-      type: Sequelize.STRING
+      type: Sequelize.STRING,
+      allowNull: {
+        args: false,
+        msg: 'Please enter a title for your article'
+      },
     },
     content: {
-      type: Sequelize.STRING
+      type: Sequelize.STRING,
+      allowNull: false
     },
     banner: {
-      type: Sequelize.STRING
+      type: Sequelize.STRING,
+      allowNull: false
     },
-    ispublished: {
+    isPublished: {
       type: Sequelize.BOOLEAN,
       defaultValue: false
     },
-    isreported: {
+    isReported: {
       type: Sequelize.BOOLEAN,
       defaultValue: false
     },
-    userid: {
+    userId: {
       type: Sequelize.INTEGER
     },
     createdAt: {

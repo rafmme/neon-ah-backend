@@ -1,7 +1,13 @@
-module.exports = (sequelize, DataTypes) => {
-  const Articletag = sequelize.define('Articletag', {
-    articleid: DataTypes.INTEGER,
-    tagid: DataTypes.INTEGER
+export default (sequelize, DataTypes) => {
+  const ArticleTag = sequelize.define('ArticleTag', {
+    articleId: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    tagId: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
   }, {});
-  return Articletag;
+  return ArticleTag;
 };

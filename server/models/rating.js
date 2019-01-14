@@ -1,10 +1,16 @@
-module.exports = (sequelize, DataTypes) => {
+export default (sequelize, DataTypes) => {
   const Rating = sequelize.define('Rating', {
-    articleid: DataTypes.INTEGER,
-    userid: DataTypes.INTEGER
+    articleId: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    userId: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    }
   }, {});
   Rating.associate = (models) => {
-    Rating.belongsTo(models.Users, {});
+    Rating.belongsTo(models.User, {});
   };
   return Rating;
 };

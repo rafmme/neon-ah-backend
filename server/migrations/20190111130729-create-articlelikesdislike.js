@@ -1,17 +1,18 @@
-/* eslint-disable no-unused-vars */
-module.exports = {
-  up: (queryInterface, Sequelize) => queryInterface.createTable('Articlelikesdislike', {
+export default {
+  up: (queryInterface, Sequelize) => queryInterface.createTable('ArticleLikesDislikes', {
     id: {
       allowNull: false,
       autoIncrement: true,
       primaryKey: true,
       type: Sequelize.INTEGER
     },
-    userid: {
-      type: Sequelize.INTEGER
+    userId: {
+      type: Sequelize.INTEGER,
+      allowNull: false
     },
-    articleid: {
-      type: Sequelize.INTEGER
+    articleId: {
+      type: Sequelize.INTEGER,
+      allowNull: false
     },
     reaction: {
       type: Sequelize.ENUM('like', 'dislike'),
@@ -28,5 +29,5 @@ module.exports = {
       defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
     }
   }),
-  down: (queryInterface, Sequelize) => queryInterface.dropTable('Articlelikesdislike')
+  down: (queryInterface, Sequelize) => queryInterface.dropTable('ArticleLikesDislikes')
 };

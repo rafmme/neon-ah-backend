@@ -1,10 +1,10 @@
-module.exports = (sequelize, DataTypes) => {
-  const Articlelikesdislike = sequelize.define('Articlelikesdislike', {
-    userid: {
+export default (sequelize, DataTypes) => {
+  const ArticleLikesDislike = sequelize.define('ArticleLikesDislike', {
+    userId: {
       type: DataTypes.INTEGER,
       allowNull: false
     },
-    articleid: {
+    articleId: {
       type: DataTypes.INTEGER,
       allowNull: false
     },
@@ -13,10 +13,11 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false
     }
   }, {});
-  Articlelikesdislike.associate = (models) => {
-    Articlelikesdislike.belongsTo(models.Article, {
-      foreignKey: 'articleid'
+  ArticleLikesDislike.associate = (models) => {
+    ArticleLikesDislike.belongsTo(models.Article, {
+      foreignKey: 'articleId',
+      onDelete: 'CASCADE'
     });
   };
-  return Articlelikesdislike;
+  return ArticleLikesDislike;
 };

@@ -1,5 +1,5 @@
-/* eslint-disable no-unused-vars */
-module.exports = {
+
+export default {
   up: (queryInterface, Sequelize) => queryInterface.bulkInsert('Roles', [{
     type: 'user',
   }], {}),

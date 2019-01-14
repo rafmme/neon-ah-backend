@@ -1,15 +1,24 @@
 module.exports = (sequelize, DataTypes) => {
   const Share = sequelize.define('Share', {
-    articleid: DataTypes.INTEGER,
-    userid: DataTypes.INTEGER
+    articleId: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    userId: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    }
   }, {});
   Share.associate = (models) => {
-    const { Users, Article } = models;
-    Share.belongsTo(Users, {
-      foreignKey: 'userid'
+    const {
+      User,
+      Article
+    } = models;
+    Share.belongsTo(User, {
+      foreignKey: 'userId'
     });
     Share.belongsTo(Article, {
-      foreignKey: 'articleid'
+      foreignKey: 'articleId'
     });
   };
   return Share;

@@ -1,6 +1,10 @@
-module.exports = (sequelize, DataTypes) => {
-  const Notificationtype = sequelize.define('Notificationtype', {
-    type: DataTypes.STRING
+export default (sequelize, DataTypes) => {
+  const NotificationType = sequelize.define('NotificationType', {
+    type: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true
+    }
   }, {});
-  return Notificationtype;
+  return NotificationType;
 };

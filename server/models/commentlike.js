@@ -1,18 +1,27 @@
-module.exports = (sequelize, DataTypes) => {
-  const Commentlike = sequelize.define('Commentlike', {
-    userid: DataTypes.INTEGER,
-    commentid: DataTypes.INTEGER
+export default (sequelize, DataTypes) => {
+  const CommentLike = sequelize.define('CommentLike', {
+    userId: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    commentId: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    }
   }, {});
-  Commentlike.associate = (models) => {
-    const { Users, Comment } = models;
-    Commentlike.belongsTo(Comment, {
-      foreignKey: 'commentid',
+  CommentLike.associate = (models) => {
+    const {
+      User,
+      Comment
+    } = models;
+    CommentLike.belongsTo(Comment, {
+      foreignKey: 'commentId',
       onDelete: 'CASCADE'
     });
-    Commentlike.belongsTo(Users, {
-      foreignKey: 'userid',
+    CommentLike.belongsTo(User, {
+      foreignKey: 'userId',
       onDelete: 'CASCADE'
     });
   };
-  return Commentlike;
+  return CommentLike;
 };

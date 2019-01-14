@@ -1,13 +1,13 @@
-module.exports = (sequelize, DataTypes) => {
-  const User = sequelize.define('Users', {
-    fullname: {
+export default (sequelize, DataTypes) => {
+  const User = sequelize.define('User', {
+    fullName: {
       type: DataTypes.STRING,
       allowNull: {
         args: false,
         msg: 'Please enter your full name'
       },
     },
-    username: {
+    userName: {
       type: DataTypes.STRING,
       allowNull: {
         args: false,
@@ -54,7 +54,7 @@ module.exports = (sequelize, DataTypes) => {
         },
       }
     },
-    isverified: {
+    isVerified: {
       type: DataTypes.BOOLEAN,
       defaultValue: false
     },
@@ -66,79 +66,77 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: true
     },
-    notifysettings: {
+    notifySettings: {
       type: DataTypes.BOOLEAN,
       defaultValue: true
     },
-    role: {
-      type: DataTypes.STRING,
-      allowNull: false
+    roleId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
     },
-    authtype: {
-      type: DataTypes.STRING,
+    authTypeId: {
+      type: DataTypes.INTEGER,
       allowNull: false
     },
   }, {});
   User.associate = (models) => {
     const {
       Article,
-      Authtype,
+      AuthType,
       Comment,
       Reply,
-      Commentlike,
+      CommentLike,
       Notification,
       Bookmark,
       Share,
-      Role,
-      Users
+      Role
     } = models;
     User.hasMany(Article, {
       as: 'articles',
-      foreignKey: 'userid'
+      foreignKey: 'userId'
     });
-    User.belongsTo(Authtype, {
-      as: 'authtypes',
-      foreignKey: 'authtype',
+    User.belongsTo(AuthType, {
+      as: 'authTypes',
+      foreignKey: 'authTypeId',
       targetKey: 'type'
     });
     User.hasMany(Comment, {
-      foreignKey: 'userid',
+      foreignKey: 'userId',
       as: 'comments'
     });
     User.hasMany(Reply, {
       as: 'replies',
-      foreignKey: 'userid'
+      foreignKey: 'userId'
     });
-    User.hasMany(Commentlike, {
+    User.hasMany(CommentLike, {
       foreignKey: 'userId',
     });
     User.hasMany(Notification, {
       as: 'sender',
-      foreignKey: 'senderid',
+      foreignKey: 'senderId',
     });
     User.hasMany(Notification, {
       as: 'receiver',
-      foreignKey: 'receiverid'
+      foreignKey: 'receiverId'
     });
     User.hasMany(Bookmark, {
-      foreignKey: 'userid',
+      foreignKey: 'userId',
     });
     User.hasMany(Share, {
-      foreignKey: 'userid',
+      foreignKey: 'userId',
     });
     User.belongsTo(Role, {
-      foreignKey: 'role',
-      targetKey: 'type'
+      foreignKey: 'roleId',
     });
-    User.belongsToMany(Users, {
+    User.belongsToMany(User, {
       through: 'Follow',
       as: 'followers',
-      foreignKey: 'followersid',
+      foreignKey: 'followersId',
     });
-    User.belongsToMany(Users, {
+    User.belongsToMany(User, {
       through: 'Follow',
       as: 'following',
-      foreignKey: 'userid',
+      foreignKey: 'userId',
     });
   };
   return User;

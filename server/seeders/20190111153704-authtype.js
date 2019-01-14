@@ -1,8 +1,7 @@
-/* eslint-disable no-unused-vars */
-module.exports = {
-  up: (queryInterface, Sequelize) => queryInterface.bulkInsert('Authtypes', [{
+export default {
+  up: (queryInterface, Sequelize) => queryInterface.bulkInsert('AuthTypes', [{
     type: 'regular',
   }], {}),
 
-  down: (queryInterface, Sequelize) => queryInterface.bulkDelete('Authtypes', null, {})
+  down: (queryInterface, Sequelize) => queryInterface.bulkDelete('AuthTypes', null, {})
 };

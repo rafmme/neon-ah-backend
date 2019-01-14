@@ -1,30 +1,39 @@
-module.exports = (sequelize, DataTypes) => {
+export default (sequelize, DataTypes) => {
   const Comment = sequelize.define('Comment', {
-    content: DataTypes.TEXT,
-    userid: DataTypes.INTEGER,
-    articleid: DataTypes.INTEGER
+    content: {
+      type: DataTypes.TEXT,
+      allowNull: false
+    },
+    userId: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    articleId: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    }
   }, {});
   Comment.associate = (models) => {
     const {
       Reply,
       Article,
-      Users,
-      Commentlike,
+      User,
+      CommentLike,
     } = models;
     Comment.hasMany(Reply, {
-      foreignKey: 'commentid',
+      foreignKey: 'commentId',
       as: 'replies'
     });
     Comment.belongsTo(Article, {
-      foreignKey: 'articleid',
+      foreignKey: 'articleId',
       onDelete: 'CASCADE'
     });
-    Comment.hasMany(Commentlike, {
-      foreignKey: 'commentid',
+    Comment.hasMany(CommentLike, {
+      foreignKey: 'commentId',
       as: 'likes'
     });
-    Comment.belongsTo(Users, {
-      foreignKey: 'userid',
+    Comment.belongsTo(User, {
+      foreignKey: 'userId',
       onDelete: 'CASCADE'
     });
   };

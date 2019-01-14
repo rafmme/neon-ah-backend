@@ -1,11 +1,14 @@
-module.exports = (sequelize, DataTypes) => {
-  const Authtype = sequelize.define('Authtype', {
-    type: DataTypes.STRING
+export default (sequelize, DataTypes) => {
+  const AuthType = sequelize.define('AuthType', {
+    type: {
+      type: DataTypes.STRING,
+      allowNull: false
+    }
   }, {});
-  Authtype.associate = (models) => {
-    Authtype.hasMany(models.Users, {
-      foreignKey: 'authtypeid'
+  AuthType.associate = (models) => {
+    AuthType.hasMany(models.User, {
+      foreignKey: 'authTypeId'
     });
   };
-  return Authtype;
+  return AuthType;
 };

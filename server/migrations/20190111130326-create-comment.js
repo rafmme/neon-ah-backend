@@ -1,5 +1,4 @@
-/* eslint-disable no-unused-vars */
-module.exports = {
+export default {
   up: (queryInterface, Sequelize) => queryInterface.createTable('Comments', {
     id: {
       allowNull: false,
@@ -8,13 +7,16 @@ module.exports = {
       type: Sequelize.INTEGER
     },
     content: {
-      type: Sequelize.TEXT
+      type: Sequelize.TEXT,
+      allowNull: false
     },
-    userid: {
-      type: Sequelize.INTEGER
+    userId: {
+      type: Sequelize.INTEGER,
+      allowNull: false
     },
-    articleid: {
-      type: Sequelize.INTEGER
+    articleId: {
+      type: Sequelize.INTEGER,
+      allowNull: false
     },
     createdAt: {
       allowNull: false,

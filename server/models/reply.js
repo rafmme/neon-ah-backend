@@ -1,16 +1,28 @@
 module.exports = (sequelize, DataTypes) => {
   const Reply = sequelize.define('Reply', {
-    userid: DataTypes.INTEGER,
-    articleid: DataTypes.INTEGER,
-    commentid: DataTypes.INTEGER
+    userId: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    articleId: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    commentId: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    }
   }, {});
   Reply.associate = (models) => {
-    const { Users, Comment } = models;
-    Reply.belongsTo(Users, {
-      foreignKey: 'userid'
+    const {
+      User,
+      Comment
+    } = models;
+    Reply.belongsTo(User, {
+      foreignKey: 'userId'
     });
     Reply.belongsTo(Comment, {
-      foreignKey: 'commentid'
+      foreignKey: 'commentId'
     });
   };
   return Reply;

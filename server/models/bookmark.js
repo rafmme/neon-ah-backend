@@ -1,11 +1,17 @@
-module.exports = (sequelize, DataTypes) => {
+export default (sequelize, DataTypes) => {
   const Bookmark = sequelize.define('Bookmark', {
-    userid: DataTypes.INTEGER,
-    articleid: DataTypes.INTEGER
+    userId: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    articleId: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    }
   }, {});
   Bookmark.associate = (models) => {
-    Bookmark.belongsTo(models.Users, {
-      foreignKey: 'userid',
+    Bookmark.belongsTo(models.User, {
+      foreignKey: 'userId',
       onDelete: 'CASCADE'
     });
   };
