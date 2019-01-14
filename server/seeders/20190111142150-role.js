@@ -1,11 +1,8 @@
+/* eslint-disable no-unused-vars */
 module.exports = {
-  up: (queryInterface, Sequelize) => {
-    return queryInterface.bulkInsert('Roles', [{
-      type: 'admin',
-    }], {});
-  },
+  up: (queryInterface, Sequelize) => queryInterface.bulkInsert('Roles', [{
+    type: 'admin',
+  }], {}),
 
-  down: (queryInterface, Sequelize) => {
-    return queryInterface.bulkDelete('Roles', null, {});
-  }
+  down: (queryInterface, Sequelize) => queryInterface.bulkDelete('Roles', null, {})
 };

@@ -1,6 +1,8 @@
 /* eslint-disable no-unused-vars */
+
+
 module.exports = {
-  up: (queryInterface, Sequelize) => queryInterface.createTable('Articletags', {
+  up: (queryInterface, Sequelize) => queryInterface.createTable('Reports', {
     id: {
       allowNull: false,
       autoIncrement: true,
@@ -10,7 +12,7 @@ module.exports = {
     articleid: {
       type: Sequelize.INTEGER
     },
-    tagid: {
+    userid: {
       type: Sequelize.INTEGER
     },
     createdAt: {
@@ -24,5 +26,5 @@ module.exports = {
       defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
     }
   }),
-  down: (queryInterface, Sequelize) => queryInterface.dropTable('Articletags')
+  down: (queryInterface, Sequelize) => queryInterface.dropTable('Reports')
 };

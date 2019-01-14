@@ -1,11 +1,8 @@
+/* eslint-disable no-unused-vars */
 module.exports = {
-  up: (queryInterface, Sequelize) => {
-    return queryInterface.bulkInsert('Authtypes', [{
-      type: 'facebook',
-    }], {});
-  },
+  up: (queryInterface, Sequelize) => queryInterface.bulkInsert('Authtypes', [{
+    type: 'google',
+  }], {}),
 
-  down: (queryInterface, Sequelize) => {
-    return queryInterface.bulkDelete('Authtypes', null, {});
-  }
+  down: (queryInterface, Sequelize) => queryInterface.bulkDelete('Authtypes', null, {})
 };

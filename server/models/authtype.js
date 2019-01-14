@@ -1,10 +1,11 @@
-'use strict';
 module.exports = (sequelize, DataTypes) => {
-  const authtype = sequelize.define('Authtype', {
+  const Authtype = sequelize.define('Authtype', {
     type: DataTypes.STRING
   }, {});
-  authtype.associate = function(models) {
-    // associations can be defined here
+  Authtype.associate = (models) => {
+    Authtype.hasMany(models.Users, {
+      foreignKey: 'authtypeid'
+    });
   };
-  return authtype;
+  return Authtype;
 };
