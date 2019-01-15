@@ -16,6 +16,55 @@ class Auth {
    * @returns {object} Json response
    * @memberof Auth
    */
+  static async signUp(req, res) {
+    try {
+      const { fullname, username, email, password } = req.body;
+      const user = await Users.findOne({ where: { email } });
+
+      if (user) {
+        return res.status(404).json({ message: 'User already exist' });
+      }
+
+      const salt = bcrypt.genSaltSync(10);
+      const hashedPassword = bcrypt.hashSync(password, salt);
+
+      const storedData = await Users.create({
+        fullname,
+        username,
+        email,
+        password: hashedPassword,
+        roleId: 3,
+        authTypeId: 0
+      });
+      const payload = {
+        id: storedData.id,
+        roleId: storedData.roleId,
+        username: storedData.username,
+        email: storedData.email
+      };
+      jwt.sign(
+        payload,
+        process.env.JWT_SECRET,
+        { expiresIn: 10800 },
+        (err, token) => {
+          res.json({
+            token: `${token}`,
+            payload
+          });
+        }
+      );
+    } catch (err) {
+      return res.status(400).json(err);
+    }
+  }
+
+  /**
+   * @static
+   * @param {*} req
+   * @param {*} res
+   * @returns {object} Json response
+   * @memberof Auth
+   */
   static async logIn(req, res) {
     try {
       const { email, password } = req.body;
