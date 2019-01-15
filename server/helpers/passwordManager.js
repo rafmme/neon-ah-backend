@@ -1,17 +1,17 @@
 import bcrypt from 'bcrypt';
 
 /**
- * @class encryptData
- * @description class defines the methods used to encrypt and decrypt passswords.
+ * @class passwordManager
+ * @description class defines the methods used to hash and compare hashed passswords.
  */
-class encryptData {
+class passwordManager {
   /**
    * @static
-   * @param {string} password to be encrpyted
+   * @param {string} password to be hashed
    * @returns {string} - hashed password.
    * @memberof encryptData
    */
-  static async encryptPassword(password) {
+  static async hashPassword(password) {
     const salt = 10;
     try {
       const hashedPassword = await bcrypt.hashSync(password, salt);
@@ -24,7 +24,8 @@ class encryptData {
   /**
    * @static
    * @param {string} password - the string to compare
-   * @param {string} hashedpassword - hashed password from the database that password is compared against.
+   * @param {string} hashedpassword - hashed password from the database
+   * that password is compared against.
    * @returns {boolean} - this is the result of the comparism
    * If the password and the hashed password in the database are the same
    * it returns true, else it returns false.
@@ -40,4 +41,4 @@ class encryptData {
   }
 }
 
-export default encryptData;
+export default passwordManager;

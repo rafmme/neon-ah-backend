@@ -1,7 +1,6 @@
-import { error } from 'util';
 import model from '../models';
-import encryptData from '../utilities/encryptPassword';
-import authentication from '../utilities/authentication';
+import passwordManager from '../helpers/passwordManager';
+import tokenManager from '../helpers/tokenManager';
 
 const { User } = model;
 
@@ -20,33 +19,32 @@ class UserController {
   static async signupUser(req, res) {
     try {
       const {
-        fullname, username, email, password
+        fullName, userName, email, password, roleId
       } = req.body;
-      const hashedPassword = encryptData.encryptPassword(password);
-      // console.log('Here Fired');
+      const hashedPassword = await passwordManager.hashPassword(password);
       const foundUser = await User.findOne({ where: { email } });
       if (foundUser) {
-        return 'Email already exists. Enter another email';
-      }
-      const createdUser = await User.Create({
-        fullname,
-        username,
-        email,
-        password: hashedPassword
-      });
-      const token = await authentication.createToken(createdUser);
-      res
-        .status(201)
-        .json({
-          token,
-          status: 'success',
-          fullname,
-          data: createdUser,
-          id: createdUser.id,
-          message: 'Inserted a new user'
+        return res.status(409).send({
+          status: 'failure',
+          message: 'Email already exists.Enter another email'
         });
+      }
+      const createdUser = await User.create({
+        userName,
+        fullName,
+        email,
+        password: hashedPassword,
+        roleId,
+        authTypeId: 1
+      });
+      const token = await tokenManager.createToken(createdUser);
+      return res.status(201).json({
+        token,
+        status: 'success',
+        message: 'Registered a new user'
+      });
     } catch (err) {
-      res.status(400).json({ error: err });
+      res.status(400).json({ error: err.message });
     }
   }
 }
