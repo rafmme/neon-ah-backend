@@ -1,8 +1,6 @@
-/* eslint-disable arrow-body-style */
-/* eslint-disable no-unused-vars */
 module.exports = {
-  up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('Users', {
+  up: (queryInterface, Sequelize) =>
+    queryInterface.createTable('Users', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -51,9 +49,6 @@ module.exports = {
         type: Sequelize.DATE(3),
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP(3)')
       }
-    });
-  },
-  down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('Users');
-  }
+    }),
+  down: (queryInterface, Sequelize) => queryInterface.dropTable('Users')
 };
