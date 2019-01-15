@@ -1,6 +1,5 @@
 import { expect } from 'chai';
 
-
 describe('set up unit test', () => {
   it('Sample test', () => {
     expect(true).to.equal(true);

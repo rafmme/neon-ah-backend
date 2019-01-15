@@ -11,7 +11,7 @@
     "comp": "babel index.js -d build",
     "clear": "rimraf build && babel index.js -d build",
     "start": "npm run comp && node build/index.js",
-    "dev-start": "nodemon -w src --exec npm run start",
+    "dev": "nodemon -w src --exec npm run start",
     "test": "nyc --reporter=html --reporter=text --require @babel/register mocha server/test/**/*.js --exit --timeout=20000",
     "coverage": "nyc report --reporter=text-lcov | coveralls"
   },

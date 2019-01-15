@@ -1,0 +1,27 @@
+{
+  "addons": [
+    "heroku-postgresql"
+  ],
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    }
+  ],
+  "env": {
+    "SENDGRID_API_KEY": {
+      "required": true
+    },
+    "JWT_SECRET": {
+      "required": true
+    }
+  },
+  "formation": {
+    "web": {
+      "quantity": 1
+    }
+  },
+  "name": "neon-ah-backend",
+  "scripts": {
+  },
+  "stack": "heroku-18"
+}
