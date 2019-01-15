@@ -1,5 +1,5 @@
 import TokenManager from '../helpers/TokenManager';
-import PasswordManager from '../helpers/passwordManager';
+import PasswordManager from '../helpers/PasswordManager';
 import db from '../models';
 
 const { Users } = db;
@@ -65,7 +65,9 @@ class UserController {
       const user = await Users.findOne({ where: { email } });
 
       if (!user) {
-        return res.status(404).json({ message: 'user not found' });
+        return res
+          .status(404)
+          .send({ status: 'failure', data: { message: 'User not found' } });
       }
 
       const isValidPassword = PasswordManager.decryptPassword(
@@ -74,9 +76,10 @@ class UserController {
       );
 
       if (!isValidPassword) {
-        return res
-          .status(401)
-          .json({ auth: false, token: null, message: 'Password is wrong' });
+        return res.status(401).send({
+          status: 'failure',
+          data: { auth: false, token: null, message: 'Password is wrong' }
+        });
       }
 
       const payload = {
@@ -85,11 +88,12 @@ class UserController {
         role: user.roleId
       };
       const token = TokenManager.sign(payload, '24h');
-      return res.json({
-        token: `${token}`
+      return res.status(200).send({
+        status: 'success',
+        data: { token: `${token}` }
       });
     } catch (error) {
-      return res.status(400).json(error);
+      return res.status(400).send(error);
     }
   }
 }
