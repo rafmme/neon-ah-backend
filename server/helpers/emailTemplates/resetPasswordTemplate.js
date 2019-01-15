@@ -21,7 +21,7 @@ const passwordResetEmailTemplate = (user, token) => `
         src="https://res.cloudinary.com/jesseinit/image/upload/v1547303525/Logo.png"
         alt="logo"
       />
-      <h3 class="username"">Hi ${user.lastName},</h3>
+      <h3 class="username"">Hi ${user.fullName},</h3>
       <p class="message">
         You recently requested to reset your password for your Authors Haven's account. Use the
         button below to reset it. This password reset is only valid for the next 24 hours.

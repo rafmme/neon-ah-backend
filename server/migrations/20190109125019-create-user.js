@@ -1,17 +1,14 @@
+/*eslint-disable */
 module.exports = {
-  up: (queryInterface, Sequelize) =>
-    queryInterface.createTable('Users', {
+  up: (queryInterface, Sequelize) => {
+    return queryInterface.createTable('Users', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      firstName: {
-        allowNull: false,
-        type: Sequelize.STRING
-      },
-      lastName: {
+      fullName: {
         allowNull: false,
         type: Sequelize.STRING
       },
@@ -49,6 +46,7 @@ module.exports = {
         type: Sequelize.DATE(3),
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP(3)')
       }
-    }),
+    });
+  },
   down: (queryInterface, Sequelize) => queryInterface.dropTable('Users')
 };

@@ -1,4 +1,5 @@
 
 build/
-server/migrations/
-server/test/
+server/migrations
+server/seeders
+server/test

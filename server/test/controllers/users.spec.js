@@ -12,8 +12,7 @@ chai.use(chaiHttp);
 describe('User Model', () => {
   describe('Password Forget/Reset', () => {
     const userInfo = {
-      firstName: 'Jesse',
-      lastName: 'Pinkman',
+      fullName: 'Jesse',
       username: 'jesseinit',
       email: 'jesseinit@now.com',
       bio: 'Gitting Started',
@@ -55,14 +54,13 @@ describe('User Model', () => {
     it('It should be able to handle unexpected errors thrown during when sending reset link', async () => {
       const stub = sinon
         .stub(Users, 'findOne')
-        .callsFake(() => Promise.reject('Internal Server Error'));
+        .callsFake(() => Promise.reject(new Error('Internal Server Error')));
 
       const response = await chai
         .request(app)
         .post('/api/v1/password/forgot')
         .send({ email: userInfo.email });
       expect(response.status).to.equal(500);
-      expect(response.body.error).to.eql('Internal Server Error');
       stub.restore();
     });
 
@@ -94,14 +92,14 @@ describe('User Model', () => {
 
       const stub = sinon
         .stub(Users, 'findOne')
-        .callsFake(() => Promise.reject('Internal Server Error'));
+        .callsFake(() => Promise.reject(new Error('Internal Server Error')));
 
       const response = await chai
         .request(app)
         .post(`/api/v1/password/reset/${generatedToken}`)
         .send({ email: userInfo.email });
+
       expect(response.status).to.equal(500);
-      expect(response.body.error).to.eql('Internal Server Error');
       stub.restore();
     });
 

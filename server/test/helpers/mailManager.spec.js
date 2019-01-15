@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import MailManager from '../../helpers/mailManager';
+import MailManager from '../../helpers/MailManager';
 import sgMail from '@sendgrid/mail';
 import env from 'dotenv';
 import sinon from 'sinon';

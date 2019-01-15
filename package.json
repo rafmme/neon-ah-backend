@@ -14,17 +14,16 @@
     "db:migrate": "node_modules/.bin/sequelize db:migrate:undo:all && node_modules/.bin/sequelize db:migrate",
     "db:seed": "node_modules/.bin/sequelize db:seed:all",
     "build": "rimraf build/* && babel ./ -d build --ignore 'node_modules','coverage' ",
-    "start": "npm run build && node build/index.js",
+    "start": "node build/index.js",
     "dev": "nodemon --exec babel-node ./index.js --env",
     "db:migrate:test": "cross-env NODE_ENV=test node_modules/.bin/sequelize db:migrate:undo:all && cross-env NODE_ENV=test node_modules/.bin/sequelize db:migrate",
     "test": "npm run db:migrate:test && cross-env NODE_ENV=test nyc mocha ./server/test --exit --timeout=20000 --recursive",
-    "coverage": "nyc report --reporter=text-lcov | coveralls"
+    "coverage": "nyc report --reporter=text-lcov | coveralls",
+    "heroku-postbuild": "npm run build"
   },
   "author": "Andela Simulations Programme",
   "license": "MIT",
   "dependencies": {
-    "@babel/polyfill": "^7.2.5",
-    "@babel/runtime": "^7.2.0",
     "@sendgrid/mail": "^6.3.1",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.3",
@@ -49,15 +48,13 @@
     "slug": "^0.9.3",
     "swagger-ui-express": "^4.0.2",
     "underscore": "^1.9.1",
+    "babel-polyfill": "^6.26.0",
     "yamljs": "^0.3.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.2.3",
-    "@babel/core": "^7.2.2",
-    "@babel/node": "^7.2.2",
-    "@babel/plugin-transform-runtime": "^7.2.0",
-    "@babel/preset-env": "^7.2.3",
-    "@babel/register": "^7.0.0",
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "babel-register": "^6.26.0",
     "chai": "^4.2.0",
     "chai-http": "^4.2.1",
     "cross-env": "^5.2.0",
@@ -73,7 +70,7 @@
   },
   "nyc": {
     "require": [
-      "@babel/register"
+      "babel-register"
     ],
     "reporter": [
       "lcov",
