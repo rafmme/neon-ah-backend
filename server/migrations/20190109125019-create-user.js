@@ -1,5 +1,4 @@
-/* eslint-disable arrow-body-style */
-/* eslint-disable no-unused-vars */
+/*eslint-disable */
 module.exports = {
   up: (queryInterface, Sequelize) => {
     return queryInterface.createTable('Users', {
@@ -9,11 +8,7 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      firstName: {
-        allowNull: false,
-        type: Sequelize.STRING
-      },
-      lastName: {
+      fullName: {
         allowNull: false,
         type: Sequelize.STRING
       },
@@ -53,7 +48,5 @@ module.exports = {
       }
     });
   },
-  down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('Users');
-  }
+  down: (queryInterface, Sequelize) => queryInterface.dropTable('Users')
 };
