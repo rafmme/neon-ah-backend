@@ -3,7 +3,10 @@ import MailManager from '../helpers/MailManager';
 import db from '../models';
 import PasswordManager from '../helpers/PasswordManager';
 
-const { Users } = db;
+const {
+  User
+
+} = db;
 
 /**
  * @class UserController
@@ -20,21 +23,41 @@ class UserController {
    */
   static async forgotPassword(req, res) {
     try {
-      const { email } = req.body;
-      const user = await Users.findOne({ where: { email } });
+      const {
+        email
+      } = req.body;
+
+      const user = await User.findOne({
+        where: {
+          email
+        }
+      });
       if (!user) {
-        res.status(404).send({ status: 'failure', message: 'User not found' });
+        res.status(404).send({
+          status: 'failure',
+          message: 'User not found'
+        });
         return;
       }
 
-      const token = TokenManager.sign({ email }, '24h');
-      await MailManager.sendPasswordResetLink({ user, token });
+      const token = TokenManager.sign({
+        email
+      }, '24h');
+      await MailManager.sendPasswordResetLink({
+        user,
+        token
+      });
 
       res
         .status(200)
-        .send({ status: 'success', message: 'Kindly check your mail to reset your password' });
+        .send({
+          status: 'success',
+          message: 'Kindly check your mail to reset your password'
+        });
     } catch (error) {
-      res.status(500).send({ error });
+      res.status(500).send({
+        error
+      });
     }
   }
 
@@ -48,28 +71,48 @@ class UserController {
    */
   static async passwordReset(req, res) {
     try {
-      const { token } = req.params;
+      const {
+        token
+      } = req.params;
 
-      const { email } = TokenManager.verify(token);
+      const {
+        email
+      } = TokenManager.verify(token);
 
-      const { newPassword, confirmPassword } = req.body;
+      const {
+        newPassword,
+        confirmPassword
+      } = req.body;
       const isPasswordEqual = newPassword === confirmPassword;
 
       if (!isPasswordEqual) {
-        return res.status(400).send({ status: 'failure', message: 'Password does not match' });
+        return res.status(400).send({
+          status: 'failure',
+          message: 'Password does not match'
+        });
       }
 
-      const user = await Users.findOne({ where: { email } });
+      const user = await User.findOne({
+        where: {
+          email
+        }
+      });
 
       if (!user) {
-        res.status(404).send({ status: 'failure', message: 'User not found' });
+        res.status(404).send({
+          status: 'failure',
+          message: 'User not found'
+        });
         return;
       }
 
-      await Users.update(
-        { password: PasswordManager.hashPassword(newPassword) },
-        { where: { email } }
-      );
+      await User.update({
+        password: PasswordManager.hashPassword(newPassword)
+      }, {
+        where: {
+          email
+        }
+      });
 
       res.status(200).send({
         status: 'success',
@@ -77,9 +120,14 @@ class UserController {
       });
     } catch (error) {
       if (error.name === 'TokenExpiredError' || error.name === 'JsonWebTokenError') {
-        return res.status(401).send({ status: 'failure', message: error.name });
+        return res.status(401).send({
+          status: 'failure',
+          message: error.name
+        });
       }
-      res.status(500).send({ error });
+      res.status(500).send({
+        error
+      });
     }
   }
 }

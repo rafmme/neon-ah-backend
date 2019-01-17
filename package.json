@@ -11,12 +11,16 @@
     "node": "10.14.1"
   },
   "scripts": {
-    "db:migrate": "node_modules/.bin/sequelize db:migrate:undo:all && node_modules/.bin/sequelize db:migrate",
-    "db:seed": "node_modules/.bin/sequelize db:seed:all",
+    "undomigrate": "babel-node node_modules/.bin/sequelize db:migrate:undo:all",
+    "migrate": "npm run undomigrate && babel-node node_modules/.bin/sequelize db:migrate",
+    "undoseed": "babel-node node_modules/.bin/sequelize db:seed:undo:all",
+    "seed": "babel-node node_modules/.bin/sequelize db:seed:all",
+    "test-undoseed": "cross-env NODE_ENV=test npm run undoseed",
+    "test-seed": "cross-env NODE_ENV=test npm run seed",
     "build": "rimraf build/* && babel ./ -d build --ignore 'node_modules','coverage' ",
     "start": "node build/index.js",
     "dev": "nodemon --exec babel-node ./index.js --env",
-    "db:migrate:test": "cross-env NODE_ENV=test node_modules/.bin/sequelize db:migrate:undo:all && cross-env NODE_ENV=test node_modules/.bin/sequelize db:migrate",
+    "db:migrate:test": "cross-env NODE_ENV=test npm run migrate && npm run test-seed",
     "test": "npm run db:migrate:test && cross-env NODE_ENV=test nyc mocha ./server/test --exit --timeout=20000 --recursive",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
     "heroku-postbuild": "npm run build"
