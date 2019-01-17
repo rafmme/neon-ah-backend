@@ -1,10 +1,12 @@
+import uuidv4 from 'uuid/v4';
+
 export default {
   up: (queryInterface, Sequelize) => queryInterface.createTable('Users', {
     id: {
       allowNull: false,
-      autoIncrement: true,
       primaryKey: true,
-      type: Sequelize.INTEGER
+      type: Sequelize.UUID,
+      defaultValue: uuidv4()
     },
     fullName: {
       type: Sequelize.STRING,
@@ -39,12 +41,12 @@ export default {
       defaultValue: true
     },
     roleId: {
-      type: Sequelize.INTEGER,
+      type: Sequelize.UUID,
       allowNull: false,
-      defaultValue: 1,
+      defaultValue: '3ceb546e-054d-4c1d-8860-e27c209d4ae3',
     },
     authTypeId: {
-      type: Sequelize.INTEGER,
+      type: Sequelize.UUID,
       allowNull: false
     },
     createdAt: {

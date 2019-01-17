@@ -1,11 +1,11 @@
 export default (sequelize, DataTypes) => {
   const ArticleTag = sequelize.define('ArticleTag', {
     articleId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       allowNull: false
     },
     tagId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       allowNull: false
     },
   }, {});

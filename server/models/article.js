@@ -29,8 +29,8 @@ export default (sequelize, DataTypes) => {
       defaultValue: false
     },
     userId: {
-      type: DataTypes.INTEGER,
-      allowNull: false
+      type: DataTypes.UUID,
+      allowNull: false,
     }
   }, {});
   Article.associate = (models) => {

@@ -1,18 +1,19 @@
-/* eslint-disable no-unused-vars */
+import uuidv4 from 'uuid/v4';
+
 export default {
   up: (queryInterface, Sequelize) => queryInterface.createTable('CommentLikes', {
     id: {
       allowNull: false,
-      autoIncrement: true,
       primaryKey: true,
-      type: Sequelize.INTEGER
+      type: Sequelize.UUID,
+      defaultValue: uuidv4()
     },
     userId: {
-      type: Sequelize.INTEGER,
+      type: Sequelize.UUID,
       allowNull: false
     },
     commentId: {
-      type: Sequelize.INTEGER,
+      type: Sequelize.UUID,
       allowNull: false
     },
     createdAt: {

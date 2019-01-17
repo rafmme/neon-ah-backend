@@ -1,17 +1,19 @@
+import uuidv4 from 'uuid/v4';
+
 export default {
   up: (queryInterface, Sequelize) => queryInterface.createTable('Reports', {
     id: {
       allowNull: false,
-      autoIncrement: true,
       primaryKey: true,
-      type: Sequelize.INTEGER
+      type: Sequelize.UUID,
+      defaultValue: uuidv4()
     },
     articleId: {
-      type: Sequelize.INTEGER,
+      type: Sequelize.UUID,
       allowNull: false
     },
     userId: {
-      type: Sequelize.INTEGER,
+      type: Sequelize.UUID,
       allowNull: false
     },
     createdAt: {

@@ -1,11 +1,11 @@
 module.exports = (sequelize, DataTypes) => {
   const Share = sequelize.define('Share', {
     articleId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       allowNull: false
     },
     userId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       allowNull: false
     }
   }, {});

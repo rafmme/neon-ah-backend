@@ -1,11 +1,11 @@
 export default (sequelize, DataTypes) => {
   const Follow = sequelize.define('Follow', {
     followersId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       allowNull: false
     },
     userId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       allowNull: false
     }
   }, {});

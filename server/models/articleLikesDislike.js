@@ -1,11 +1,11 @@
 export default (sequelize, DataTypes) => {
   const ArticleLikesDislike = sequelize.define('ArticleLikesDislike', {
     userId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       allowNull: false
     },
     articleId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       allowNull: false
     },
     reaction: {

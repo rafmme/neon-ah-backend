@@ -1,11 +1,11 @@
 export default (sequelize, DataTypes) => {
   const Bookmark = sequelize.define('Bookmark', {
     userId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       allowNull: false
     },
     articleId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       allowNull: false
     }
   }, {});

@@ -1,11 +1,11 @@
 export default (sequelize, DataTypes) => {
   const CommentLike = sequelize.define('CommentLike', {
     userId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       allowNull: false
     },
     commentId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       allowNull: false
     }
   }, {});
