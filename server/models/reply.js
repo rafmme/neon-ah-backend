@@ -1,7 +1,7 @@
 module.exports = (sequelize, DataTypes) => {
   const Reply = sequelize.define('Reply', {
     userId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       allowNull: false
     },
     content: {
@@ -9,11 +9,11 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false
     },
     articleId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       allowNull: false
     },
     commentId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       allowNull: false
     }
   }, {});

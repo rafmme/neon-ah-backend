@@ -53,12 +53,12 @@ export default (sequelize, DataTypes) => {
       defaultValue: true
     },
     roleId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       allowNull: false,
       defaultValue: 1
     },
     authTypeId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       allowNull: false
     },
   }, {});
