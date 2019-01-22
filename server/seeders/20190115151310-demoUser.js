@@ -15,6 +15,16 @@ export default {
     bio: 'Learning life now',
     password: 'Blahblah',
     authTypeId: '15745c60-7b1a-11e8-9c9c-2d42b21b1a3e'
-  }], {}),
+  },
+  {
+    id: '92745c78-7b1a-81e8-9c9c-9d42b21b1a3e',
+    fullName: 'Steve',
+    userName: 'steve',
+    email: 'steve@now.com',
+    bio: 'Gitting Started',
+    password: 'Blahblah',
+    authTypeId: '15745c60-7b1a-11e8-9c9c-2d42b21b1a3e'
+  }
+], {}),
   down: (queryInterface, Sequelize) => queryInterface.bulkDelete('Users', null, {})
 };

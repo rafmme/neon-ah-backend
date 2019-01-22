@@ -11,15 +11,13 @@
    */
 
 export default (res, code, status, message, error, payload) => {
-  const responseData = error ? {
-    message,
-    error,
-  } : {
-    message,
-    payload
-  };
   res.status(code).json({
     status,
-    data: responseData
+    data: {
+      statusCode: code,
+      message,
+      error,
+      payload
+    }
   });
 };

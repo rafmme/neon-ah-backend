@@ -19,7 +19,7 @@ class AuthMiddleware {
       if (!authorization) {
         return response(
           res, 401, 'failure', 'authentication error',
-          { message: 'You are not logged in, Token is needed!' },
+          { message: 'You are not logged in.' },
           null
         );
       }

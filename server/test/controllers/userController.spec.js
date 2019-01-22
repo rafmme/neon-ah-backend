@@ -12,7 +12,6 @@ chai.use(chaiHttp);
 describe('User Model', () => {
   describe('Password Forget/Reset', () => {
     let generatedToken = null;
-
     after(async () => {
       await User.destroy({ where: {} });
     });
@@ -24,7 +23,6 @@ describe('User Model', () => {
         .send({
           email: 'blahblah@gmail.com'
         });
-
       expect(response.status).to.eqls(404);
       expect(response.body.status).to.eqls('failure');
       expect(response.body.data.message).to.eqls('User not found');

@@ -29,7 +29,7 @@ class ArticleController {
         banner,
         tagsList,
       } = req.body;
-      const tagsArray = tagsList ? Util.createArrayOfStrings(tagsList) : '';
+      const tagsArray = tagsList ? Util.createArrayOfStrings(tagsList) : [];
 
       const articleData = {
         userId,
@@ -42,16 +42,18 @@ class ArticleController {
         isReported: false,
       };
 
-      const article = await Article.create(articleData);
+      let article = await Article.create(articleData);
 
       if (article) {
+        article = article.toJSON();
+        article.tags = articleData.tagsList;
         const {
           createdAt,
           updatedAt
         } = article;
         await TagHelper.findOrAddTag(article.id, tagsArray);
-        articleData.createdAt = Util.formatDate(createdAt);
-        articleData.updatedAt = Util.formatDate(updatedAt);
+        article.createdAt = Util.formatDate(createdAt);
+        article.updatedAt = Util.formatDate(updatedAt);
 
         return response(
           res, 201, 'success',

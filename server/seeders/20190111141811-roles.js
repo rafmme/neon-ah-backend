@@ -13,6 +13,5 @@ export default {
     ],
     {}
   ),
-
   down: (queryInterface, Sequelize) => queryInterface.bulkDelete('Roles', null, {})
 };
