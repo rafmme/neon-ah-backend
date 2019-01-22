@@ -180,7 +180,7 @@ class UserController {
         data: {
           statusCode: 201,
           token,
-          message: 'Registered a new user'
+          message: 'You have successfully signed up'
         }
       });
     } catch (err) {
@@ -240,11 +240,11 @@ class UserController {
         roleId: user.roleId
       };
       const token = TokenManager.sign(payload, '360d');
-      return response.status(201).send({
+      return response.status(200).send({
         status: 'Success',
         data: {
-          statusCode: 201,
-          message: 'User signed in successfully',
+          statusCode: 200,
+          message: 'You have successfully logged in',
           token: `${token}`
         }
       });
