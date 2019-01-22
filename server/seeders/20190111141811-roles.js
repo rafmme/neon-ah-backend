@@ -11,7 +11,8 @@ export default {
         type: 'admin'
       }
     ],
-    {}),
+    {}
+  ),
 
   down: (queryInterface, Sequelize) => queryInterface.bulkDelete('Roles', null, {})
 };

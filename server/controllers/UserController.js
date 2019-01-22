@@ -23,14 +23,13 @@ class UserController {
       const { email } = req.body;
       const user = await User.findOne({ where: { email } });
       if (!user) {
-        res.status(404).send({
+        return res.status(404).json({
           status: 'failure',
           data: {
             statusCode: 404,
             message: 'User not found'
           }
         });
-        return;
       }
 
       const token = TokenManager.sign(
@@ -81,7 +80,7 @@ class UserController {
       const isPasswordEqual = newPassword === confirmPassword;
 
       if (!isPasswordEqual) {
-        return res.status(400).send({
+        return res.status(400).json({
           status: 'failure',
           data: {
             statusCode: 400,
@@ -93,14 +92,13 @@ class UserController {
       const user = await User.findOne({ where: { email } });
 
       if (!user) {
-        res.status(404).send({
+        return res.status(404).json({
           status: 'failure',
           data: {
             statusCode: 404,
             message: 'User not found'
           }
         });
-        return;
       }
 
       await User.update(
@@ -108,7 +106,7 @@ class UserController {
         { where: { email } }
       );
 
-      res.status(200).send({
+      res.status(200).json({
         status: 'success',
         data: {
           statusCode: '200',
@@ -251,6 +249,61 @@ class UserController {
     } catch (error) {
       return response.status(400).send(error);
     }
+  }
+
+  /**
+   *
+   *
+   * @static
+   * @param {string} accessToken
+   * @param {string} refreshToken
+   * @param {string} profile
+   * @param {function} done
+   * @returns {object} User Object
+   * @memberof UserController
+   */
+  static async strategyCallback(accessToken, refreshToken, profile, done) {
+    try {
+      const providerList = ['google', 'facebook', 'twitter', 'linkedin'];
+
+      const {
+        id, displayName, emails, photos, provider
+      } = profile;
+
+      const syncValue = 2;
+      const authType = providerList.indexOf(provider);
+
+      const [user] = await User.findOrCreate({
+        where: { email: emails[0].value },
+        defaults: {
+          fullName: displayName,
+          userName: `user${id}`,
+          password: id,
+          authTypeId: authType + syncValue,
+          roleId: 1,
+          isVerified: true,
+          email: emails[0].value,
+          img: photos[0].value
+        }
+      });
+      return done(null, user.dataValues);
+    } catch (error) {
+      return done(error, null);
+    }
+  }
+
+  /**
+   *
+   * @description Handles social auth method and returns a token
+   * @static
+   * @param {*} req
+   * @param {*} res
+   * @returns {object} Json Resonse
+   * @memberof UserController
+   */
+  static handleSocialAuth(req, res) {
+    const token = TokenManager.sign(req.user);
+    return res.redirect(`/?token=${token}`);
   }
 }
 
