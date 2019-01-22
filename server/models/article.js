@@ -43,7 +43,8 @@ export default (sequelize, DataTypes) => {
     } = models;
     Article.belongsTo(User, {
       foreignKey: 'userId',
-      onDelete: 'CASCADE'
+      onDelete: 'CASCADE',
+      as: 'author'
     });
     Article.belongsToMany(User, {
       through: 'Report',
