@@ -18,7 +18,7 @@ export default {
             allowNull: false
           },
           articleId: {
-            type: Sequelize.STRING,
+            type: Sequelize.UUID,
             allowNull: false
           },
           createdAt: {

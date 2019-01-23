@@ -1,9 +1,7 @@
 import db from '../models';
 import response from '../helpers/response';
 
-
 const { Article, Comment, User } = db;
-
 /**
  * @class CommentController
  */
@@ -34,7 +32,7 @@ class CommentController {
         const commentCreated = await Comment.create({
           content,
           userId,
-          articleId: slug
+          articleId: articleFound.dataValues.id
         });
         if (commentCreated) {
           return response(res, 201, 'success', 'Comment created', null, commentCreated.dataValues);
@@ -63,13 +61,21 @@ class CommentController {
   static async getComments(req, res) {
     try {
       const { slug } = req.params;
+      const articleFound = await Article.findOne({
+        where: {
+          slug
+        }
+      });
+      if (!articleFound) {
+        return response(res, 404, 'failure', 'Article not found', null, null);
+      }
       const commentsQuery = await Comment.findAll({
         include: [{
           model: User,
           attributes: ['userName', 'img']
         }],
         where: {
-          articleId: slug
+          articleId: articleFound.dataValues.id
         },
       });
       if (commentsQuery.length === 0) {
@@ -99,13 +105,21 @@ class CommentController {
   static async getSingleComments(req, res) {
     try {
       const { slug, commentId } = req.params;
-      const comment = await Comment.findAndCount({
+      const articleFound = await Article.findOne({
+        where: {
+          slug
+        }
+      });
+      if (!articleFound) {
+        return response(res, 404, 'failure', 'Article not found', null, null);
+      }
+      const comment = await Comment.findOne({
         include: [{
           model: User,
           attributes: ['userName', 'img']
         }],
         where: {
-          articleId: slug,
+          articleId: articleFound.dataValues.id,
           id: commentId
         },
       });
@@ -113,7 +127,7 @@ class CommentController {
         return response(res, 200, 'success', 'Comment found', null, comment.dataValues);
       }
     } catch (error) {
-      if (error.name === 'SequelizeDatabaseError') {
+      if (error.name === 'SequelizeDatabaseError' || null) {
         return response(res, 404, 'failure', 'Comment not found', null, null);
       }
       return response(
@@ -138,12 +152,20 @@ class CommentController {
       const { userId } = req.user;
       const { slug, commentId } = req.params;
       const { content } = req.body;
+      const articleFound = await Article.findOne({
+        where: {
+          slug
+        }
+      });
+      if (!articleFound) {
+        return response(res, 404, 'failure', 'Article not found', null, null);
+      }
       const getCommentUpdate = await Comment.findOne({
         where: {
           id: commentId
         }
       });
-      if (getCommentUpdate.dataValues.articleId !== slug) {
+      if (getCommentUpdate.dataValues.articleId !== articleFound.dataValues.id) {
         return response(res, 404, 'failure', 'Comment not found for article id', null, null);
       }
       if (getCommentUpdate.dataValues.userId !== userId) {
@@ -179,13 +201,21 @@ class CommentController {
   static async deleteComment(req, res) {
     try {
       const { userId } = req.user;
-      const { slug: articleId, commentId } = req.params;
+      const { slug, commentId } = req.params;
+      const articleFound = await Article.findOne({
+        where: {
+          slug
+        }
+      });
+      if (!articleFound) {
+        return response(res, 404, 'failure', 'Article not found', null, null);
+      }
       const getCommentDelete = await Comment.findOne({
         where: {
           id: commentId
         }
       });
-      if (getCommentDelete.dataValues.articleId !== articleId) {
+      if (getCommentDelete.dataValues.articleId !== articleFound.dataValues.id) {
         return response(res, 404, 'failure', 'Comment not found for article id', null, null);
       }
       if (getCommentDelete.dataValues.userId !== userId) {
@@ -207,5 +237,4 @@ class CommentController {
     }
   }
 }
-
 export default CommentController;

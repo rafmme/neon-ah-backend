@@ -9,5 +9,6 @@ export default {
     onDelete: 'cascade',
     onUpdate: 'cascade'
   }),
+
   down: (queryInterface, Sequelize) => queryInterface.removeConstraint('CommentLikes', 'commentLikesUserId_FK')
 };

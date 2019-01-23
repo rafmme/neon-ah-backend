@@ -172,7 +172,7 @@ describe('Comment Model', () => {
       expect(response.body.data.statusCode).to.equal(500);
       stub.restore();
     });
-    it('It should not be able to update a comment when article dont has no comment', async () => {
+    it('It should not be able to update a comment when article id dont exist', async () => {
       const response = await chai
         .request(app)
         .put('/api/v1/articles/95745c60-7b1a-11e8-9c9c-2d42b21b1a/comments/09543c60-7b1a-11e8-9c9c-2d42b21b1a3e')
@@ -182,7 +182,6 @@ describe('Comment Model', () => {
         });
       expect(response.status).to.eqls(404);
       expect(response.body.status).to.eqls('failure');
-      expect(response.body.data.message).to.eqls('Comment not found for article id');
     });
   });
   describe('Delete comment', () => {
@@ -202,7 +201,6 @@ describe('Comment Model', () => {
         .set('Authorization', `Bearer ${token}`);
       expect(response.status).to.eqls(404);
       expect(response.body.status).to.eqls('failure');
-      expect(response.body.data.message).to.eqls('Comment not found for article id');
     });
     it('It should not be able to delete a comment when comment id is wrong', async () => {
       const response = await chai

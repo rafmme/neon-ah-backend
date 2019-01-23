@@ -6,13 +6,13 @@ import Util from '../../helpers/Util';
  */
 class UserValidator {
   /**
-   * @static
-   * @param {object} req HTTP request object.
-   * @param {object} res HTTP response object.
-   * @param {function} next the next middleware function.
-   * @returns {object} returns appropriate error message.
-   * @memberof UserValidator
-   */
+       * @static
+       * @param {object} req HTTP request object.
+       * @param {object} res HTTP response object.
+       * @param {function} next the next middleware function.
+       * @returns {object} returns appropriate error message.
+       * @memberof UserValidator
+       */
   static validateUserSignupInput(req, res, next) {
     req
       .check('fullName')
@@ -60,13 +60,13 @@ class UserValidator {
   }
 
   /**
-   * @static
-   * @param {object} req HTTP request object.
-   * @param {object} res HTTP response object.
-   * @param {function} next the next middleware function.
-   * @returns {object} returns appropriate error message.
-   * @memberof UserValidator
-   */
+       * @static
+       * @param {object} req HTTP request object.
+       * @param {object} res HTTP response object.
+       * @param {function} next the next middleware function.
+       * @returns {object} returns appropriate error message.
+       * @memberof UserValidator
+       */
   static validateUserLoginInput(req, res, next) {
     req
       .check('email')

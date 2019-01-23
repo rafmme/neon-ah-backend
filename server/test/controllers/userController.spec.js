@@ -68,7 +68,6 @@ describe('User Model', () => {
           newPassword: '123456789',
           confirmPassword: '123456789'
         });
-
       expect(response.status).to.eqls(404);
       expect(response.body.status).to.eqls('failure');
       expect(response.body.data.message).to.eqls('User not found');
