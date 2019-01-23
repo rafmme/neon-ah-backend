@@ -4,6 +4,10 @@ import ArticleValidation from '../../middlewares/validations/ArticleValidation';
 import AuthMiddleware from '../../middlewares/AuthMiddleware';
 
 const articleRoutes = Router();
+articleRoutes.get(
+  '/search',
+  ArticleController.search
+);
 
 articleRoutes.post(
   '/articles',
