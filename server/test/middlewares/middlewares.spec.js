@@ -7,7 +7,7 @@ import TokenManager from '../../helpers/TokenManager';
 import db from '../../models';
 
 
-const { Article } = db;
+const { Article, User } = db;
 chai.use(sinonChai);
 
 describe('Middlewares function test', () => {
@@ -26,6 +26,19 @@ describe('Middlewares function test', () => {
         expect(res.status).to.have.been.calledWith(500);
         sinon.restore();
         done();
+      });
+
+      it('should throw a 500 server error if user verification fails', async () => {
+        const req = {};
+        const res = {
+          status() {},
+          json() {}
+        };
+        sinon.stub(res, 'status').returnsThis();
+        sinon.stub(User, 'findOne').throws();
+        AuthMiddleware.checkUserVerification(req, res, null);
+        expect(res.status).to.have.been.calledWith(500);
+        sinon.restore();
       });
     })
 

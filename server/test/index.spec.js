@@ -1,5 +1,4 @@
 import chai from 'chai';
-// import request from 'request';
 import chaiHttp from 'chai-http';
 
 import app from '../../index';

@@ -8,6 +8,7 @@ const articleRoutes = Router();
 articleRoutes.post(
   '/articles',
   AuthMiddleware.checkIfUserIsAuthenticated,
+  AuthMiddleware.checkUserVerification,
   ArticleValidation.validateArticleData,
   ArticleValidation.sanitizeArticleContent,
   ArticleValidation.checkIfArticleExist,

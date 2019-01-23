@@ -1,71 +1,67 @@
 export default (sequelize, DataTypes) => {
-  const User = sequelize.define(
-    'User',
-    {
-      fullName: {
-        type: DataTypes.STRING,
-        allowNull: {
-          args: false,
-          msg: 'Please enter your full name'
-        }
+  const User = sequelize.define('User', {
+    fullName: {
+      type: DataTypes.STRING,
+      allowNull: {
+        args: false,
+        msg: 'Please enter your full name'
       },
-      userName: {
-        type: DataTypes.STRING,
-        allowNull: {
-          args: false,
-          msg: 'Please enter a username'
-        },
-        unique: {
-          args: true,
-          msg: 'Username has been taken'
-        }
-      },
-      email: {
-        type: DataTypes.STRING,
-        allowNull: {
-          args: false,
-          msg: 'Please enter your email address'
-        },
-        unique: {
-          args: true,
-          msg: 'Email already exists'
-        }
-      },
-      password: {
-        type: DataTypes.STRING,
-        allowNull: {
-          args: false,
-          msg: 'Please enter a password'
-        }
-      },
-      isVerified: {
-        type: DataTypes.BOOLEAN,
-        defaultValue: false
-      },
-      bio: {
-        type: DataTypes.STRING,
-        allowNull: true
-      },
-      img: {
-        type: DataTypes.STRING,
-        allowNull: true
-      },
-      notifySettings: {
-        type: DataTypes.BOOLEAN,
-        defaultValue: true
-      },
-      roleId: {
-        type: DataTypes.UUID,
-        allowNull: false,
-        defaultValue: '3ceb546e-054d-4c1d-8860-e27c209d4ae3'
-      },
-      authTypeId: {
-        type: DataTypes.UUID,
-        allowNull: false
-      }
     },
-    {}
-  );
+    userName: {
+      type: DataTypes.STRING,
+      allowNull: {
+        args: false,
+        msg: 'Please enter a username'
+      },
+      unique: {
+        args: true,
+        msg: 'Username has been taken'
+      },
+    },
+    email: {
+      type: DataTypes.STRING,
+      allowNull: {
+        args: false,
+        msg: 'Please enter your email address'
+      },
+      unique: {
+        args: true,
+        msg: 'Email already exists'
+      },
+    },
+    password: {
+      type: DataTypes.STRING,
+      allowNull: {
+        args: false,
+        msg: 'Please enter a password'
+      },
+    },
+    isVerified: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    },
+    bio: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    img: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    notifySettings: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true
+    },
+    roleId: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      defaultValue: 1
+    },
+    authTypeId: {
+      type: DataTypes.UUID,
+      allowNull: false
+    },
+  }, {});
   User.associate = (models) => {
     const {
       Article,
@@ -96,24 +92,24 @@ export default (sequelize, DataTypes) => {
       foreignKey: 'userId'
     });
     User.hasMany(CommentLike, {
-      foreignKey: 'userId'
+      foreignKey: 'userId',
     });
     User.hasMany(Notification, {
       as: 'sender',
-      foreignKey: 'senderId'
+      foreignKey: 'senderId',
     });
     User.hasMany(Notification, {
       as: 'receiver',
       foreignKey: 'receiverId'
     });
     User.hasMany(Bookmark, {
-      foreignKey: 'userId'
+      foreignKey: 'userId',
     });
     User.hasMany(Share, {
-      foreignKey: 'userId'
+      foreignKey: 'userId',
     });
     User.belongsTo(Role, {
-      foreignKey: 'roleId'
+      foreignKey: 'roleId',
     });
     User.belongsToMany(Article, {
       through: 'Rating',
@@ -122,12 +118,12 @@ export default (sequelize, DataTypes) => {
     User.belongsToMany(User, {
       through: 'Follow',
       as: 'followers',
-      foreignKey: 'followersId'
+      foreignKey: 'followersId',
     });
     User.belongsToMany(User, {
       through: 'Follow',
       as: 'following',
-      foreignKey: 'userId'
+      foreignKey: 'userId',
     });
   };
   return User;

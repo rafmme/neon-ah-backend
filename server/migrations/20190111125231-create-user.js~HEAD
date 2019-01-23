@@ -2,43 +2,53 @@ export default {
   up: (queryInterface, Sequelize) => {
     return queryInterface.sequelize.query('CREATE EXTENSION IF NOT EXISTS "uuid-ossp";')
       .then(() => {
-        return queryInterface.createTable('Articles', {
+        return queryInterface.createTable('Users', {
           id: {
             allowNull: false,
             primaryKey: true,
             type: Sequelize.UUID,
             defaultValue: Sequelize.literal('uuid_generate_v4()')
           },
-          slug: {
+          fullName: {
+            type: Sequelize.STRING,
+            allowNull: false,
+          },
+          userName: {
             type: Sequelize.STRING,
             allowNull: false,
             unique: true
           },
-          title: {
-            type: Sequelize.TEXT,
-            allowNull: {
-              args: false,
-              msg: 'Please enter a title for your article'
-            },
+          email: {
+            type: Sequelize.STRING,
+            allowNull: false,
+            unique: true
           },
-          content: {
-            type: Sequelize.TEXT,
+          password: {
+            type: Sequelize.STRING,
             allowNull: false
           },
-          banner: {
-            type: Sequelize.TEXT,
-            allowNull: false
-          },
-          isPublished: {
+          isVerified: {
             type: Sequelize.BOOLEAN,
             defaultValue: false
           },
-          isReported: {
-            type: Sequelize.BOOLEAN,
-            defaultValue: false
+          bio: {
+            type: Sequelize.STRING
           },
-          userId: {
-            type: Sequelize.UUID
+          img: {
+            type: Sequelize.STRING
+          },
+          notifySettings: {
+            type: Sequelize.BOOLEAN,
+            defaultValue: true
+          },
+          roleId: {
+            type: Sequelize.UUID,
+            allowNull: false,
+            defaultValue: '3ceb546e-054d-4c1d-8860-e27c209d4ae3',
+          },
+          authTypeId: {
+            type: Sequelize.UUID,
+            allowNull: false
           },
           createdAt: {
             allowNull: false,
@@ -50,8 +60,8 @@ export default {
             type: Sequelize.DATE,
             defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
           }
-        });
-      });
+        })
+      })
   },
-  down: (queryInterface, Sequelize) => queryInterface.dropTable('Articles')
+  down: (queryInterface, Sequelize) => queryInterface.dropTable('Users')
 };

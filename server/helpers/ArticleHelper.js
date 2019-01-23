@@ -18,6 +18,34 @@ class ArticleHelper {
       return slug;
     }
   }
+
+  /**
+   * @static
+   * @description a function for filtering an array of articles
+   * @param {array} arrayOfArticles
+   * @param {string} filteringOption { tag or drafts or published }
+   * @param {string} tagKeyword tag word
+   * @returns {array} returns the the filtered array
+   */
+  static filterAuthorArticle(arrayOfArticles, filteringOption, tagKeyword) {
+    let filteredArray = [];
+    switch (filteringOption) {
+      case 'tag':
+        filteredArray = arrayOfArticles
+          .filter(articleArray => articleArray.tags
+            .map(tag => tag.toLowerCase())
+            .indexOf(tagKeyword.toLowerCase()) !== -1);
+        return filteredArray;
+      case 'drafts':
+        filteredArray = arrayOfArticles.filter(articleArray => articleArray.isPublished === false);
+        return filteredArray;
+      case 'published':
+        filteredArray = arrayOfArticles.filter(articleArray => articleArray.isPublished === true);
+        return filteredArray;
+      default:
+        return arrayOfArticles;
+    }
+  }
 }
 
 export default ArticleHelper;

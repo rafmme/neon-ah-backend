@@ -12,7 +12,10 @@ describe('Mail Manager Utility Class', () => {
     it('It should be called when provided with the right parameters', async () => {
       const stub = sinon.stub(sgMail, 'send');
       stub.resolves();
-      await MailManager.sendPasswordResetLink({ user: { email: 'hi@me.com' }, token: 'hello' });
+      await MailManager.sendPasswordResetLink({
+        user: { email: 'hi@me.com' },
+        token: 'hello'
+      });
       expect(stub.called).to.be.eql(true);
     });
   });
