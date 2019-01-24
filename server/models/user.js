@@ -58,6 +58,11 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.BOOLEAN,
       defaultValue: true
     },
+    roleId: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      defaultValue: '3ceb546e-054d-4c1d-8860-e27c209d4ae3'
+    },
     authTypeId: {
       type: DataTypes.UUID,
       allowNull: false

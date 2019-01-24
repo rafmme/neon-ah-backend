@@ -180,6 +180,7 @@ components:
       scheme: bearer
       bearerFormat: JWT
 paths:
+<<<<<<< HEAD
   /users/login/:
     post:
       tags:
