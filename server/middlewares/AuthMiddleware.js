@@ -19,9 +19,10 @@ class AuthMiddleware {
       const { authorization } = req.headers;
       if (!authorization) {
         return response(
-          res, 401, 'failure', 'authentication error',
-          { message: 'You are not logged in.' },
-          null
+          res,
+          401,
+          'failure',
+          'You are not logged in.'
         );
       }
 
@@ -36,16 +37,19 @@ class AuthMiddleware {
       const { name } = error;
       if (name === 'TokenExpiredError' || name === 'JsonWebTokenError') {
         return response(
-          res, 401, 'failure', 'authentication error',
-          { message: 'Token is invalid, You need to log in again' },
-          null
+          res,
+          401,
+          'failure',
+          'Token is invalid, You need to log in again'
         );
       }
 
       return response(
-        res, 500, 'failure',
-        'server error',
-        { message: 'Something went wrong on the server' }, null
+        res,
+        500,
+        'failure',
+        'An error occured on the server',
+        error
       );
     }
   }

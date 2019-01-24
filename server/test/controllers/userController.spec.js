@@ -4,8 +4,9 @@ import sinon from 'sinon';
 import app from '../../..';
 import db from '../../models';
 import TokenManager from '../../helpers/TokenManager';
-import { token } from '../mockData/token';
+// import { token } from '../mockData/token';
 import { userToken, userToken2, invalidToken } from '../mockData/tokens'
+import token from '../mockData/tokens';
 import { exists } from 'fs';
 
 const { User } = db;
@@ -111,6 +112,7 @@ describe('User Model', () => {
         email: 'jesseinit@now.com'
       });
 
+
       const response = await chai
         .request(app)
         .post(`/api/v1/password/reset/${generatedToken}`)
@@ -176,7 +178,7 @@ describe('User Model', () => {
 
       expect(response.status).to.eqls(401);
       expect(response.body.status).to.eqls('failure');
-      expect(response.body.data.message).to.eqls('authentication error');
+      expect(response.body.data.message).to.eqls('You are not logged in.');
     });
 
     it('Should show error response when trying to update without being fake token', async () => {
@@ -188,7 +190,7 @@ describe('User Model', () => {
         .send({ bio: 'I am so hungry' });
       expect(response.status).to.eqls(401);
       expect(response.body.status).to.eqls('failure');
-      expect(response.body.data.error.message).to.eqls(
+      expect(response.body.data.message).to.eqls(
         'Token is invalid, You need to log in again'
       );
     });

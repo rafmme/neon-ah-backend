@@ -35,6 +35,7 @@ describe('API endpoint /articles/', () => {
         .post('/api/v1/articles')
         .set({ authorization: `Bearer ${userToken}` })
         .send(mockArticles[1]);
+
       expect(response.status).to.eqls(409);
       expect(response.body.status).to.eqls('failure');
       expect(response.body.data.message).to.eqls('conflict error');
@@ -61,7 +62,7 @@ describe('API endpoint /articles/', () => {
 
       expect(response.status).to.eqls(401);
       expect(response.body.status).to.eqls('failure');
-      expect(response.body.data.message).to.eqls('authentication error');
+      expect(response.body.data.message).to.eqls('Token is invalid, You need to log in again');
     });
 
     it('It should not allow user with invalid token to post an article', async () => {
@@ -72,7 +73,7 @@ describe('API endpoint /articles/', () => {
 
       expect(response.status).to.eqls(401);
       expect(response.body.status).to.eqls('failure');
-      expect(response.body.data.message).to.eqls('authentication error');
+      expect(response.body.data.message).to.eqls('You are not logged in.');
     });
 
     it('It should show validation error if empty data is passed', async () => {
@@ -192,7 +193,7 @@ describe('API endpoint /articles/', () => {
 
       expect(response.status).to.eqls(401);
       expect(response.body.status).to.eqls('failure');
-      expect(response.body.data.message).to.eqls('authentication error');
+      expect(response.body.data.message).to.eqls('You are not logged in.');
     });
 
     it('should return not found if article does not exist', async () => {
@@ -243,7 +244,7 @@ describe('API endpoint /articles/', () => {
 
       expect(response.status).to.eqls(401);
       expect(response.body.status).to.eqls('failure');
-      expect(response.body.data.message).to.eqls('authentication error');
+      expect(response.body.data.message).to.eqls('You are not logged in.');
     });
 
     it('should return not found if article does not exist', async () => {

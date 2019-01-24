@@ -28,6 +28,7 @@ export default (sequelize, DataTypes) => {
         args: true,
         msg: 'Email already exists'
       },
+
     },
     password: {
       type: DataTypes.STRING,
@@ -35,6 +36,11 @@ export default (sequelize, DataTypes) => {
         args: false,
         msg: 'Please enter a password'
       },
+    },
+    roleId: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      defaultValue: '3ceb546e-054d-4c1d-8860-e27c209d4ae3'
     },
     isVerified: {
       type: DataTypes.BOOLEAN,
@@ -51,11 +57,6 @@ export default (sequelize, DataTypes) => {
     notifySettings: {
       type: DataTypes.BOOLEAN,
       defaultValue: true
-    },
-    roleId: {
-      type: DataTypes.UUID,
-      allowNull: false,
-      defaultValue: '3ceb546e-054d-4c1d-8860-e27c209d4ae3'
     },
     authTypeId: {
       type: DataTypes.UUID,
@@ -115,6 +116,7 @@ export default (sequelize, DataTypes) => {
       through: 'Rating',
       foreignKey: 'userId'
     });
+
     User.belongsToMany(User, {
       through: 'Follow',
       as: 'followers',

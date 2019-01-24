@@ -207,7 +207,8 @@ paths:
           $ref: '#/components/responses/ErrorNotFound'
         '500':
           $ref: '#/components/responses/ErrorInternalServer'
-  /user/{userName}:
+
+  /users/{userName}:
     get:
       tags:
         - Users
@@ -231,7 +232,7 @@ paths:
         '500':
           description: Something went wrong on the server.
 
-  /users:
+  /user:
     put:
       tags:
         - Users
@@ -251,9 +252,11 @@ paths:
         '400':
           $ref: 'Bad Request'
         '500':
+
           $ref: 'Something went wrong on the server'
 
-  /profiles/{username}/follow:
+
+  /users/{userName}/follow:
     post:
       tags:
         - Profile
@@ -276,17 +279,15 @@ paths:
               $ref: '#/components/schemas/User'
       responses:
         '200':
-          $ref: '#/components/responses/UserFollowed'
+          $ref: 'You followed {userName}'
         '400':
-          $ref: '#/components/responses/ErrorBadRequest'
+          $ref: 'You cannot follow yourself'
         '401':
-          $ref: '#/components/responses/ErrorUnauthorized'
+          $ref: 'User not authorized'
         '404':
-          $ref: '#/components/responses/ErrorNotFound'
-        '415':
-          $ref: '#/components/responses/ErrorUnsupportedMediaType'
+          $ref: 'User not found'
         '500':
-          $ref: '#/components/responses/ErrorInternalServer'
+          $ref: 'An error occured on the server'
     delete:
       tags:
         - Profile
@@ -309,14 +310,69 @@ paths:
               $ref: '#/components/schemas/User'
       responses:
         '200':
-          $ref: '#/components/responses/UserUnFollowed'
+          $ref: 'You unfollowed {userName}'
         '400':
-          $ref: '#/components/responses/ErrorBadRequest'
+          $ref: 'You cannot unfollow yourself'
         '401':
-          $ref: '#/components/responses/ErrorUnauthorized'
+          $ref: 'User not authorized'
         '404':
-          $ref: '#/components/responses/ErrorNotFound'
-        '415':
-          $ref: '#/components/responses/ErrorUnsupportedMediaType'
+          $ref: 'User not found'
         '500':
-          $ref: '#/components/responses/ErrorInternalServer'
+          $ref: 'An error occured on the server'
+/users/{userName}/follower:
+    get:
+      tags:
+        - Profile
+      summary: Get user followers
+      security:
+        - token: []
+      parameters:
+        - name: username
+          in: path
+          description: username of the User
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: An object representing the fields in the requested Profile
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          $ref: 'Followers returned successfully'
+        '404':
+          $ref: 'User not found'
+        '500':
+          $ref: 'An error occured on the server'
+    /users/{userName}/following:
+    get:
+      tags:
+        - Profile
+      summary: Get user following
+      security:
+        - token: []
+      parameters:
+        - name: username
+          in: path
+          description: username of the User
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: An object representing the fields in the requested Profile
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          $ref: 'Following returned successfully'
+        '404':
+          $ref: 'User not found'
+        '500':
+          $ref: 'An error occured on the server'
+    

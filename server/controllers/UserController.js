@@ -4,6 +4,7 @@ import db from '../models';
 import PasswordManager from '../helpers/PasswordManager';
 import response from '../helpers/response';
 
+
 const { User } = db;
 
 /**
@@ -55,6 +56,7 @@ class UserController {
           statusCode: 200,
           message: 'Kindly check your mail to reset your password'
         }
+
       });
     } catch (error) {
       res.status(500).send({
@@ -128,6 +130,7 @@ class UserController {
       if (
         error.name === 'TokenExpiredError' ||
         error.name === 'JsonWebTokenError'
+
       ) {
         return res.status(401).send({
           status: 'failure',

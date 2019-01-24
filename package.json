@@ -81,7 +81,8 @@
     "nyc": "^13.1.0",
     "rimraf": "^2.6.3",
     "sequelize-cli": "^5.4.0",
-    "sinon": "^7.2.2"
+    "sinon": "^7.2.2",
+    "sinon-chai": "^3.3.0"
   },
   "nyc": {
     "require": [

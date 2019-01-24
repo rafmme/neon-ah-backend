@@ -9,5 +9,19 @@ export default (sequelize, DataTypes) => {
       allowNull: false
     }
   }, {});
+  Follow.associate = (models) => {
+    const { User } = models;
+    Follow.belongsTo(User, {
+      foreignKey: 'userId',
+      onDelete: 'CASCADE',
+      as: 'followedUser'
+    });
+    Follow.belongsTo(User, {
+      foreignKey: 'followersId',
+      onDelete: 'CASCADE',
+      as: 'followingUser'
+    });
+  };
+
   return Follow;
 };
