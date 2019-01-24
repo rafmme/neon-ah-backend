@@ -42,7 +42,6 @@ describe('Search Model', () => {
       const stub = sinon
         .stub(User, 'findAll')
         .callsFake(() => Promise.reject(new Error('Internal Server Error')));
-
       const response = await chai
         .request(app)
         .get('/api/v1/search?author=s')
