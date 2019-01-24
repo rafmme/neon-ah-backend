@@ -17,12 +17,11 @@ const swaggerDocument = YAML.load('swagger.yaml');
 const app = express();
 
 app.use(cors());
-app.use(volleyLogger);
+// app.use(volleyLogger);
 app.use(expressValidator());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(expressValidator());
-
 
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 

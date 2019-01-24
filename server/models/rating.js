@@ -13,6 +13,7 @@ export default (sequelize, DataTypes) => {
       allowNull: false
     }
   }, {});
+
   Rating.associate = (models) => {
     Rating.belongsTo(models.User, {});
   };

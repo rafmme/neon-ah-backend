@@ -13,6 +13,7 @@ export default (sequelize, DataTypes) => {
       allowNull: false
     }
   }, {});
+
   Notification.associate = (models) => {
     Notification.belongsTo(models.User, {
       as: 'sender',

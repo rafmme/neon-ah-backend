@@ -1,6 +1,7 @@
 export default {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.sequelize.query('CREATE EXTENSION IF NOT EXISTS "uuid-ossp";')
+    return queryInterface.sequelize
+      .query('CREATE EXTENSION IF NOT EXISTS "uuid-ossp";')
       .then(() => {
         return queryInterface.createTable('ArticleLikesDislikes', {
           id: {
@@ -34,5 +35,7 @@ export default {
         });
       });
   },
-  down: (queryInterface, Sequelize) => queryInterface.dropTable('ArticleLikesDislikes')
+
+  down: (queryInterface, Sequelize) =>
+    queryInterface.dropTable('ArticleLikesDislikes')
 };

@@ -2,6 +2,7 @@ import TokenManager from '../helpers/TokenManager';
 import MailManager from '../helpers/MailManager';
 import db from '../models';
 import PasswordManager from '../helpers/PasswordManager';
+import response from '../helpers/response';
 
 const { User } = db;
 
@@ -21,7 +22,11 @@ class UserController {
   static async forgotPassword(req, res) {
     try {
       const { email } = req.body;
-      const user = await User.findOne({ where: { email } });
+      const user = await User.findOne({
+        where: {
+          email
+        }
+      });
       if (!user) {
         return res.status(404).json({
           status: 'failure',
@@ -102,8 +107,14 @@ class UserController {
       }
 
       await User.update(
-        { password: PasswordManager.hashPassword(newPassword) },
-        { where: { email } }
+        {
+          password: PasswordManager.hashPassword(newPassword)
+        },
+        {
+          where: {
+            email
+          }
+        }
       );
 
       res.status(200).json({
@@ -114,7 +125,10 @@ class UserController {
         }
       });
     } catch (error) {
-      if (error.name === 'TokenExpiredError' || error.name === 'JsonWebTokenError') {
+      if (
+        error.name === 'TokenExpiredError' ||
+        error.name === 'JsonWebTokenError'
+      ) {
         return res.status(401).send({
           status: 'failure',
           data: {
@@ -145,8 +159,11 @@ class UserController {
       const {
         fullName, userName, email, password
       } = req.body;
+
       const hashedPassword = await PasswordManager.hashPassword(password);
+
       const foundUser = await User.findOne({ where: { email } });
+
       if (foundUser) {
         return response.status(409).send({
           status: 'failure',
@@ -156,6 +173,7 @@ class UserController {
           }
         });
       }
+
       const createdUser = await User.create({
         userName,
         fullName,
@@ -217,7 +235,10 @@ class UserController {
         });
       }
 
-      const isValidPassword = PasswordManager.decryptPassword(password, user.dataValues.password);
+      const isValidPassword = PasswordManager.decryptPassword(
+        password,
+        user.dataValues.password
+      );
 
       if (!isValidPassword) {
         return response.status(401).send({
@@ -304,6 +325,102 @@ class UserController {
   static handleSocialAuth(req, res) {
     const token = TokenManager.sign(req.user);
     return res.redirect(`/?token=${token}`);
+  }
+
+  /**
+   *@description Method to get users by username
+   * @static
+   * @param {*} req express Request object
+   * @param {*} res express Response object
+   * @returns {object} Json response
+   * @memberof UserController
+   */
+  static async getProfile(req, res) {
+    try {
+      const { userName } = req.params;
+      const userProfile = await User.findOne({
+        where: { userName },
+        attributes: ['id', 'fullName', 'userName', 'img', 'bio']
+      });
+
+      if (!userProfile) {
+        response(res, 404, 'failure', 'User not found');
+        return;
+      }
+      response(
+        res,
+        200,
+        'success',
+        'User retrieved successfully',
+        null,
+        userProfile
+      );
+    } catch (error) {
+      response(res, 500, 'failure', 'An error occured on the server');
+    }
+  }
+
+  /**
+   *
+   *@description Method to update user's profile
+   * @static
+   * @param {*} req
+   * @param {*} res
+   * @returns {object} Json response
+   * @memberof UserController
+   */
+  static async updateProfile(req, res) {
+    try {
+      const editableFeilds = [
+        'fullName',
+        'img',
+        'bio',
+        'notifySettings',
+        'userName'
+      ];
+
+      const findProfile = await User.findOne({
+        where: { id: req.user.userId },
+        attributes: ['id', 'fullName', 'userName', 'img', 'bio']
+      });
+
+      if (!findProfile) {
+        response(res, 404, 'failiure', 'User not found');
+        return;
+      }
+
+      const checkUserName = await User.findAndCountAll({
+        where: { userName: req.body.userName }
+      });
+
+      if (checkUserName.count > 0) {
+        response(res, 409, 'failure', 'Username already exists');
+        return;
+      }
+
+      if (req.user.authTypeId === 1) {
+        await findProfile.update(req.body, {
+          fields: [...editableFeilds, 'passsword']
+        });
+        response(res, 200, 'success', 'Profile updated successfully');
+        return;
+      }
+
+      const updatedProfile = await findProfile.update(req.body, {
+        fields: [...editableFeilds]
+      });
+      response(
+        res,
+        200,
+        'success',
+        'Profile updated successfully',
+        null,
+        updatedProfile.dataValues
+      );
+      return;
+    } catch (error) {
+      response(res, 500, 'failure', 'An error occured on the server');
+    }
   }
 }
 

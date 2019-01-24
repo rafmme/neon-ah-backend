@@ -17,6 +17,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false
     }
   }, {});
+
   Reply.associate = (models) => {
     const {
       User,

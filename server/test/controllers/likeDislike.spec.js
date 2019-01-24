@@ -43,10 +43,9 @@ describe('Likes and Dislike feature', () => {
         .set(
           'authorization', token
         );
-      console.log(response)
-      // expect(response.status).to.equal(200);
-      // expect(response.body.data).to.have.property('message');
-      // expect(response.body.data.message).to.be.a('string');
+      expect(response.status).to.equal(200);
+      expect(response.body.data).to.have.property('message');
+      expect(response.body.data.message).to.be.a('string');
       expect(response.body.data.message).to.be.eql(
         'You just liked this article!'
       );

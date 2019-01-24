@@ -16,7 +16,7 @@ export default (sequelize, DataTypes) => {
       unique: {
         args: true,
         msg: 'Username has been taken'
-      },
+      }
     },
     email: {
       type: DataTypes.STRING,
@@ -55,7 +55,7 @@ export default (sequelize, DataTypes) => {
     roleId: {
       type: DataTypes.UUID,
       allowNull: false,
-      defaultValue: 1
+      defaultValue: '3ceb546e-054d-4c1d-8860-e27c209d4ae3'
     },
     authTypeId: {
       type: DataTypes.UUID,

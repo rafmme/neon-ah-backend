@@ -207,52 +207,37 @@ paths:
           $ref: '#/components/responses/ErrorNotFound'
         '500':
           $ref: '#/components/responses/ErrorInternalServer'
-  /user:
+  /user/{userName}:
     get:
       tags:
         - Users
-      summary: Get Current User
+      summary: Get User by username
+      security:
+        - token: []
+
       parameters:
-        - token: query
-          in: query
-          description: The term to query for
+        - name: userName
+          in: path
+          description: Username of the user
           schema:
             type: string
       responses:
         '200':
-          $ref: '#/components/responses/UsersRetrieved'
-        '400':
-          $ref: '#/components/responses/ErrorBadRequest'
+          description: User Retrieved Successfully
+        '404':
+          description: User not found
+        '401':
+          description: Authentication Error
         '500':
-          $ref: '#/components/responses/ErrorInternalServer'
+          description: Something went wrong on the server.
+
+  /users:
     put:
       tags:
         - Users
-      summary: Updates a User account
-      requestBody:
-        description: The updated User object
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/User'
-      responses:
-        '200':
-          $ref: '#/components/responses/OwnUserRetrieved'
-        '400':
-          $ref: '#/components/responses/ErrorBadRequest'
-        '401':
-          $ref: '#/components/responses/ErrorUnauthorized'
-        '404':
-          $ref: '#/components/responses/ErrorNotFound'
-        '403':
-          $ref: '#/components/responses/ErrorForbidden'
-        '500':
-          $ref: '#/components/responses/ErrorInternalServer'
-  /users:
-    post:
-      tags:
-        - Users
-      summary: New User Registration
+      summary: Edit User Profile
+      security:
+        - token: []
       requestBody:
         description: The New User object
         required: true
@@ -262,32 +247,12 @@ paths:
               $ref: '#/components/schemas/User'
       responses:
         '201':
-          $ref: '#/components/responses/UserCreated'
+          $ref: 'User Updated Successfully'
         '400':
-          $ref: '#/components/responses/ErrorBadRequest'
+          $ref: 'Bad Request'
         '500':
-          $ref: '#/components/responses/ErrorInternalServer'
-  /profiles/{username}:
-    get:
-      tags:
-        - Profile
-      summary: Retrieves details of a single User
-      parameters:
-        - name: username
-          in: path
-          description: username of the User to retrieve
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          $ref: '#/components/responses/UserRetrieved'
-        '400':
-          $ref: '#/components/responses/ErrorBadRequest'
-        '404':
-          $ref: '#/components/responses/ErrorNotFound'
-        '500':
-          $ref: '#/components/responses/ErrorInternalServer'
+          $ref: 'Something went wrong on the server'
+
   /profiles/{username}/follow:
     post:
       tags:

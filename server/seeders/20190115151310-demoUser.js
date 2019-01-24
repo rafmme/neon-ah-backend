@@ -28,4 +28,5 @@ export default {
   }
   ], {}),
   down: (queryInterface, Sequelize) => queryInterface.bulkDelete('Users', null, {})
+
 };

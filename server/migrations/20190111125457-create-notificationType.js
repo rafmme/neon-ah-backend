@@ -1,6 +1,7 @@
 export default {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.sequelize.query('CREATE EXTENSION IF NOT EXISTS "uuid-ossp";')
+    return queryInterface.sequelize
+      .query('CREATE EXTENSION IF NOT EXISTS "uuid-ossp";')
       .then(() => {
         return queryInterface.createTable('NotificationTypes', {
           id: {
@@ -27,5 +28,7 @@ export default {
         });
       });
   },
-  down: (queryInterface, Sequelize) => queryInterface.dropTable('NotificationTypes')
+
+  down: (queryInterface, Sequelize) =>
+    queryInterface.dropTable('NotificationTypes')
 };

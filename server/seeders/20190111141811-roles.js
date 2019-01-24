@@ -8,6 +8,7 @@ export default {
       },
       {
         id: '3ceb546e-054d-4c1d-8860-e27c209d4ae4',
+
         type: 'admin'
       }
     ],

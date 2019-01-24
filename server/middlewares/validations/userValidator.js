@@ -1,5 +1,6 @@
 import Util from '../../helpers/Util';
 
+
 /**
  * @class UserValidator
  * @description describes the methids for validating user inout
@@ -86,6 +87,7 @@ class UserValidator {
       .withMessage('password has to be a string');
 
     const { hasError, errorMessages } = Util.extractErrorMessages(req.validationErrors());
+
     if (hasError === true) {
       return res.status(400).send({
         status: 'failure',
@@ -95,6 +97,85 @@ class UserValidator {
       });
     }
     return next();
+  }
+
+  /**
+   * @static
+   * @param {object} req HTTP request object.
+   * @param {object} res HTTP response object.
+   * @param {function} next the next middleware function.
+   * @returns {object} returns appropriate error message.
+   * @memberof UserValidator
+   */
+  static editProfileValidate(req, res, next) {
+    req.sanitizeBody('useName').trim();
+    req
+      .check('bio')
+      .optional()
+      .withMessage('Bio cant be empty')
+      .isString()
+      .withMessage('Bio can only be string');
+
+    req
+      .check('fullName')
+      .optional()
+      .notEmpty()
+      .withMessage('Fullname cannot be empty')
+      .isString()
+      .withMessage('Fullname can only be string')
+      .isLength({ max: 100 })
+      .withMessage('Max length exceeded');
+
+    req
+      .check('password')
+      .optional()
+      .notEmpty()
+      .withMessage('Password cannot be empty')
+      .isString()
+      .withMessage('Fullname can only be string')
+      .isLength({ min: 8 })
+      .withMessage('Password must be at least 8 characters');
+
+    req
+      .check('notifySettings')
+      .optional()
+      .notEmpty()
+      .withMessage('Notification settings cannot be empty')
+      .isBoolean()
+      .withMessage('Notification settings must be a Boolean');
+
+    req
+      .check('userName')
+      .optional()
+      .trim()
+      .notEmpty()
+      .withMessage('Username cannot be empty')
+      .isString()
+      .withMessage('Username must be a string');
+
+    req
+      .check('img')
+      .optional()
+      .isString()
+      .withMessage('img must be a string');
+
+    // eslint-disable-next-line prefer-const
+    let { hasError, errorMessages } = Util.extractErrorMessages(req.validationErrors());
+    const { userName } = req.body;
+
+    if (typeof userName === 'number') {
+      hasError = true;
+      errorMessages.userName = 'Username can be only string';
+    }
+    if (hasError === true) {
+      return res.status(400).send({
+        status: 'failure',
+        data: {
+          error: errorMessages
+        }
+      });
+    }
+    next();
   }
 }
 

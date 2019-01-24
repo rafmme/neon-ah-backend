@@ -1,5 +1,6 @@
 import TokenManager from '../helpers/TokenManager';
 import response from '../helpers/response';
+
 /**
  * @class AuthMiddleware
  * @description class contains function for implementing Authentication middleware

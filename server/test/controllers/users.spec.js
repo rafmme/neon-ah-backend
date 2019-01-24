@@ -11,9 +11,9 @@ chai.use(chaiHttp);
 
 describe('User Model', () => {
   const userInfo = {
-    fullName: 'Jesse Doe',
-    userName: 'jesseinitot',
-    email: 'jesseinit@now.com',
+    fullName: 'Mmakwe Onyeka',
+    userName: 'mmakwe222',
+    email: 'jesseinit@nowt.com',
     password: 'Blahblah',
     bio: 'Gitting Started',
     authTypeId: '15745c60-7b1a-11e8-9c9c-2d42b21b1a3e'

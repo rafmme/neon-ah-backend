@@ -1,6 +1,7 @@
 export default {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.sequelize.query('CREATE EXTENSION IF NOT EXISTS "uuid-ossp";')
+    return queryInterface.sequelize
+      .query('CREATE EXTENSION IF NOT EXISTS "uuid-ossp";')
       .then(() => {
         return queryInterface.createTable('Users', {
           id: {
@@ -11,7 +12,7 @@ export default {
           },
           fullName: {
             type: Sequelize.STRING,
-            allowNull: false,
+            allowNull: false
           },
           userName: {
             type: Sequelize.STRING,
@@ -44,7 +45,7 @@ export default {
           roleId: {
             type: Sequelize.UUID,
             allowNull: false,
-            defaultValue: '3ceb546e-054d-4c1d-8860-e27c209d4ae3',
+            defaultValue: '3ceb546e-054d-4c1d-8860-e27c209d4ae3'
           },
           authTypeId: {
             type: Sequelize.UUID,
@@ -60,8 +61,9 @@ export default {
             type: Sequelize.DATE,
             defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
           }
-        })
-      })
+        });
+      });
   },
+
   down: (queryInterface, Sequelize) => queryInterface.dropTable('Users')
 };

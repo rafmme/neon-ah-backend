@@ -1,6 +1,7 @@
 export default {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.sequelize.query('CREATE EXTENSION IF NOT EXISTS "uuid-ossp";')
+    return queryInterface.sequelize
+      .query('CREATE EXTENSION IF NOT EXISTS "uuid-ossp";')
       .then(() => {
         return queryInterface.createTable('Articles', {
           id: {
@@ -19,7 +20,7 @@ export default {
             allowNull: {
               args: false,
               msg: 'Please enter a title for your article'
-            },
+            }
           },
           content: {
             type: Sequelize.TEXT,
@@ -53,5 +54,6 @@ export default {
         });
       });
   },
+
   down: (queryInterface, Sequelize) => queryInterface.dropTable('Articles')
 };

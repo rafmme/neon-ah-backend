@@ -1,9 +1,8 @@
 export default {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.sequelize
-      .query('CREATE EXTENSION IF NOT EXISTS "uuid-ossp";')
+    return queryInterface.sequelize.query('CREATE EXTENSION IF NOT EXISTS "uuid-ossp";')
       .then(() => {
-        return queryInterface.createTable('Bookmarks', {
+        return queryInterface.createTable('CommentLikes', {
           id: {
             allowNull: false,
             primaryKey: true,
@@ -14,7 +13,7 @@ export default {
             type: Sequelize.UUID,
             allowNull: false
           },
-          articleId: {
+          commentId: {
             type: Sequelize.UUID,
             allowNull: false
           },
@@ -31,6 +30,5 @@ export default {
         });
       });
   },
-
-  down: (queryInterface, Sequelize) => queryInterface.dropTable('Bookmarks')
+  down: (queryInterface, Sequelize) => queryInterface.dropTable('CommentLikes')
 };

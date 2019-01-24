@@ -20,6 +20,7 @@ export default (sequelize, DataTypes) => {
       User,
       CommentLike,
     } = models;
+
     Comment.hasMany(Reply, {
       foreignKey: 'commentId',
       as: 'replies'
