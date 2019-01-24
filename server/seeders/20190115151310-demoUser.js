@@ -1,4 +1,3 @@
-
 export default {
   up: (queryInterface, Sequelize) => queryInterface.bulkInsert('Users', [{
     id: '45745c60-7b1a-11e8-9c9c-2d42b21b1a3e',
@@ -14,7 +13,7 @@ export default {
     userName: 'kabir',
     email: 'kabir@now.com',
     bio: 'Learning life now',
-    password: 'Blahblah',
+    password: '$2y$10$QCQ1uW0OWH7xKOvJ9gNWsewzoXSjvAmXw21mcZBEB52TN6T/f2Xfy',
     authTypeId: '15745c60-7b1a-11e8-9c9c-2d42b21b1a3e'
   },
   {
@@ -23,10 +22,9 @@ export default {
     userName: 'steve',
     email: 'steve@now.com',
     bio: 'Gitting Started',
-    password: 'Blahblah',
+    password: '$2y$10$5hj02gtnG2xxYHqpkrqeXOs3kj0t3uTKUMqdKBYGeHOKRNrZdTT9O',
     authTypeId: '15745c60-7b1a-11e8-9c9c-2d42b21b1a3e'
   }
   ], {}),
   down: (queryInterface, Sequelize) => queryInterface.bulkDelete('Users', null, {})
-
 };

@@ -4,6 +4,7 @@ import ArticleHelper from '../helpers/ArticleHelper';
 import Util from '../helpers/Util';
 import TagHelper from '../helpers/TagHelper';
 import response from '../helpers/response';
+import SearchController from './SearchController';
 
 
 const { Article, Tag, User } = db;
@@ -250,6 +251,22 @@ class ArticleController {
         'server error',
         { message: 'Something went wrong on the server' }, null
       );
+    }
+  }
+
+  /**
+   * @static
+   * @description this handles searching an article by author
+   * @param {object} req HTTP request object
+   * @param {object} res HTTP response object
+   * @returns {object} api route response
+   */
+  static async search(req, res) {
+    const { author } = req.query;
+    if (author) {
+      SearchController.byAuthor(author, res);
+    } else {
+      return response(res, 400, 'failure', 'No search parameters supplied', null, null);
     }
   }
 }

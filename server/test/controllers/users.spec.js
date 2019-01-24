@@ -5,7 +5,7 @@ import app from '../../../index';
 import db from '../../models';
 import TokenManager from '../../helpers/TokenManager';
 
-const { User, Role, AuthType } = db;
+const { User } = db;
 
 chai.use(chaiHttp);
 
@@ -20,12 +20,6 @@ describe('User Model', () => {
   };
 
 
-  after(async () => {
-    await User.destroy({ where: {} });
-    await Role.destroy({ where: {} });
-    await AuthType.destroy({ where: {} });
-  });
-
   describe('User Sign up Test', () => {
     it('should create user', async () => {
       const response = await chai
@@ -36,6 +30,7 @@ describe('User Model', () => {
           fullName: userInfo.fullName,
           email: userInfo.email,
           password: userInfo.password,
+          confirmPassword: userInfo.password,
           authTypeId: userInfo.authTypeId
         });
       expect(response.status).to.equal(201);
@@ -61,6 +56,7 @@ describe('User Model', () => {
           fullName: userInfo.fullName,
           email: userInfo.email,
           password: userInfo.password,
+          confirmPassword: userInfo.password,
           authTypeId: userInfo.authTypeId
         });
       expect(response.status).to.equal(409);
@@ -83,7 +79,7 @@ describe('User Model', () => {
         .request(app)
         .post('/api/v1/auth/login')
         .send({
-          email: 'jeinit@now.com',
+          userNameEmail: 'jeinit@now.com',
           password: '123456'
         });
       expect(response.status).to.equal(404);
@@ -95,7 +91,7 @@ describe('User Model', () => {
       const response = await chai
         .request(app)
         .post('/api/v1/auth/login')
-        .send({ email: 'jesseinit@now.com', password: '123' });
+        .send({ userNameEmail: 'jesseinit@nowt.com', password: '1234657890B' });
       expect(response.status).to.eql(401);
       expect(response.body.status).to.eqls('failure');
       expect(response.body.data.message).to.eqls('Password is wrong');

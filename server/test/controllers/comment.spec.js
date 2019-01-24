@@ -32,7 +32,7 @@ describe('Comment Model', () => {
         .send({
           content: ''
         });
-      expect(response.status).to.eqls(400);
+      expect(response.status).to.eqls(422);
       expect(response.body.status).to.eqls('failure');
     });
     it('It should be able to handle unexpected errors thrown during creating a comment', async () => {
@@ -129,7 +129,10 @@ describe('Comment Model', () => {
       const response = await chai
         .request(app)
         .put('/api/v1/articles/how-to-be-a-10x-dev-sGNYfURm/comments/09543c60-7b1a-11e8-9c9c-2d42b21b1a3e')
-        .set('Authorization', `Bearer ${tokenTwo}`);
+        .set('Authorization', `Bearer ${tokenTwo}`)
+        .send({
+          content: 'Nice write up here'
+        });;
       expect(response.status).to.eqls(403);
       expect(response.body.status).to.eqls('failure');
       expect(response.body.data.message).to.eqls('You are not allowed to update another user\'s comment');
@@ -172,7 +175,7 @@ describe('Comment Model', () => {
       expect(response.body.data.statusCode).to.equal(500);
       stub.restore();
     });
-    it('It should not be able to update a comment when article id dont exist', async () => {
+    it('It should not be able to update a comment when article dont has no comment', async () => {
       const response = await chai
         .request(app)
         .put('/api/v1/articles/95745c60-7b1a-11e8-9c9c-2d42b21b1a/comments/09543c60-7b1a-11e8-9c9c-2d42b21b1a3e')
@@ -182,6 +185,7 @@ describe('Comment Model', () => {
         });
       expect(response.status).to.eqls(404);
       expect(response.body.status).to.eqls('failure');
+      expect(response.body.data.message).to.eqls('Comment not found for article id');
     });
   });
   describe('Delete comment', () => {
@@ -201,6 +205,7 @@ describe('Comment Model', () => {
         .set('Authorization', `Bearer ${token}`);
       expect(response.status).to.eqls(404);
       expect(response.body.status).to.eqls('failure');
+      expect(response.body.data.message).to.eqls('Comment not found for article id');
     });
     it('It should not be able to delete a comment when comment id is wrong', async () => {
       const response = await chai

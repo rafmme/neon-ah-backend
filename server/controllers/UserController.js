@@ -1,3 +1,4 @@
+import Sequelize from 'sequelize';
 import TokenManager from '../helpers/TokenManager';
 import MailManager from '../helpers/MailManager';
 import db from '../models';
@@ -6,6 +7,7 @@ import response from '../helpers/response';
 
 
 const { User } = db;
+const { Op } = Sequelize;
 
 /**
  * @class UserController
@@ -222,10 +224,14 @@ class UserController {
    */
   static async logIn(req, response) {
     try {
-      const { email, password } = req.body;
+      const { userNameEmail, password } = req.body;
 
       const user = await User.findOne({
-        where: { email }
+        // where: { $or: [{ email: userNameEmail }, { userName: userNameEmail }] }
+        where: {
+          [Op.or]: [{ email: userNameEmail }, { userName: userNameEmail }]
+          // $or: [{ a: 5 }, { a: 6 }]
+        }
       });
 
       if (!user) {
@@ -238,10 +244,7 @@ class UserController {
         });
       }
 
-      const isValidPassword = PasswordManager.decryptPassword(
-        password,
-        user.dataValues.password
-      );
+      const isValidPassword = PasswordManager.decryptPassword(password, user.dataValues.password);
 
       if (!isValidPassword) {
         return response.status(401).send({
@@ -261,7 +264,7 @@ class UserController {
         userEmail: user.email,
         roleId: user.roleId
       };
-      const token = TokenManager.sign(payload, '360d');
+      const token = TokenManager.sign(payload, '1y');
       return response.status(200).send({
         status: 'Success',
         data: {
