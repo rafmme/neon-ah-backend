@@ -180,7 +180,6 @@ components:
       scheme: bearer
       bearerFormat: JWT
 paths:
-<<<<<<< HEAD
   /users/login/:
     post:
       tags:
@@ -299,16 +298,6 @@ paths:
         - name: username
           in: path
           description: username of the User
-          $ref: '#/components/responses/ErrorInternalServer'
-  /search?author=jesse:
-    get:
-      tags:
-        - User
-      summary: Search for details of an authors
-      parameters:
-        - in: query
-          name: author
-          description: name of the author to retrieve
           required: true
           schema:
             type: string
@@ -335,35 +324,22 @@ paths:
       tags:
         - Profile
       summary: Get user followers
-          description: Author found
-        '400':
-          description: No search parameters supplied.
-        '404':
-          description: Author not found
-        '500':
-          description: Something went wrong on the server.
-  /articles/{slug}/comments:
-    post:
-      tags:
-        - Comments
-      summary: Allow a user create a comment
-
       security:
         - token: []
       parameters:
-        - name: slug
+        - name: username
           in: path
-          description: Article slug
+          description: username of the User
           required: true
           schema:
             type: string
       requestBody:
-        description: An object representing the content 
+        description: An object representing the fields in the requested Profile
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Content'
+              $ref: '#/components/schemas/User'
       responses:
         '200':
           $ref: 'Followers returned successfully'
@@ -376,121 +352,27 @@ paths:
       tags:
         - Profile
       summary: Get user following
-        '201':
-          description:  Comment created
-        '404':
-          description: Article with the id not found
-        '500':
-          description: Something went wrong on the server.
-    get:
-      tags:
-        - Comments
-      summary: Allow a user get all comments
       security:
         - token: []
       parameters:
-        - name: slug
+        - name: username
           in: path
-          description: Article slug
+          description: username of the User
           required: true
           schema:
             type: string
+      requestBody:
+        description: An object representing the fields in the requested Profile
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
       responses:
-        '201':
-          description:  Comment found
+        '200':
+          $ref: 'Following returned successfully'
         '404':
-          description: Comment with the articleId not found
+          $ref: 'User not found'
         '500':
-          description: Something went wrong on the server.
-  /articles/{slug}/comments/{comentId}:
-    get:
-      tags:
-        - Comments
-      summary: Allow a user get a comment by id
-      security:
-        - token: []
-      parameters:
-        - name: slug
-          in: path
-          description: Article slug
-          required: true
-          schema:
-            type: string
-        - name: commentId
-          in: path
-          description: Comment id
-          required: true
-          schema:
-            type: UUID
-      responses:
-        '201':
-          description:  Comment found
-        '404':
-          description:  Comment with the articleId not found
-        '500':
-          description: Something went wrong on the server.
-    put:
-      tags:
-        - Comments
-      summary: Allow a user update a comment
-      security:
-        - token: []
-      parameters:
-        - name: slug
-          in: path
-          description: Article slug
-          required: true
-          schema:
-            type: string
-        - name: commentId
-          in: path
-          description: Comment id
-          required: true
-          schema:
-            type: UUID
-      responses:
-        '201':
-          description:  Comment updated
-        '404':
-          description: Comment not found
-        '404':
-          description: Article not found
-        '404':
-          description: Comment not found for article id
-        '403':
-          description: You are not allowed to update another user's comment
-        '500':
-          description: Something went wrong on the server.
-    delete:
-      tags:
-        - Comments
-      summary: Allow a user delete a comment
-      security:
-        - token: []
-      parameters:
-        - name: slug
-          in: path
-          description: Article slug
-          required: true
-          schema:
-            type: string
-        - name: commentId
-          in: path
-          description: Comment id
-          required: true
-          schema:
-            type: UUID
-      responses:
-        '201':
-          description:  Comment deleted
-        '404':
-          description: Comment not found
-        '404':
-          description: Comment not found for article id
-        '404':
-          description: Article not found
-        '403':
-          description: You are not allowed to delete another user's comment
-        '500':
-          description: Something went wrong on the server.
-
+          $ref: 'An error occured on the server'
+    

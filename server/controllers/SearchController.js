@@ -38,7 +38,7 @@ class SearchController {
       if (findAuthor.length > 0) {
         return response(res, 200, 'success', 'Author found', null, findAuthor);
       }
-      return response(res, 404, 'failure', 'Arthor not found', null, null);
+      return response(res, 404, 'failure', 'Author not found', null, null);
     } catch (error) {
       return response(res, 500, 'failure', 'Something went wrong on the server', null, null);
     }

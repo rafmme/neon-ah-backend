@@ -27,7 +27,7 @@ describe('Search Model', () => {
           .set('Authorization', `Bearer ${token}`)
         expect(response.status).to.eqls(404);
         expect(response.body.status).to.eqls('failure');
-        expect(response.body.data.message).to.eqls('Arthor not found');     
+        expect(response.body.data.message).to.eqls('Author not found');     
       });
       it('It should not be able to search for authors if inputed value is empty', async () => {
         const response = await chai
