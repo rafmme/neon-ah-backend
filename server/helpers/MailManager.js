@@ -1,6 +1,7 @@
 import sgMail from '@sendgrid/mail';
 import env from 'dotenv';
 import passwordResetEmailTemplate from './emailTemplates/resetPasswordTemplate';
+import verifyEmailTemplate from './emailTemplates/verifyEmailTemplate';
 
 env.config();
 
@@ -27,6 +28,24 @@ class MailManager {
       html: passwordResetEmailTemplate(user, token)
     };
 
+    return sgMail.send(message);
+  }
+
+  /**
+   * @static
+   * @description utility function to send verification email to user.
+   * @param {string} email Email address of the user
+   * @param {string} token token to send to user's email.
+   * @returns {Promise} A promise object that represents mail success.
+   * @memberof MailManager
+   */
+  static sendVerificationEmail({ createdUser, token }) {
+    const message = {
+      to: `${createdUser.email}`,
+      from: 'notification@neon-ah.com',
+      subject: "Welcome to Author's Haven! Confirm your email",
+      html: verifyEmailTemplate(createdUser, token)
+    };
     return sgMail.send(message);
   }
 }

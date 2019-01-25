@@ -194,12 +194,13 @@ class UserController {
       };
 
       const token = await TokenManager.sign(payload, '24h');
+      await MailManager.sendVerificationEmail({ createdUser, token });
+
       return response.status(201).send({
         status: 'success',
         data: {
           statusCode: 201,
-          token,
-          message: 'You have successfully signed up'
+          message: 'Kindly your check your email to verify your account'
         }
       });
     } catch (err) {
@@ -208,6 +209,50 @@ class UserController {
         data: {
           statusCode: 400,
           error: err.message
+        }
+      });
+    }
+  }
+
+  /**
+   * @static
+   * @param {*} req - request object
+   * @param {*} res - response object
+   * @returns {object} - response object containing user payload.
+   * @memberof UserController
+   */
+  static async verifyEmail(req, res) {
+    try {
+      const { token } = req.params;
+      const { userEmail } = TokenManager.verify(token);
+
+      const foundUser = await User.findOne({ where: { email: userEmail } });
+
+      if (foundUser.isVerified === true) {
+        return res.status(409).send({
+          status: 'failure',
+          data: {
+            statusCode: 409,
+            error: 'Your account has already been activated.'
+          }
+        });
+      }
+
+      await User.update({ isVerified: true }, { where: { email: userEmail } });
+
+      return res.status(200).send({
+        status: 'success',
+        data: {
+          statusCode: 200,
+          token,
+          message: 'Your account has now been verified'
+        }
+      });
+    } catch (err) {
+      res.status(400).send({
+        status: 'failure',
+        data: {
+          error: err
         }
       });
     }
