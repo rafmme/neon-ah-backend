@@ -5,7 +5,7 @@ import app from '../../../index';
 import db from '../../models';
 import TokenManager from '../../helpers/TokenManager';
 
-const { User, Role, AuthType } = db;
+const { User } = db;
 
 chai.use(chaiHttp);
 
@@ -19,13 +19,25 @@ describe('User Model', () => {
     authTypeId: '15745c60-7b1a-11e8-9c9c-2d42b21b1a3e'
   };
 
-  after(async () => {
-    await User.destroy({ where: {} });
-    await Role.destroy({ where: {} });
-    await AuthType.destroy({ where: {} });
-  });
-
   describe('User Sign up Test', () => {
+
+    it('User should get an error when confirmation password does not match', async () => {
+      const response = await chai
+        .request(app)
+        .post('/api/v1/auth/signup')
+        .send({
+          userName: userInfo.userName,
+          fullName: userInfo.fullName,
+          email: userInfo.email,
+          password: userInfo.password,
+          confirmPassword: '123456',
+          authTypeId: userInfo.authTypeId
+        });
+      expect(response.status).to.eql(422);
+      expect(response.body.status).to.eqls('failure');
+      expect(response.body.data.error[0]).to.eqls('Password confirmation does not match password');
+    });
+
     it('should create user', async () => {
       const response = await chai
         .request(app)
@@ -35,6 +47,7 @@ describe('User Model', () => {
           fullName: userInfo.fullName,
           email: userInfo.email,
           password: userInfo.password,
+          confirmPassword: userInfo.password,
           authTypeId: userInfo.authTypeId
         });
       expect(response.status).to.equal(201);
@@ -60,6 +73,7 @@ describe('User Model', () => {
           fullName: userInfo.fullName,
           email: userInfo.email,
           password: userInfo.password,
+          confirmPassword: userInfo.password,
           authTypeId: userInfo.authTypeId
         });
       expect(response.status).to.equal(409);
@@ -116,7 +130,7 @@ describe('User Model', () => {
         .request(app)
         .post('/api/v1/auth/login')
         .send({
-          email: 'jeinit@now.com',
+          user: 'jeinit@now.com',
           password: '123456'
         });
       expect(response.status).to.equal(404);
@@ -128,10 +142,10 @@ describe('User Model', () => {
       const response = await chai
         .request(app)
         .post('/api/v1/auth/login')
-        .send({ email: 'jesseinit@now.com', password: '123' });
+        .send({ user: 'jesseinit@now.com', password: '1234657890B' });
       expect(response.status).to.eql(401);
       expect(response.body.status).to.eqls('failure');
-      expect(response.body.data.message).to.eqls('Password is wrong');
+      expect(response.body.data.message).to.eqls('Wrong login details');
     });
 
     it('User should get a token on successful login', async () => {

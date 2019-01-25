@@ -31,7 +31,7 @@ describe('Comment Model', () => {
         .send({
           content: ''
         });
-      expect(response.status).to.eqls(400);
+      expect(response.status).to.eqls(422);
       expect(response.body.status).to.eqls('failure');
     });
     it('It should be able to handle unexpected errors thrown during creating a comment', async () => {
@@ -134,7 +134,10 @@ describe('Comment Model', () => {
         .put(
           '/api/v1/articles/how-to-be-a-10x-dev-sGNYfURm/comments/09543c60-7b1a-11e8-9c9c-2d42b21b1a3e'
         )
-        .set('Authorization', `Bearer ${tokenTwo}`);
+        .set('Authorization', `Bearer ${tokenTwo}`)
+        .send({
+          content: 'Nice write up here'
+        });;
       expect(response.status).to.eqls(403);
       expect(response.body.status).to.eqls('failure');
       expect(response.body.data.message).to.eqls(

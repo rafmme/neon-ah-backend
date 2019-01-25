@@ -1,3 +1,4 @@
+import Sequelize from 'sequelize';
 import TokenManager from '../helpers/TokenManager';
 import MailManager from '../helpers/MailManager';
 import db from '../models';
@@ -6,6 +7,7 @@ import response from '../helpers/response';
 
 
 const { User } = db;
+const { Op } = Sequelize;
 
 /**
  * @class UserController
@@ -267,13 +269,15 @@ class UserController {
    */
   static async logIn(req, response) {
     try {
-      const { email, password } = req.body;
+      const { user, password } = req.body;
 
-      const user = await User.findOne({
-        where: { email }
+      const userSearch = await User.findOne({
+        where: {
+          [Op.or]: [{ email: user }, { userName: user }]
+        }
       });
 
-      if (!user) {
+      if (!userSearch) {
         return response.status(404).send({
           status: 'failure',
           data: {
@@ -282,11 +286,8 @@ class UserController {
           }
         });
       }
-
-      const isValidPassword = PasswordManager.decryptPassword(
-        password,
-        user.dataValues.password
-      );
+      const isValidPassword = PasswordManager
+        .decryptPassword(password, userSearch.dataValues.password);
 
       if (!isValidPassword) {
         return response.status(401).send({
@@ -295,18 +296,18 @@ class UserController {
             statusCode: 401,
             auth: false,
             token: null,
-            message: 'Password is wrong'
+            message: 'Wrong login details'
           }
         });
       }
 
       const payload = {
-        userId: user.id,
-        userName: user.username,
-        userEmail: user.email,
-        roleId: user.roleId
+        userId: userSearch.id,
+        userName: userSearch.username,
+        userEmail: userSearch.email,
+        roleId: userSearch.roleId
       };
-      const token = TokenManager.sign(payload, '360d');
+      const token = TokenManager.sign(payload, '1y');
       return response.status(200).send({
         status: 'Success',
         data: {

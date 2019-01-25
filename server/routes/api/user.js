@@ -1,22 +1,24 @@
 import { Router } from 'express';
 import UserController from '../../controllers/UserController';
-import userValidator from '../../middlewares/validations/userValidator';
 import followController from '../../controllers/followController';
 import AuthMiddleware from '../../middlewares/AuthMiddleware';
+import handleValidationErrors from '../../middlewares/validations/handleValidationErrors';
+import { signUpSchema, logInSchema, editProfileSchema } from '../../middlewares/validations/userValidation';
 
 const userRoutes = Router();
 
 userRoutes.post('/password/forgot', UserController.forgotPassword);
 
 userRoutes.post('/password/reset/:token', UserController.passwordReset);
-userRoutes.post('/auth/signup', userValidator.validateUserSignupInput, UserController.signUp);
-userRoutes.post('/auth/login', userValidator.validateUserLoginInput, UserController.logIn);
 userRoutes.post('/auth/verify/:token', UserController.verifyEmail);
+userRoutes.post('/auth/signup', signUpSchema, handleValidationErrors, UserController.signUp);
+userRoutes.post('/auth/login', logInSchema, handleValidationErrors, UserController.logIn);
 
 userRoutes.put(
   '/users',
   AuthMiddleware.checkIfUserIsAuthenticated,
-  userValidator.editProfileValidate,
+  editProfileSchema,
+  handleValidationErrors,
   UserController.updateProfile
 );
 
