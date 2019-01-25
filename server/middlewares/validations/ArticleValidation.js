@@ -181,6 +181,66 @@ class ArticleValidation {
       );
     }
   }
+
+  /**
+   * @static
+   * @description a middleware function for checking if the limit param is an integer
+   * @param {*} req HTTP request object
+   * @param {*} res HTTP response object
+   * @param {function} next next middleware function
+   * @returns {object} returns to the next middleware function
+   * @memberof ArticleValidation
+   */
+  static async verifyLimitParams(req, res, next) {
+    try {
+      const { limit } = req.query;
+      if (!limit) {
+        return next();
+      }
+      if (!Number.isSafeInteger(parseInt(limit, 10))) {
+        response(res, 400, 'failure', 'There was an issue with your query');
+      }
+      return next();
+    } catch (error) {
+      return response(
+        res, 500, 'failure',
+        'server error',
+        {
+          message: 'Something went wrong on the server'
+        }, null);
+    }
+  }
+
+
+  /**
+   *
+   * @description a middleware function for checking if the page param is an integer
+   * @static
+   * @param {*} req
+   * @param {*} res
+   * @param {*} next
+   * @returns {object} returns to the next middleware function
+   * @memberof ArticleValidation
+   */
+  static async verifyPageParams(req, res, next) {
+    try {
+      const { page } = req.query;
+      if (!page) {
+        return next();
+      }
+      if (!Number.isSafeInteger(parseInt(page, 10))) {
+        response(res, 400, 'failure', 'There was an issue with your query');
+      }
+      return next();
+    } catch (error) {
+      return response(
+        res, 500, 'failure',
+        'server error',
+        {
+          message: 'Something went wrong on the server'
+        }, null);
+    }
+  }
 }
 
 export default ArticleValidation;

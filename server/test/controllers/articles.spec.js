@@ -105,6 +105,36 @@ describe('API endpoint /articles/', () => {
       expect(response.body.data.message).to.eqls('All articles');
     });
 
+    it('should return a list of articles on the next page given a page limit', async () => {
+      const response = await chai
+        .request(app)
+        .get('/api/v1/articles??page=2&limit=1');
+
+      expect(response.status).to.eqls(200);
+      expect(response.body.status).to.eqls('success');
+      expect(response.body.data.payload.articles).to.be.an('Array');
+    });
+
+    it('should return error value passed to the limit is not a number', async () => {
+      const response = await chai
+        .request(app)
+        .get('/api/v1/articles?page=2&limit=a');
+
+      expect(response.status).to.eqls(400);
+      expect(response.body.status).to.eqls('failure');
+      expect(response.body.data.message).to.eqls('There was an issue with your query');
+    });
+
+    it('should return error value passed to the page is not a number', async () => {
+      const response = await chai
+        .request(app)
+        .get('/api/v1/articles?page=a&limit=1');
+
+      expect(response.status).to.eqls(400);
+      expect(response.body.status).to.eqls('failure');
+      expect(response.body.data.message).to.eqls('There was an issue with your query');
+    });
+
     it('It should be able to handle unexpected errors thrown when creating articles', async () => {
       const stub = sinon
         .stub(Article, 'findAll')
