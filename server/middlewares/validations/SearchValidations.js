@@ -1,21 +1,4 @@
-import { validationResult, checkSchema } from 'express-validator/check';
-
-
-const handleValidationErrors = (req, res, next) => {
-  const validationErrors = validationResult(req);
-  if (!validationErrors.isEmpty()) {
-    return res.status(422).send({
-      status: 'failure',
-      data: {
-        statusCode: 422,
-        error: validationErrors.array().map(err => (
-          err.msg
-        ))
-      }
-    });
-  }
-  next();
-};
+import checkSchema from 'express-validator/check';
 
 const searchSchema = checkSchema({
   searchBar: {
@@ -36,4 +19,4 @@ const searchSchema = checkSchema({
   }
 });
 
-export { handleValidationErrors, searchSchema };
+export default searchSchema;

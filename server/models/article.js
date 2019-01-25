@@ -39,17 +39,12 @@ export default (sequelize, DataTypes) => {
   );
   Article.associate = (models) => {
     const {
-      User, Tag, Comment, ArticleLikesDislike, Bookmark, Rating, Share
+      User, Tag, Comment, ArticleLikesDislike, Bookmark, Rating, Share, Report
     } = models;
     Article.belongsTo(User, {
       foreignKey: 'userId',
       onDelete: 'CASCADE',
       as: 'author'
-    });
-    Article.belongsToMany(User, {
-      through: 'Report',
-      as: 'reports',
-      foreignKey: 'articleId'
     });
     Article.belongsToMany(User, {
       through: 'Rating',
@@ -65,9 +60,23 @@ export default (sequelize, DataTypes) => {
       foreignKey: 'articleId',
       as: 'comments'
     });
+    Article.hasMany(Report, {
+      foreignKey: 'articleId',
+      as: 'report'
+    });
+    Article.belongsToMany(User, {
+      through: 'Report',
+      as: 'reports',
+      foreignKey: 'articleId',
+    });
+    Article.belongsToMany(User, {
+      through: 'ArticleLikesDislike',
+      as: 'likes',
+      foreignKey: 'articleId',
+    });
     Article.hasMany(ArticleLikesDislike, {
       foreignKey: 'articleId',
-      as: 'likes'
+      as: 'like'
     });
     Article.hasOne(Bookmark, {
       foreignKey: 'articleId',

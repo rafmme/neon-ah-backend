@@ -17,7 +17,7 @@ articleRoutes.post(
   ArticleValidation.checkIfArticleExist,
   ArticleController.create
 );
-articleRoutes.get('/articles', ArticleController.fetchAll);
+articleRoutes.get('/articles', ArticleValidation.verifyLimitParams, ArticleValidation.verifyPageParams, ArticleController.fetchAll);
 articleRoutes.get('/articles/:slug', ArticleController.fetchOne);
 articleRoutes.put(
   '/articles/:slug',

@@ -28,7 +28,7 @@ class AuthMiddleware {
 
       const token = authorization.split(' ')[1];
       const decoded = TokenManager.verify(token);
-
+      /* istanbul ignore if */
       if (decoded) {
         req.user = decoded;
         return next();
@@ -40,7 +40,7 @@ class AuthMiddleware {
           res,
           401,
           'failure',
-          'Token is invalid, You need to log in again'
+          'You need to log in again'
         );
       }
 

@@ -5,7 +5,7 @@ import Util from '../helpers/Util';
 import TagHelper from '../helpers/TagHelper';
 import response from '../helpers/response';
 import SearchController from './SearchController';
-
+import pagination from '../helpers/pagination';
 
 const { Article, Tag, User } = db;
 
@@ -24,11 +24,7 @@ class ArticleController {
     try {
       const { userId } = req.user;
       const {
-        title,
-        content,
-        isPublished,
-        banner,
-        tagsList,
+        title, content, isPublished, banner, tagsList
       } = req.body;
       const tagsArray = tagsList ? Util.createArrayOfStrings(tagsList) : [];
 
@@ -40,7 +36,7 @@ class ArticleController {
         banner: banner || 'https://unsplash.com/photos/Q7wDdmgCBFg',
         tagsList: tagsArray,
         isPublished: Boolify(isPublished) || true,
-        isReported: false,
+        isReported: false
       };
 
       let article = await Article.create(articleData);
@@ -48,29 +44,31 @@ class ArticleController {
       if (article) {
         article = article.toJSON();
         article.tags = articleData.tagsList;
-        const {
-          createdAt,
-          updatedAt
-        } = article;
+        const { createdAt, updatedAt } = article;
         await TagHelper.findOrAddTag(article.id, tagsArray);
         article.createdAt = Util.formatDate(createdAt);
         article.updatedAt = Util.formatDate(updatedAt);
 
         return response(
-          res, 201, 'success',
+          res,
+          201,
+          'success',
           'New article has been successfully created',
-          null, article
+          null,
+          article
         );
       }
     } catch (error) {
       return response(
-        res, 500, 'failure',
+        res,
+        500,
+        'failure',
         'server error',
-        { message: 'Something went wrong on the server' }, null
+        { message: 'Something went wrong on the server' },
+        null
       );
     }
   }
-
 
   /**
    * @static
@@ -81,35 +79,57 @@ class ArticleController {
    */
   static async fetchAll(req, res) {
     try {
-      let articles = await Article.findAll({
+      const { query } = req;
+
+      const limit = Number(query.limit) || 20;
+      const currentPage = Number(query.page) || 1;
+      const offset = (currentPage - 1) * limit;
+
+      const articlesCount = await Article.findAndCountAll({
         where: { isPublished: true },
-        attributes: { exclude: ['userId'] },
-        include: [{
-          model: User,
-          as: 'author',
-          attributes: ['userName', 'bio', 'img'],
-        },
-        {
-          model: Tag,
-          as: 'tags',
-          attributes: ['name'],
-          through: { attributes: [] }
-        },
-        ]
+        include: [
+          {
+            model: User,
+            as: 'author',
+            attributes: ['userName', 'bio', 'img']
+          },
+        ],
+      });
+      const totalArticles = articlesCount.count;
+
+      const articles = await Article.findAndCountAll({
+        where: { isPublished: true },
+        include: [
+          {
+            model: User,
+            as: 'author',
+            attributes: ['userName', 'bio', 'img']
+          },
+          {
+            model: Tag,
+            as: 'tags',
+            attributes: ['name'],
+            through: { attributes: [] }
+          }
+        ],
+        limit,
+        offset
       });
 
-      if (articles && articles.length > 0) {
-        articles = articles.map((article) => {
+
+      if (articles.count > 0) {
+        const articleList = articles.rows.map((article) => {
           article = article.toJSON();
           article.tags = article.tags.map(tag => tag.name);
-          article.createdAt = Util.formatDate(article.createdAt);
-          article.updatedAt = Util.formatDate(article.updatedAt);
           return article;
         });
+
+        const paginatedData = pagination(articleList.length, limit, currentPage, totalArticles);
         const data = {
-          articles,
-          articlesCount: articles.length,
+          articles: articleList,
+          paginatedData
         };
+
         return response(res, 200, 'success', 'All articles', null, data);
       }
       return response(res, 200, 'success', 'All articles', null, {
@@ -117,9 +137,12 @@ class ArticleController {
       });
     } catch (error) {
       return response(
-        res, 500, 'failure',
+        res,
+        500,
+        'failure',
         'server error',
-        { message: 'Something went wrong on the server' }, null
+        { message: 'Something went wrong on the server' },
+        null
       );
     }
   }
@@ -136,20 +159,21 @@ class ArticleController {
       const { slug } = req.params;
       let article = await Article.findOne({
         where: {
-          slug,
+          slug
         },
         attributes: { exclude: ['userId'] },
-        include: [{
-          model: User,
-          as: 'author',
-          attributes: ['userName', 'bio', 'img'],
-        },
-        {
-          model: Tag,
-          as: 'tags',
-          attributes: ['name'],
-          through: { attributes: [] }
-        },
+        include: [
+          {
+            model: User,
+            as: 'author',
+            attributes: ['userName', 'bio', 'img']
+          },
+          {
+            model: Tag,
+            as: 'tags',
+            attributes: ['name'],
+            through: { attributes: [] }
+          }
         ]
       });
       if (article) {
@@ -160,21 +184,30 @@ class ArticleController {
         article.updatedAt = Util.formatDate(article.updatedAt);
 
         return response(
-          res, 200, 'success',
+          res,
+          200,
+          'success',
           'Article was fetched successfully',
-          null, article
+          null,
+          article
         );
       }
       return response(
-        res, 404, 'failure',
+        res,
+        404,
+        'failure',
         'not found error',
-        { message: 'Article not found' }, null
+        { message: 'Article not found' },
+        null
       );
     } catch (error) {
       return response(
-        res, 500, 'failure',
+        res,
+        500,
+        'failure',
         'server error',
-        { message: 'Something went wrong on the server' }, null
+        { message: 'Something went wrong on the server' },
+        null
       );
     }
   }
@@ -193,12 +226,14 @@ class ArticleController {
       const result = await Article.findOne({
         where: {
           slug,
-          userId,
+          userId
         }
       });
       if (result) {
-        const articleSlug = result.title.toLowerCase() === req.body.title.toLowerCase()
-          ? result.slug : ArticleHelper.generateArticleSlug(req.body.title);
+        const articleSlug =
+          result.title.toLowerCase() === req.body.title.toLowerCase()
+            ? result.slug
+            : ArticleHelper.generateArticleSlug(req.body.title);
 
         req.body.slug = articleSlug;
         let article = await result.update(req.body);
@@ -206,16 +241,22 @@ class ArticleController {
         article.createdAt = Util.formatDate(article.createdAt);
         article.updatedAt = Util.formatDate(article.updatedAt);
         return response(
-          res, 200, 'success',
+          res,
+          200,
+          'success',
           'Article was updated successfully',
-          null, article
+          null,
+          article
         );
       }
     } catch (error) {
       return response(
-        res, 500, 'failure',
+        res,
+        500,
+        'failure',
         'server error',
-        { message: 'Something went wrong on the server' }, null
+        { message: 'Something went wrong on the server' },
+        null
       );
     }
   }
@@ -234,22 +275,28 @@ class ArticleController {
       const article = await Article.findOne({
         where: {
           slug,
-          userId,
+          userId
         }
       });
       if (article) {
         await article.destroy();
         return response(
-          res, 200, 'success',
+          res,
+          200,
+          'success',
           'Article was deleted successfully',
-          null, null
+          null,
+          null
         );
       }
     } catch (error) {
       return response(
-        res, 500, 'failure',
+        res,
+        500,
+        'failure',
         'server error',
-        { message: 'Something went wrong on the server' }, null
+        { message: 'Something went wrong on the server' },
+        null
       );
     }
   }

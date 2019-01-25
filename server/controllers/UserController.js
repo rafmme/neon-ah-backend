@@ -196,12 +196,13 @@ class UserController {
       };
 
       const token = await TokenManager.sign(payload, '24h');
+      await MailManager.sendVerificationEmail({ createdUser, token });
+
       return response.status(201).send({
         status: 'success',
         data: {
           statusCode: 201,
-          token,
-          message: 'You have successfully signed up'
+          message: 'Kindly your check your email to verify your account'
         }
       });
     } catch (err) {
@@ -217,6 +218,50 @@ class UserController {
 
   /**
    * @static
+   * @param {*} req - request object
+   * @param {*} res - response object
+   * @returns {object} - response object containing user payload.
+   * @memberof UserController
+   */
+  static async verifyEmail(req, res) {
+    try {
+      const { token } = req.params;
+      const { userEmail } = TokenManager.verify(token);
+
+      const foundUser = await User.findOne({ where: { email: userEmail } });
+
+      if (foundUser.isVerified === true) {
+        return res.status(409).send({
+          status: 'failure',
+          data: {
+            statusCode: 409,
+            error: 'Your account has already been activated.'
+          }
+        });
+      }
+
+      await User.update({ isVerified: true }, { where: { email: userEmail } });
+
+      return res.status(200).send({
+        status: 'success',
+        data: {
+          statusCode: 200,
+          token,
+          message: 'Your account has now been verified'
+        }
+      });
+    } catch (err) {
+      res.status(400).send({
+        status: 'failure',
+        data: {
+          error: err
+        }
+      });
+    }
+  }
+
+  /**
+   * @static
    * @param {*} req
    * @param {*} response
    * @returns {object} Json response
@@ -224,17 +269,15 @@ class UserController {
    */
   static async logIn(req, response) {
     try {
-      const { userNameEmail, password } = req.body;
+      const { user, password } = req.body;
 
-      const user = await User.findOne({
-        // where: { $or: [{ email: userNameEmail }, { userName: userNameEmail }] }
+      const userSearch = await User.findOne({
         where: {
-          [Op.or]: [{ email: userNameEmail }, { userName: userNameEmail }]
-          // $or: [{ a: 5 }, { a: 6 }]
+          [Op.or]: [{ email: user }, { userName: user }]
         }
       });
 
-      if (!user) {
+      if (!userSearch) {
         return response.status(404).send({
           status: 'failure',
           data: {
@@ -243,8 +286,8 @@ class UserController {
           }
         });
       }
-
-      const isValidPassword = PasswordManager.decryptPassword(password, user.dataValues.password);
+      const isValidPassword = PasswordManager
+        .decryptPassword(password, userSearch.dataValues.password);
 
       if (!isValidPassword) {
         return response.status(401).send({
@@ -253,16 +296,16 @@ class UserController {
             statusCode: 401,
             auth: false,
             token: null,
-            message: 'Password is wrong'
+            message: 'Wrong login details'
           }
         });
       }
 
       const payload = {
-        userId: user.id,
-        userName: user.username,
-        userEmail: user.email,
-        roleId: user.roleId
+        userId: userSearch.id,
+        userName: userSearch.username,
+        userEmail: userSearch.email,
+        roleId: userSearch.roleId
       };
       const token = TokenManager.sign(payload, '1y');
       return response.status(200).send({

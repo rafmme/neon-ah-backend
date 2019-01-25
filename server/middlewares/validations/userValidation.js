@@ -1,20 +1,5 @@
-import { validationResult, checkSchema } from 'express-validator/check';
+import { checkSchema } from 'express-validator/check';
 
-const handleValidationErrors = (req, res, next) => {
-  const validationErrors = validationResult(req);
-  if (!validationErrors.isEmpty()) {
-    return res.status(422).send({
-      status: 'failure',
-      data: {
-        statusCode: 422,
-        error: validationErrors.array().map(err => (
-          err.msg
-        ))
-      }
-    });
-  }
-  next();
-};
 
 const signUpSchema = checkSchema({
   fullName: {
@@ -104,10 +89,10 @@ const signUpSchema = checkSchema({
 });
 
 const logInSchema = checkSchema({
-  userNameEmail: {
+  user: {
     in: 'body',
     customSanitizer: {
-      options: userNameEmail => userNameEmail.trim()
+      options: user => user.trim()
     },
     isString: {
       errorMessage: 'Username or Email has to be a string'
@@ -141,4 +126,108 @@ const logInSchema = checkSchema({
   }
 });
 
-export { handleValidationErrors, signUpSchema, logInSchema };
+
+const editProfileSchema = checkSchema({
+  fullName: {
+    in: 'body',
+    customSanitizer: {
+      options: fullName => fullName.trim()
+    },
+    isEmpty: {
+      negated: true,
+      errorMessage: 'fullname cannot be empty'
+    },
+    isString: {
+      errorMessage: 'fullname has to be a string'
+    },
+    isLength: {
+      options: {
+        min: 2
+      },
+      errorMessage: 'fullname is too short'
+    }
+  },
+  userName: {
+    in: 'body',
+    customSanitizer: {
+      options: UserName => UserName.trim()
+    },
+    isEmpty: {
+      negated: true,
+      errorMessage: 'Username cannot be empty'
+    },
+    isString: {
+      errorMessage: 'Username has to be a string'
+    },
+    isLength: {
+      options: {
+        min: 2
+      },
+      errorMessage: 'Username is too short'
+    }
+  },
+  email: {
+    in: 'body',
+    customSanitizer: {
+      options: email => email.trim()
+    },
+    isEmpty: {
+      negated: true,
+      errorMessage: 'Email cannot be empty'
+    },
+    isEmail: {
+      errorMessage: 'Please provide a valid email'
+    },
+    errorMessage: 'email is too short'
+  },
+  password: {
+    in: 'body',
+    customSanitizer: {
+      options: password => password.trim()
+    },
+    isEmpty: {
+      negated: true,
+      errorMessage: 'Password cannot be empty'
+    },
+    isLength: {
+      options: {
+        min: 6
+      },
+      errorMessage: 'Password cannot be less than 6 Characters'
+    }
+  },
+  bio: {
+    in: 'body',
+    customSanitizer: {
+      options: bio => bio.trim()
+    },
+    isString: {
+      errorMessage: 'Bio can only be string'
+    }
+  },
+  notifySettings: {
+    in: 'body',
+    isEmpty: {
+      negated: true,
+      errorMessage: 'Notification settings cannot be empty'
+    },
+    isBoolean: {
+      errorMessage: 'Notification settings must be a Boolean'
+    }
+  },
+  img: {
+    in: 'body',
+    customSanitizer: {
+      options: img => img.trim()
+    },
+    isString: {
+      errorMessage: 'image has to be a string'
+    }
+  }
+});
+
+export {
+  signUpSchema,
+  logInSchema,
+  editProfileSchema
+};

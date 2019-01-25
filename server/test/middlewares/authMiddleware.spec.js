@@ -13,16 +13,16 @@ describe('Checks if user is authorized', () => {
       .request(app)
       .post('/api/v1/articles/What-a-mighy-God/likes')
       .set(
-        'authorization', wrongToken
+        'authorization', `Bearer ${wrongToken}`
       );
-    expect(response.status).to.equal(403);
+    expect(response.status).to.equal(401);
     expect(response.body).to.be.an('object');
     expect(response.body).to.have.property('data');
     expect(response.body.data).to.be.an('object');
     expect(response.body.data).to.have.property('message');
     expect(response.body.data.message).to.be.a('string');
     expect(response.body.data.message).to.be.eql(
-      'User not Authorised!'
+      'You need to log in again'
     );
   });
 });

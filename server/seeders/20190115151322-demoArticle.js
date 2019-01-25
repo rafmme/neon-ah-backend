@@ -2,7 +2,7 @@ export default {
   up: (queryInterface, Sequelize) => queryInterface.bulkInsert('Articles', [{
     id: '95745c60-7b1a-11e8-9c9c-2d42b21b1a3e',
     slug: 'how-to-be-a-10x-dev-sGNYfURm',
-    title: 'Mighty God',
+    title: 'How to be a 10x Dev',
     content: 'Hallelujah',
     isPublished: true,
     banner: 'https://www.imagurl.com/img.jpg',

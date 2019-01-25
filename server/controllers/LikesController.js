@@ -1,7 +1,7 @@
 import db from '../models';
 import response from '../helpers/response';
 
-const { Article, ArticleLikesDislike } = db;
+const { Article, ArticleLikesDislike, User } = db;
 
 /**
  * @class LikesDislikeController
@@ -82,16 +82,62 @@ class LikesController {
         where: {
           articleId: theArticle.dataValues.id,
           reaction: 'like'
-        }
+        },
+        include: [
+          {
+            model: User,
+            as: 'Liked By',
+            attributes: ['id', 'userName', 'img'],
+          }
+        ],
+        attributes: [
+        ]
       });
       if (!allLikes) {
         return response(res, 404, 'failure', 'No likes for this Article', null, null);
       }
-      return response(res, 200, 'success', `There are ${allLikes.count} Likes for this article`, null, null);
+      return response(res, 200, 'success', `There are ${allLikes.count} Likes for this article`, null, allLikes.rows);
     } catch (error) {
       return res.status(401).json({
         data: { status: 'failure', message: error }
       });
+    }
+  }
+
+
+  /**
+     *
+     * @description Gets all likes by user
+     * @static
+     * @param {*} req
+     * @param {*} res
+     * @returns {object} Json response
+     * @memberof LikesDislikeController
+     */
+  static async getLikesByUser(req, res) {
+    try {
+      const { userId } = req.user;
+
+      const allLikes = await ArticleLikesDislike.findAndCountAll({
+        include: [
+          {
+            model: Article,
+            attributes: ['id', 'title']
+          }
+        ],
+        attributes: [
+        ],
+        where: {
+          userId
+        }
+      });
+
+      return response(res, 200, 'success', `You have ${allLikes.count} article likes`, null, allLikes.rows);
+    } catch (error) {
+      return response(
+        res, 500, 'failure', 'server error',
+        { message: 'Something went wrong on the server' }, null
+      );
     }
   }
 }

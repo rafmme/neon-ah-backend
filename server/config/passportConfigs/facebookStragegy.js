@@ -14,8 +14,9 @@ const facebookStrategy = new FacebookStrategy(
   },
   UserController.strategyCallback
 );
-
 const mockStrategy = new MockStrategy('facebook', UserController.strategyCallback);
+
+/* istanbul ignore next */
 const facebook = process.env.NODE_ENV === 'test' ? mockStrategy : facebookStrategy;
 
 export default facebook;

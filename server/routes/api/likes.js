@@ -1,18 +1,23 @@
 import { Router } from 'express';
 import LikesController from '../../controllers/LikesController';
-import AuthManager from '../../middlewares/AuthManager';
+import AuthMiddleware from '../../middlewares/AuthMiddleware';
 
 const likeRoutes = Router();
 
 likeRoutes.post(
   '/articles/:slug/likes',
-  AuthManager.checkIfUserIsLoggedIn,
+  AuthMiddleware.checkIfUserIsAuthenticated,
   LikesController.likeArticle
 );
 likeRoutes.get(
   '/articles/:slug/likes',
-  AuthManager.checkIfUserIsLoggedIn,
+  AuthMiddleware.checkIfUserIsAuthenticated,
   LikesController.articleLikes
+);
+likeRoutes.get(
+  '/users/:userName/likes',
+  AuthMiddleware.checkIfUserIsAuthenticated,
+  LikesController.getLikesByUser
 );
 
 

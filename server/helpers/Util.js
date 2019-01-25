@@ -17,6 +17,7 @@ class Util {
     if (errors === false || typeof errors !== 'object') {
       return error;
     }
+    /* istanbul ignore if */
     if (errors.length >= 1) {
       errors.forEach((err) => {
         error.errorMessages[err.param] = err.msg;

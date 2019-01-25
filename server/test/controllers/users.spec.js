@@ -11,16 +11,33 @@ chai.use(chaiHttp);
 
 describe('User Model', () => {
   const userInfo = {
-    fullName: 'Mmakwe Onyeka',
-    userName: 'mmakwe222',
-    email: 'jesseinit@nowt.com',
+    fullName: 'Jesse Doe',
+    userName: 'jesseinitot',
+    email: 'jesseinit1@now.com',
     password: 'Blahblah',
     bio: 'Gitting Started',
     authTypeId: '15745c60-7b1a-11e8-9c9c-2d42b21b1a3e'
   };
 
-
   describe('User Sign up Test', () => {
+
+    it('User should get an error when confirmation password does not match', async () => {
+      const response = await chai
+        .request(app)
+        .post('/api/v1/auth/signup')
+        .send({
+          userName: userInfo.userName,
+          fullName: userInfo.fullName,
+          email: userInfo.email,
+          password: userInfo.password,
+          confirmPassword: '123456',
+          authTypeId: userInfo.authTypeId
+        });
+      expect(response.status).to.eql(422);
+      expect(response.body.status).to.eqls('failure');
+      expect(response.body.data.error[0]).to.eqls('Password confirmation does not match password');
+    });
+
     it('should create user', async () => {
       const response = await chai
         .request(app)
@@ -40,7 +57,7 @@ describe('User Model', () => {
       expect(response.body.data).to.have.property('message');
       expect(response.body.data.message).to.be.a('string');
       expect(response.body.data.message).to.be.eql(
-        'You have successfully signed up'
+        'Kindly your check your email to verify your account'
       );
       expect(response.body).to.have.property('status');
       expect(response.body.status).to.be.a('string');
@@ -65,12 +82,46 @@ describe('User Model', () => {
       expect(response.body.data).to.be.an('object');
       expect(response.body.data).to.have.property('message');
       expect(response.body.data.message).to.be.a('string');
-      expect(response.body.data.message).to.be.eql(
-        'Email already exists.Enter another email'
-      );
+      expect(response.body.data.message).to.be.eql('Email already exists.Enter another email');
       expect(response.body).to.have.property('status');
       expect(response.body.status).to.be.a('string');
       expect(response.body.status).to.equal('failure');
+    });
+  });
+
+  describe('Email Verification Link', () => {
+    it('It should verify a user on successful signup', async () => {
+      const generatedToken = TokenManager.sign({
+        userEmail: 'jesseinit1@now.com'
+      });
+
+      const response = await chai.request(app).post(`/api/v1/auth/verify/${generatedToken}`);
+      expect(response.status).to.equal(200);
+      expect(response.body.status).to.eqls('success');
+      expect(response.body.data.message).to.eqls('Your account has now been verified');
+    });
+
+    it('should return error for a user whose has been verified before', async () => {
+      const generatedToken = TokenManager.sign({
+        userEmail: 'jesseinit1@now.com'
+      });
+      const response = await chai.request(app).post(`/api/v1/auth/verify/${generatedToken}`);
+
+      expect(response.status).to.eqls(409);
+      expect(response.body.status).to.eqls('failure');
+      expect(response.body.data.error).to.eqls('Your account has already been activated.');
+    });
+
+    it('User should get an error token is malformed', async () => {
+      const generatedToken = TokenManager.sign({
+        userEmail: 'jesseinit1@now.com'
+      });
+      const malformedToken = generatedToken.toUpperCase();
+
+      const response = await chai.request(app).post(`/api/v1/auth/verify/${malformedToken}`);
+
+      expect(response.status).to.eqls(400);
+      expect(response.body.data.error.name).to.eqls('JsonWebTokenError');
     });
   });
   describe('User Login', () => {
@@ -79,7 +130,7 @@ describe('User Model', () => {
         .request(app)
         .post('/api/v1/auth/login')
         .send({
-          userNameEmail: 'jeinit@now.com',
+          user: 'jeinit@now.com',
           password: '123456'
         });
       expect(response.status).to.equal(404);
@@ -91,10 +142,10 @@ describe('User Model', () => {
       const response = await chai
         .request(app)
         .post('/api/v1/auth/login')
-        .send({ userNameEmail: 'jesseinit@nowt.com', password: '1234657890B' });
+        .send({ user: 'jesseinit@now.com', password: '1234657890B' });
       expect(response.status).to.eql(401);
       expect(response.body.status).to.eqls('failure');
-      expect(response.body.data.message).to.eqls('Password is wrong');
+      expect(response.body.data.message).to.eqls('Wrong login details');
     });
 
     it('User should get a token on successful login', async () => {
@@ -125,16 +176,13 @@ describe('User Model', () => {
 
       expect(response.status).to.equal(200);
       expect(response.body.status).to.eqls('success');
-      expect(response.body.data.message).to.eqls(
-        'Kindly check your mail to reset your password'
-      );
+      expect(response.body.data.message).to.eqls('Kindly check your mail to reset your password');
     });
 
     it('It should be able to handle unexpected errors thrown during when sending reset link', async () => {
       const stub = sinon
         .stub(User, 'findOne')
         .callsFake(() => Promise.reject(new Error('Internal Server Error')));
-
 
       it('should send back an error message for wrong roleId', async () => {
         const response = await chai

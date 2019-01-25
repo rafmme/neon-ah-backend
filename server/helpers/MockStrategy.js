@@ -23,6 +23,7 @@ class Strategy extends passport.Strategy {
    * @memberof Strategy
    */
   constructor(name, strategyCallback) {
+    /* istanbul ignore if */
     if (!name || name.length === 0) {
       throw new TypeError('Strategy requires a Strategy name');
     }

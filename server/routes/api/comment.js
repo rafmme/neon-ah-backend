@@ -1,7 +1,8 @@
 import { Router } from 'express';
 import CommentController from '../../controllers/CommentController';
 import AuthMiddleware from '../../middlewares/AuthMiddleware';
-import { handleValidationErrors, commentSchema } from '../../middlewares/validations/CommentValidations';
+import handleValidationErrors from '../../middlewares/validations/handleValidationErrors';
+import commentSchema from '../../middlewares/validations/CommentValidations';
 
 const commentRoutes = Router();
 

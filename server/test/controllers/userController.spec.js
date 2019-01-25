@@ -191,7 +191,7 @@ describe('User Model', () => {
       expect(response.status).to.eqls(401);
       expect(response.body.status).to.eqls('failure');
       expect(response.body.data.message).to.eqls(
-        'Token is invalid, You need to log in again'
+        'You need to log in again'
       );
     });
 
@@ -200,7 +200,7 @@ describe('User Model', () => {
         .request(app)
         .put(`/api/v1/users`)
         .set('Authorization', `Bearer ${userToken}`)
-        .send({ userName: 'jesseinit' });
+        .send({ userName: 'jesseinit', fullName: 'Jesse', email: 'jesseinit@now.com', password: 'Blahblah', notifySettings: true, bio: '', img: '' });
       expect(response.status).to.eqls(409);
       expect(response.body.status).to.eqls('failure');
       expect(response.body.data.message).to.eqls('Username already exists');
@@ -212,10 +212,10 @@ describe('User Model', () => {
         .request(app)
         .put(`/api/v1/users`)
         .set('Authorization', `Bearer ${userToken}`)
-        .send({ bio: 1 });
-      expect(response.status).to.eqls(400);
+        .send({ bio: 1, userName: 'jesseinit', fullName: 'Jesse', email: 'jesseinit@now.com', password: 'Blahblah', notifySettings: true, img: '' });
+      expect(response.status).to.eqls(422);
       expect(response.body.status).to.eqls('failure');
-      expect(response.body.data.error.bio).to.eqls('Bio can only be string');
+      expect(response.body.data.error[0]).to.eqls('Bio can only be string');
     });
 
     it('User should show proper error when user tries to edit profile with invalid notifySetting data', async () => {
@@ -223,10 +223,10 @@ describe('User Model', () => {
         .request(app)
         .put(`/api/v1/users`)
         .set('Authorization', `Bearer ${userToken}`)
-        .send({ notifySettings: 3 });
-      expect(response.status).to.eqls(400);
+        .send({ notifySettings: 3, userName: 'jesseinit', fullName: 'Jesse', email: 'jesseinit@now.com', password: 'Blahblah', bio: '', img: '' });
+      expect(response.status).to.eqls(422);
       expect(response.body.status).to.eqls('failure');
-      expect(response.body.data.error.notifySettings).to.eqls(
+      expect(response.body.data.error[0]).to.eqls(
         'Notification settings must be a Boolean'
       );
     });
@@ -236,24 +236,24 @@ describe('User Model', () => {
         .request(app)
         .put(`/api/v1/users`)
         .set('Authorization', `Bearer ${userToken}`)
-        .send({ userName: 3 });
-      expect(response.status).to.eqls(400);
+        .send({ userName: 3, fullName: 'Jesse', email: 'jesseinit@now.com', password: 'Blahblah', notifySettings: true, bio: '', img: '' });
+      expect(response.status).to.eqls(422);
       expect(response.body.status).to.eqls('failure');
-      expect(response.body.data.error.userName).to.eqls(
-        'Username can be only string'
+      expect(response.body.data.error[0]).to.eqls(
+        'Username has to be a string'
       );
     });
 
-    it('User should show proper error when user tries to edit profile with with empty Fullname', async () => {
+    it('User should show proper error when user tries to edit profile with empty Fullname', async () => {
       const response = await chai
         .request(app)
         .put(`/api/v1/users`)
         .set('Authorization', `Bearer ${userToken}`)
-        .send({ fullName: '' });
-      expect(response.status).to.eqls(400);
+        .send({ fullName: '', userName: 'jesseinit', email: 'jesseinit@now.com', password: 'Blahblah', notifySettings: true, bio: '', img: '' });
+      expect(response.status).to.eqls(422);
       expect(response.body.status).to.eqls('failure');
-      expect(response.body.data.error.fullName).to.eqls(
-        'Fullname cannot be empty'
+      expect(response.body.data.error[0]).to.eqls(
+        'fullname cannot be empty'
       );
     });
 
@@ -266,7 +266,7 @@ describe('User Model', () => {
         .request(app)
         .put(`/api/v1/users`)
         .set('Authorization', `Bearer ${userToken}`);
-      expect(response.status).to.eqls(500);
+      expect(response.status).to.eqls(422);
       stub.restore();
 
       it('User should update the user profile when the correct user tries to edit his profile', async () => {
