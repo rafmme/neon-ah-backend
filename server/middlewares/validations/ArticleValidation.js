@@ -35,7 +35,9 @@ class ArticleValidation {
       'Article content is missing'
     ).notEmpty().isString();
 
-    let { hasError, errorMessages } = Util.extractErrorMessages(req.validationErrors());
+    let {
+      hasError, errorMessages
+    } = Util.extractErrorMessages(req.validationErrors());
 
     if (banner) {
       const imgExtensionPattern = /\.(svg|png|jpg|jpeg|gif)$/g;

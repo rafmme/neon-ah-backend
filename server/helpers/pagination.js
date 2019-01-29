@@ -11,7 +11,6 @@
  */
 
 const pagination = (currentCount, limit, currentPage, totalCount) => {
-  // const articlesCount = totalcount;
   const pages = Math.ceil(totalCount / limit);
   const nextPage = currentPage < pages ? currentPage + 1 : null;
   const prevPage = currentPage > 1 ? currentPage - 1 : null;

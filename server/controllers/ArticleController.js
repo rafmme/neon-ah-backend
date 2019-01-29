@@ -6,6 +6,7 @@ import TagHelper from '../helpers/TagHelper';
 import response from '../helpers/response';
 import SearchController from './SearchController';
 import pagination from '../helpers/pagination';
+import TimeToRead from '../helpers/TimeToRead';
 
 const { Article, Tag, User } = db;
 
@@ -59,6 +60,7 @@ class ArticleController {
         );
       }
     } catch (error) {
+      console.log(error);
       return response(
         res,
         500,
@@ -87,12 +89,14 @@ class ArticleController {
 
       const articlesCount = await Article.findAndCountAll({
         where: { isPublished: true },
+        attributes: { exclude: ['userId'] },
         include: [
           {
             model: User,
             as: 'author',
             attributes: ['userName', 'bio', 'img']
           },
+
         ],
       });
       const totalArticles = articlesCount.count;
@@ -120,6 +124,7 @@ class ArticleController {
       if (articles.count > 0) {
         const articleList = articles.rows.map((article) => {
           article = article.toJSON();
+          article.timeToRead = TimeToRead.readTime(article);
           article.tags = article.tags.map(tag => tag.name);
           return article;
         });
@@ -313,7 +318,14 @@ class ArticleController {
     if (author) {
       SearchController.byAuthor(author, res);
     } else {
-      return response(res, 400, 'failure', 'No search parameters supplied', null, null);
+      return response(
+        res,
+        400,
+        'failure',
+        'No search parameters supplied',
+        null,
+        null
+      );
     }
   }
 }

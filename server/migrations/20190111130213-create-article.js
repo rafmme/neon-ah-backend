@@ -29,6 +29,9 @@ export default {
             type: Sequelize.TEXT,
             allowNull: false
           },
+          timeToRead: {
+            type: Sequelize.INTEGER
+          },
           isPublished: {
             type: Sequelize.BOOLEAN,
             defaultValue: false

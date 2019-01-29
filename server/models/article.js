@@ -1,3 +1,5 @@
+import TimeToRead from '../helpers/TimeToRead';
+
 export default (sequelize, DataTypes) => {
   const Article = sequelize.define(
     'Article',
@@ -22,6 +24,9 @@ export default (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false
       },
+      timeToRead: {
+        type: DataTypes.INTEGER,
+      },
       isPublished: {
         type: DataTypes.BOOLEAN,
         defaultValue: false
@@ -35,7 +40,16 @@ export default (sequelize, DataTypes) => {
         allowNull: false
       }
     },
-    {}
+    {
+      hooks: {
+        beforeCreate: (article) => {
+          article.timeToRead = TimeToRead.readTime(article);
+        },
+        beforeUpdate(article) {
+          article.timeToRead = TimeToRead.readTime(article.dataValues);
+        }
+      }
+    }
   );
   Article.associate = (models) => {
     const {
