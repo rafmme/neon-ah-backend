@@ -8,7 +8,13 @@ import pagination from '../helpers/pagination';
 import TimeToRead from '../helpers/TimeToRead';
 import ReadingStatsContoller from './ReadingStatsController';
 
-const { Article, Tag, User } = db;
+const {
+  Article,
+  Tag,
+  User,
+  Sequelize
+} = db;
+const { Op } = Sequelize;
 const { createReadingStats } = ReadingStatsContoller;
 
 /**
@@ -164,29 +170,33 @@ class ArticleController {
   static async fetchOne(req, res) {
     try {
       const { slug } = req.params;
+      const userId = req.user !== undefined ? req.user.userId : null;
+
       let article = await Article.findOne({
         where: {
-          slug
+          slug,
+          [Op.or]: [{ isPublished: true }, { userId }],
         },
         attributes: { exclude: ['userId'] },
-        include: [
-          {
-            model: User,
-            as: 'author',
-            attributes: ['userName', 'bio', 'img']
-          },
-          {
-            model: Tag,
-            as: 'tags',
-            attributes: ['name'],
-            through: { attributes: [] }
-          }
+        include: [{
+          model: User,
+          as: 'author',
+          attributes: ['userName', 'bio', 'img'],
+        },
+        {
+          model: Tag,
+          as: 'tags',
+          attributes: ['name'],
+          through: { attributes: [] }
+        },
         ]
       });
+
       if (article) {
         article = article.toJSON();
         const tags = article.tags.map(tag => tag.name);
         article.tags = tags;
+        article.timeToRead = TimeToRead.readTime(article);
         article.createdAt = Util.formatDate(article.createdAt);
         article.updatedAt = Util.formatDate(article.updatedAt);
 
@@ -195,30 +205,21 @@ class ArticleController {
         }
 
         return response(
-          res,
-          200,
-          'success',
+          res, 200, 'success',
           'Article was fetched successfully',
-          null,
-          article
+          null, article
         );
       }
       return response(
-        res,
-        404,
-        'failure',
+        res, 404, 'failure',
         'not found error',
-        { message: 'Article not found' },
-        null
+        { message: 'Article not found' }
       );
     } catch (error) {
       return response(
-        res,
-        500,
-        'failure',
+        res, 500, 'failure',
         'server error',
-        { message: 'Something went wrong on the server' },
-        null
+        { message: 'Something went wrong on the server' }
       );
     }
   }
@@ -248,6 +249,7 @@ class ArticleController {
         req.body.slug = articleSlug;
         let article = await result.update(req.body);
         article = article.toJSON();
+        article.timeToRead = TimeToRead.readTime(article);
         article.createdAt = Util.formatDate(article.createdAt);
         article.updatedAt = Util.formatDate(article.updatedAt);
         return response(
@@ -383,6 +385,98 @@ class ArticleController {
       );
     }
     return res.redirect(socialShareLink);
+  }
+
+  /**
+   * @static
+   * @description this handles fetching of a particular articles for a user
+   * @param {object} req HTTP request object
+   * @param {object} res HTTP response object
+   * @returns {object} api route response with the articles
+   */
+  static async fetchAllUserArticles(req, res) {
+    try {
+      const { userId } = req.user;
+      const {
+        tag,
+        drafts,
+        published,
+        page
+      } = req.query;
+
+      const limit = Number(req.query.limit) || 20;
+      const currentPage = Number(page) || 1;
+      const offset = (currentPage - 1) * limit;
+
+      const articlesCount = await Article.findAndCountAll({
+        where: { userId },
+        include: [
+          {
+            model: User,
+            as: 'author',
+            attributes: ['userName', 'bio', 'img']
+          },
+        ],
+      });
+      const totalArticles = articlesCount.count;
+
+      const articles = await Article.findAndCountAll({
+        where: { userId },
+        include: [
+          {
+            model: User,
+            as: 'author',
+            attributes: ['userName', 'bio', 'img']
+          },
+          {
+            model: Tag,
+            as: 'tags',
+            attributes: ['name'],
+            through: { attributes: [] }
+          }
+        ],
+        limit,
+        offset
+      });
+
+
+      if (articles.count > 0) {
+        let articleList = articles.rows.map((article) => {
+          article = article.toJSON();
+          article.timeToRead = TimeToRead.readTime(article);
+          article.tags = article.tags.map(articleTag => articleTag.name);
+          return article;
+        });
+
+        if (tag) {
+          articleList = ArticleHelper.filterAuthorArticle(articleList, 'tag', tag);
+        } else if (drafts === '') {
+          articleList = ArticleHelper.filterAuthorArticle(articleList, 'drafts');
+        } else if (published === '') {
+          articleList = ArticleHelper.filterAuthorArticle(articleList, 'published');
+        }
+
+        const paginatedData = pagination(articleList.length, limit, currentPage, totalArticles);
+        const data = {
+          articles: articleList,
+          paginatedData
+        };
+
+        return response(res, 200, 'success', 'All User articles', null, data);
+      }
+      return response(res, 200, 'success', 'All User articles', null, {
+        message: 'No articles posted yet'
+      });
+    } catch (error) {
+      return response(
+        res,
+        500,
+        'failure',
+        'server error',
+        { message: 'Something went wrong on the server' },
+        null
+      );
+    }
   }
 }
 

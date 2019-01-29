@@ -3,11 +3,9 @@ import UserController from '../../controllers/UserController';
 import followController from '../../controllers/followController';
 import AuthMiddleware from '../../middlewares/AuthMiddleware';
 import handleValidationErrors from '../../middlewares/validations/handleValidationErrors';
-import {
-  signUpSchema,
-  logInSchema,
-  editProfileSchema
-} from '../../middlewares/validations/userValidation';
+import { signUpSchema, logInSchema, editProfileSchema } from '../../middlewares/validations/userValidation';
+import ArticleController from '../../controllers/ArticleController';
+import ArticleValidation from '../../middlewares/validations/ArticleValidation';
 
 const userRoutes = Router();
 
@@ -55,6 +53,18 @@ userRoutes.delete(
   '/users/:userName/unfollow',
   AuthMiddleware.checkIfUserIsAuthenticated,
   followController.unfollowUser
+);
+userRoutes.get(
+  '/myArticles',
+  AuthMiddleware.checkIfUserIsAuthenticated,
+  ArticleValidation.verifyLimitParams,
+  ArticleValidation.verifyPageParams,
+  ArticleController.fetchAllUserArticles
+);
+userRoutes.get(
+  '/myArticles/:slug',
+  AuthMiddleware.checkIfUserIsAuthenticated,
+  ArticleController.fetchOne
 );
 
 export default userRoutes;

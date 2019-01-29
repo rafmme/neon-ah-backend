@@ -89,8 +89,6 @@ describe('API endpoint /articles/', () => {
       expect(response.body.status).to.eqls('failure');
       expect(response.body.data.message).to.eqls('Field validation error');
     });
-
-    it('It should be able to handle unexpected errors thrown when creating articles', async () => {});
   });
 
   describe('GET all articles', () => {
@@ -153,11 +151,11 @@ describe('API endpoint /articles/', () => {
   });
 
   describe('GET one article', () => {
+
     it('should successfully return an article with the specified slug', async () => {
       const response = await chai
         .request(app)
-        .get('/api/v1/articles/What-a-mighty-God')
-        .set({ authorization: `Bearer ${userToken}` });
+        .get('/api/v1/articles/What-a-mighty-God');
 
       expect(response.status).to.eqls(200);
       expect(response.body.status).to.eqls('success');
@@ -193,6 +191,7 @@ describe('API endpoint /articles/', () => {
   });
 
   describe('UPDATE an article', () => {
+
     it('should successfully update an article with the specified slug', async () => {
       const response = await chai
         .request(app)
@@ -207,7 +206,7 @@ describe('API endpoint /articles/', () => {
       );
     });
 
-    it("should not allow another user update story that isn't there own", async () => {
+    it('should not allow another user update story that isn\'t there own', async () => {
       const response = await chai
         .request(app)
         .put(`/api/v1/articles/${newArticleSlug}`)
@@ -259,6 +258,7 @@ describe('API endpoint /articles/', () => {
   });
 
   describe('DELETE an article', () => {
+
     it('should successfully delete an article with the specified slug', async () => {
       const response = await chai
         .request(app)
@@ -321,6 +321,97 @@ describe('API endpoint /articles/', () => {
       expect(response.status).to.eqls(400);
       expect(response.body.status).to.eqls('failure');
       expect(response.body.data.message).to.eqls('bad request error');
+    });
+  });
+});
+
+describe('API endpoint /myArticles', () => {
+
+  describe('GET /myArticles', () => {
+    it('should successfully get all articles of a particular user', async () => {
+      const response = await chai
+        .request(app)
+        .get('/api/v1/myArticles')
+        .set('Authorization', `Bearer ${userToken}`);
+
+      expect(response.status).to.eqls(200);
+      expect(response.body.status).to.eqls('success');
+      expect(response.body.data.message).to.eqls('All User articles');
+    });
+
+    it('should successfully get all unpublished articles of a user', async () => {
+      const response = await chai
+        .request(app)
+        .get('/api/v1/myArticles?drafts')
+        .set('Authorization', `Bearer ${userToken}`);
+
+      expect(response.status).to.eqls(200);
+      expect(response.body.status).to.eqls('success');
+      expect(response.body.data.message).to.eqls('All User articles');
+    });
+
+    it('should successfully get all published articles of a user', async () => {
+      const response = await chai
+        .request(app)
+        .get('/api/v1/myArticles?published')
+        .set('Authorization', `Bearer ${userToken}`);
+
+      expect(response.status).to.eqls(200);
+      expect(response.body.status).to.eqls('success');
+      expect(response.body.data.message).to.eqls('All User articles');
+    });
+
+    it('should filter a user\'s articles by tag', async () => {
+      const response = await chai
+        .request(app)
+        .get('/api/v1/myArticles?tag=welcome')
+        .set('Authorization', `Bearer ${userToken}`);
+
+      expect(response.status).to.eqls(200);
+      expect(response.body.status).to.eqls('success');
+      expect(response.body.data.message).to.eqls('All User articles');
+    });
+
+    it('It should be able to handle unexpected errors thrown when getting all user\'s articles', async () => {
+      const stub = sinon
+        .stub(Article, 'findAll')
+        .callsFake(() => Promise.reject(new Error('Internal Server Error')));
+
+      const response = await chai
+        .request(app)
+        .get('/api/v1/myArticles')
+        .set('Authorization', `Bearer ${userToken}`);
+
+      expect(response.status).to.equal(500);
+      expect(response.body.status).to.eqls('failure');
+      expect(response.body.data.message).to.eqls('server error');
+      stub.restore();
+ 
+    });
+  });
+
+  describe('GET /myArticles/:slug', () => {
+
+    it('should successfully return an article of a user with the specified slug', async () => {
+      const response = await chai
+        .request(app)
+        .get('/api/v1/myArticles/how-to-say-hello-in-2019')
+        .set('Authorization', `Bearer ${userToken}`);
+
+      expect(response.status).to.eqls(200);
+      expect(response.body.status).to.eqls('success');
+      expect(response.body.data.message).to.eqls('Article was fetched successfully');
+    });
+
+    it('should return not found if article does not exist', async () => {
+      const response = await chai
+        .request(app)
+        .get('/api/v1/myArticles/jwt-key-use-case-2')
+        .set('Authorization', `Bearer ${userToken}`);
+
+      expect(response.status).to.eqls(404);
+      expect(response.body.status).to.eqls('failure');
+      expect(response.body.data.message).to.eqls('not found error');
     });
   });
 });
