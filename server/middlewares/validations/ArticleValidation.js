@@ -1,6 +1,8 @@
 /* eslint-disable no-useless-escape */
 /* eslint-disable no-unused-expressions */
 /* eslint-disable prefer-const */
+
+import { Boolify } from 'node-boolify';
 import db from '../../models';
 import Util from '../../helpers/Util';
 import response from '../../helpers/response';
@@ -163,9 +165,9 @@ class ArticleValidation {
         req.body.banner = req.body.banner
           ? Util.removeExtraWhitespace(req.body.banner) : article.banner;
         req.body.isPublished = req.body.isPublished !== undefined
-          ? Boolean(req.body.isPublished) : article.isPublished;
+          ? Boolify(req.body.isPublished) : article.isPublished;
         req.body.isReported = req.body.isReported !== undefined
-          ? Boolean(req.body.isReported) : article.isReported;
+          ? Boolify(req.body.isReported) : article.isReported;
         return next();
       }
       return response(
@@ -198,7 +200,7 @@ class ArticleValidation {
         return next();
       }
       if (!Number.isSafeInteger(parseInt(limit, 10))) {
-        return response(res, 400, 'failure', 'There was an issue with your query');
+        response(res, 400, 'failure', 'There was an issue with your query');
       }
       return next();
     } catch (error) {
@@ -207,7 +209,7 @@ class ArticleValidation {
         'server error',
         {
           message: 'Something went wrong on the server'
-        }
+        }, null
       );
     }
   }
@@ -230,7 +232,7 @@ class ArticleValidation {
         return next();
       }
       if (!Number.isSafeInteger(parseInt(page, 10))) {
-        return response(res, 400, 'failure', 'There was an issue with your query');
+        response(res, 400, 'failure', 'There was an issue with your query');
       }
       return next();
     } catch (error) {
@@ -239,10 +241,9 @@ class ArticleValidation {
         'server error',
         {
           message: 'Something went wrong on the server'
-        }
+        }, null
       );
     }
   }
 }
-
 export default ArticleValidation;

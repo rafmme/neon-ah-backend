@@ -2,12 +2,10 @@ import { Router } from 'express';
 import ArticleController from '../../controllers/ArticleController';
 import ArticleValidation from '../../middlewares/validations/ArticleValidation';
 import AuthMiddleware from '../../middlewares/AuthMiddleware';
+import AuthManager from '../../middlewares/AuthManager';
 
 const articleRoutes = Router();
-articleRoutes.get(
-  '/search',
-  ArticleController.search
-);
+articleRoutes.get('/search', ArticleController.search);
 
 articleRoutes.post(
   '/articles',
@@ -17,8 +15,17 @@ articleRoutes.post(
   ArticleValidation.checkIfArticleExist,
   ArticleController.create
 );
-articleRoutes.get('/articles', ArticleValidation.verifyLimitParams, ArticleValidation.verifyPageParams, ArticleController.fetchAll);
-articleRoutes.get('/articles/:slug', ArticleController.fetchOne);
+articleRoutes.get(
+  '/articles',
+  ArticleValidation.verifyLimitParams,
+  ArticleValidation.verifyPageParams,
+  ArticleController.fetchAll
+);
+articleRoutes.get(
+  '/articles/:slug',
+  AuthManager.checkAuthStatus,
+  ArticleController.fetchOne
+);
 articleRoutes.put(
   '/articles/:slug',
   AuthMiddleware.checkIfUserIsAuthenticated,

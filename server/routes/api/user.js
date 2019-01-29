@@ -3,7 +3,11 @@ import UserController from '../../controllers/UserController';
 import followController from '../../controllers/followController';
 import AuthMiddleware from '../../middlewares/AuthMiddleware';
 import handleValidationErrors from '../../middlewares/validations/handleValidationErrors';
-import { signUpSchema, logInSchema, editProfileSchema } from '../../middlewares/validations/userValidation';
+import {
+  signUpSchema,
+  logInSchema,
+  editProfileSchema
+} from '../../middlewares/validations/userValidation';
 
 const userRoutes = Router();
 
@@ -11,8 +15,18 @@ userRoutes.post('/password/forgot', UserController.forgotPassword);
 
 userRoutes.post('/password/reset/:token', UserController.passwordReset);
 userRoutes.post('/auth/verify/:token', UserController.verifyEmail);
-userRoutes.post('/auth/signup', signUpSchema, handleValidationErrors, UserController.signUp);
-userRoutes.post('/auth/login', logInSchema, handleValidationErrors, UserController.logIn);
+userRoutes.post(
+  '/auth/signup',
+  signUpSchema,
+  handleValidationErrors,
+  UserController.signUp
+);
+userRoutes.post(
+  '/auth/login',
+  logInSchema,
+  handleValidationErrors,
+  UserController.logIn
+);
 
 userRoutes.put(
   '/users',
@@ -22,7 +36,11 @@ userRoutes.put(
   UserController.updateProfile
 );
 
-userRoutes.get('/users/:userName', AuthMiddleware.checkIfUserIsAuthenticated, UserController.getProfile);
+userRoutes.get(
+  '/users/:userName',
+  AuthMiddleware.checkIfUserIsAuthenticated,
+  UserController.getProfile
+);
 userRoutes.get('/users/:userName/followers', followController.getFollowers);
 
 userRoutes.get('/users/:userName/following', followController.getFollowing);
@@ -38,4 +56,5 @@ userRoutes.delete(
   AuthMiddleware.checkIfUserIsAuthenticated,
   followController.unfollowUser
 );
+
 export default userRoutes;

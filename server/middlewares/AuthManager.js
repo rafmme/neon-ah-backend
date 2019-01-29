@@ -19,12 +19,43 @@ class AuthManager {
       const decoded = await TokenManager.verify(token);
 
       if (!token || !decoded || !decoded.userId) {
-        return response(res, 403, 'failure', 'User not Authorised!', null, null);
+        return response(
+          res,
+          403,
+          'failure',
+          'User not Authorised!',
+          null,
+          null
+        );
       }
       req.user = decoded;
       return next();
     } catch (error) {
       return response(res, 403, 'failure', 'User not Authorised!', null, null);
+    }
+  }
+
+  /**
+   * @static
+   * @description checks login status of a request
+   * @param {*} req - request object
+   * @param {*} res response object
+   * @param {*} next - next callback
+   * @returns {*} calls the next middleware
+   * @memberof VerifyUser
+   */
+  static async checkAuthStatus(req, res, next) {
+    try {
+      const { authorization } = req.headers;
+      const token = authorization.split(' ')[1];
+      const decoded = TokenManager.verify(token);
+      if (decoded) {
+        req.user = decoded;
+        return next();
+      }
+    } catch (error) {
+      req.isLoggedIn = false;
+      next();
     }
   }
 }

@@ -6,8 +6,10 @@ import response from '../helpers/response';
 import SearchController from './SearchController';
 import pagination from '../helpers/pagination';
 import TimeToRead from '../helpers/TimeToRead';
+import ReadingStatsContoller from './ReadingStatsController';
 
 const { Article, Tag, User } = db;
+const { createReadingStats } = ReadingStatsContoller;
 
 /**
  * @class ArticleController
@@ -92,9 +94,8 @@ class ArticleController {
             model: User,
             as: 'author',
             attributes: ['userName', 'bio', 'img']
-          },
-
-        ],
+          }
+        ]
       });
       const totalArticles = articlesCount.count;
 
@@ -117,7 +118,6 @@ class ArticleController {
         offset
       });
 
-
       if (articles.count > 0) {
         const articleList = articles.rows.map((article) => {
           article = article.toJSON();
@@ -126,7 +126,12 @@ class ArticleController {
           return article;
         });
 
-        const paginatedData = pagination(articleList.length, limit, currentPage, totalArticles);
+        const paginatedData = pagination(
+          articleList.length,
+          limit,
+          currentPage,
+          totalArticles
+        );
         const data = {
           articles: articleList,
           paginatedData
@@ -184,6 +189,10 @@ class ArticleController {
         article.tags = tags;
         article.createdAt = Util.formatDate(article.createdAt);
         article.updatedAt = Util.formatDate(article.updatedAt);
+
+        if (req.user) {
+          await createReadingStats(req, res);
+        }
 
         return response(
           res,

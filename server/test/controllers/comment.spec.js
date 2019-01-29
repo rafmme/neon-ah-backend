@@ -128,7 +128,7 @@ describe('Comment Model', () => {
         .put('/api/v1/articles/how-to-be-a-10x-dev-sGNYfURm/comments/09543c60-7b1a-11e8-9c9c-2d42b21b1a3e')
         .set('Authorization', `Bearer ${tokenTwo}`)
         .send({
-          content: 'Nice write up'
+          content: 'Nice write up here'
         });
       expect(response.status).to.eqls(403);
       expect(response.body.status).to.eqls('failure');

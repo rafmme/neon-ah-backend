@@ -53,7 +53,14 @@ export default (sequelize, DataTypes) => {
   );
   Article.associate = (models) => {
     const {
-      User, Tag, Comment, ArticleLikesDislike, Bookmark, Rating, Share
+      User,
+      Tag,
+      Comment,
+      ArticleLikesDislike,
+      Bookmark,
+      Rating,
+      Share,
+      ReadingStats
     } = models;
     Article.belongsTo(User, {
       foreignKey: 'userId',
@@ -94,6 +101,9 @@ export default (sequelize, DataTypes) => {
     Article.hasMany(Share, {
       foreignKey: 'articleId',
       as: 'share'
+    });
+    Article.hasMany(ReadingStats, {
+      foreignKey: 'articleId'
     });
   };
   return Article;
