@@ -5,7 +5,6 @@ import db from '../models';
 import PasswordManager from '../helpers/PasswordManager';
 import response from '../helpers/response';
 
-
 const { User } = db;
 const { Op } = Sequelize;
 
@@ -58,7 +57,6 @@ class UserController {
           statusCode: 200,
           message: 'Kindly check your mail to reset your password'
         }
-
       });
     } catch (error) {
       res.status(500).send({
@@ -129,11 +127,7 @@ class UserController {
         }
       });
     } catch (error) {
-      if (
-        error.name === 'TokenExpiredError' ||
-        error.name === 'JsonWebTokenError'
-
-      ) {
+      if (error.name === 'TokenExpiredError' || error.name === 'JsonWebTokenError') {
         return res.status(401).send({
           status: 'failure',
           data: {
@@ -286,8 +280,10 @@ class UserController {
           }
         });
       }
-      const isValidPassword = PasswordManager
-        .decryptPassword(password, userSearch.dataValues.password);
+      const isValidPassword = PasswordManager.decryptPassword(
+        password,
+        userSearch.dataValues.password
+      );
 
       if (!isValidPassword) {
         return response.status(401).send({
@@ -396,14 +392,7 @@ class UserController {
         response(res, 404, 'failure', 'User not found');
         return;
       }
-      response(
-        res,
-        200,
-        'success',
-        'User retrieved successfully',
-        null,
-        userProfile
-      );
+      response(res, 200, 'success', 'User retrieved successfully', null, userProfile);
     } catch (error) {
       response(res, 500, 'failure', 'An error occured on the server');
     }
@@ -420,13 +409,7 @@ class UserController {
    */
   static async updateProfile(req, res) {
     try {
-      const editableFeilds = [
-        'fullName',
-        'img',
-        'bio',
-        'notifySettings',
-        'userName'
-      ];
+      const editableFeilds = ['fullName', 'img', 'bio', 'notifySettings', 'userName'];
 
       const findProfile = await User.findOne({
         where: { id: req.user.userId },
@@ -469,6 +452,63 @@ class UserController {
       return;
     } catch (error) {
       response(res, 500, 'failure', 'An error occured on the server');
+    }
+  }
+
+  /**
+   *
+   * @static
+   * @description - This method upgrades a user to admin. It accessible only to the superadmin.
+   * @param {object} req - The request object.
+   * @param {object} res - The response object.
+   * @returns {object} Json response
+   * @memberof UserController
+   */
+  static async toggleUserToAdmin(req, res) {
+    try {
+      const adminRole = { roleId: '3ceb546e-054d-4c1d-8860-e27c209d4ae4' };
+      const userRole = { roleId: '3ceb546e-054d-4c1d-8860-e27c209d4ae3' };
+      const { userName } = req.params;
+      const user = await User.findOne({
+        where: { userName }
+      });
+
+      if (!user) {
+        return response(res, 404, 'failure', 'This User is not found');
+      }
+      if (user && user.roleId === '3ceb546e-054d-4c1d-8860-e27c209d4ae4') {
+        const updatedUser = await user.update(userRole, {
+          fields: ['roleId']
+        });
+        return response(
+          res,
+          200,
+          'success',
+          'The User role has been downgraded to User',
+          null,
+          updatedUser.dataValues
+        );
+      }
+
+      const updatedUser = await user.update(adminRole, {
+        fields: ['roleId']
+      });
+      return response(
+        res,
+        200,
+        'success',
+        'The User role has been upgraded to Admin',
+        null,
+        updatedUser.dataValues
+      );
+    } catch (err) {
+      return response(
+        res,
+        500,
+        'failure',
+        null,
+        'An error occured on the server. Please try again later'
+      );
     }
   }
 }

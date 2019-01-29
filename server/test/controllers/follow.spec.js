@@ -4,11 +4,10 @@ import sinon from 'sinon';
 import app from '../../..';
 import db from '../../models';
 import TokenManager from '../../helpers/TokenManager';
-import { userToken, userToken2, invalidToken } from '../mockData/tokens'
+import { userToken, userToken2, invalidToken } from '../mockData/tokens';
 
 const { User, Follow } = db;
 describe('Follow Model', () => {
-
   describe('User follows', () => {
     it('Should get show proper error message when user is not authorized', async () => {
       const response = await chai
@@ -18,9 +17,7 @@ describe('Follow Model', () => {
 
       expect(response.status).to.eqls(401);
       expect(response.body.status).to.eqls('failure');
-      expect(response.body.data.message).to.eqls(
-        'You are not logged in.'
-      );
+      expect(response.body.data.message).to.eqls('You are not logged in.');
       expect(response.body.data.statusCode).to.eqls(401);
     });
 
@@ -91,9 +88,7 @@ describe('Follow Model', () => {
 
   describe('Get followers', () => {
     it("Should get show proper error message when getting the followers of users that don't exist", async () => {
-      const response = await chai
-        .request(app)
-        .get('/api/v1/users/jesseinitjesseinit/followers');
+      const response = await chai.request(app).get('/api/v1/users/jesseinitjesseinit/followers');
 
       expect(response.status).to.eqls(404);
       expect(response.body.status).to.eqls('failure');
@@ -102,9 +97,7 @@ describe('Follow Model', () => {
     });
 
     it('Should get show proper message when getting the followers of users that have followers', async () => {
-      const response = await chai
-        .request(app)
-        .get('/api/v1/users/jesseinit/followers');
+      const response = await chai.request(app).get('/api/v1/users/jesseinit/followers');
 
       expect(response.status).to.eqls(200);
       expect(response.body.status).to.eqls('success');
@@ -113,15 +106,11 @@ describe('Follow Model', () => {
     });
 
     it('Should get show proper message when user does not have any followers', async () => {
-      const response = await chai
-        .request(app)
-        .get('/api/v1/users/kabir/followers');
+      const response = await chai.request(app).get('/api/v1/users/kabir/followers');
 
       expect(response.status).to.eqls(200);
       expect(response.body.status).to.eqls('success');
-      expect(response.body.data.message).to.eqls(
-        'You currenly have no followers'
-      );
+      expect(response.body.data.message).to.eqls('You currenly have no followers');
       expect(response.body.data.statusCode).to.eqls(200);
     });
 
@@ -129,9 +118,7 @@ describe('Follow Model', () => {
       const stub = sinon
         .stub(Follow, 'findAll')
         .callsFake(() => Promise.reject(new Error('Internal Server Error')));
-      const response = await chai
-        .request(app)
-        .get('/api/v1/users/kabir/followers');
+      const response = await chai.request(app).get('/api/v1/users/kabir/followers');
 
       expect(response.status).to.eqls(500);
       expect(response.body.status).to.eqls('failure');
@@ -142,9 +129,7 @@ describe('Follow Model', () => {
 
   describe('Get following', () => {
     it("Should get show proper error message when getting the following of users that don't exist", async () => {
-      const response = await chai
-        .request(app)
-        .get('/api/v1/users/jesseinitjesseinit/following');
+      const response = await chai.request(app).get('/api/v1/users/jesseinitjesseinit/following');
 
       expect(response.status).to.eqls(404);
       expect(response.body.status).to.eqls('failure');
@@ -153,9 +138,7 @@ describe('Follow Model', () => {
     });
 
     it('Should get show proper message when getting the followers of users that have following', async () => {
-      const response = await chai
-        .request(app)
-        .get('/api/v1/users/kabir/following');
+      const response = await chai.request(app).get('/api/v1/users/kabir/following');
 
       expect(response.status).to.eqls(200);
       expect(response.body.status).to.eqls('success');
@@ -164,15 +147,11 @@ describe('Follow Model', () => {
     });
 
     it('Should get show proper message when user is not following any other user', async () => {
-      const response = await chai
-        .request(app)
-        .get('/api/v1/users/jesseinit/following');
+      const response = await chai.request(app).get('/api/v1/users/jesseinit/following');
 
       expect(response.status).to.eqls(200);
       expect(response.body.status).to.eqls('success');
-      expect(response.body.data.message).to.eqls(
-        'You are not following anyone'
-      );
+      expect(response.body.data.message).to.eqls('You are not following anyone');
       expect(response.body.data.statusCode).to.eqls(200);
     });
 
@@ -180,9 +159,7 @@ describe('Follow Model', () => {
       const stub = sinon
         .stub(Follow, 'findAll')
         .callsFake(() => Promise.reject(new Error('Internal Server Error')));
-      const response = await chai
-        .request(app)
-        .get('/api/v1/users/kabir/following');
+      const response = await chai.request(app).get('/api/v1/users/kabir/following');
 
       expect(response.status).to.eqls(500);
       expect(response.body.status).to.eqls('failure');
@@ -200,9 +177,7 @@ describe('Follow Model', () => {
 
       expect(response.status).to.eqls(401);
       expect(response.body.status).to.eqls('failure');
-      expect(response.body.data.message).to.eqls(
-        'You are not logged in.'
-      );
+      expect(response.body.data.message).to.eqls('You are not logged in.');
       expect(response.body.data.statusCode).to.eqls(401);
     });
 
@@ -226,9 +201,7 @@ describe('Follow Model', () => {
 
       expect(response.status).to.eqls(400);
       expect(response.body.status).to.eqls('failure');
-      expect(response.body.data.message).to.eqls(
-        'You cannot unfollow yourself'
-      );
+      expect(response.body.data.message).to.eqls('You cannot unfollow yourself');
       expect(response.body.data.statusCode).to.eqls(400);
     });
 

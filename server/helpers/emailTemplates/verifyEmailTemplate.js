@@ -24,6 +24,8 @@ const verifyEmailTemplate = (createdUser, token) => `<!DOCTYPE html>
         <p class="message">
          You have tried to register on Author's Haven.</br>
          Please verify your email address by clicking the link below.
+         <br>
+         Please note that this link expires in 24 hours.
         </p>
         <a class="reset-btn" href="http://localhost:3000/auth/verify/${token}">
           Verify your email

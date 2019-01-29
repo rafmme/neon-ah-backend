@@ -20,7 +20,6 @@ describe('User Model', () => {
   };
 
   describe('User Sign up Test', () => {
-
     it('User should get an error when confirmation password does not match', async () => {
       const response = await chai
         .request(app)

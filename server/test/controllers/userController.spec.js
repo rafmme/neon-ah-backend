@@ -1,13 +1,15 @@
 import chai, { expect } from 'chai';
 import chaiHttp from 'chai-http';
 import sinon from 'sinon';
+import { exists } from 'fs';
 import app from '../../..';
 import db from '../../models';
 import TokenManager from '../../helpers/TokenManager';
 // import { token } from '../mockData/token';
-import { userToken, userToken2, invalidToken } from '../mockData/tokens'
+import {
+  userToken, userToken2, invalidToken, superAdminToken
+} from '../mockData/tokens';
 import token from '../mockData/tokens';
-import { exists } from 'fs';
 
 const { User } = db;
 
@@ -38,9 +40,7 @@ describe('User Model', () => {
 
       expect(response.status).to.equal(200);
       expect(response.body.status).to.eqls('success');
-      expect(response.body.data.message).to.eqls(
-        'Kindly check your mail to reset your password'
-      );
+      expect(response.body.data.message).to.eqls('Kindly check your mail to reset your password');
     });
 
     it('It should be able to handle unexpected DB errors thrown when sending reset link', async () => {
@@ -112,7 +112,6 @@ describe('User Model', () => {
         email: 'jesseinit@now.com'
       });
 
-
       const response = await chai
         .request(app)
         .post(`/api/v1/password/reset/${generatedToken}`)
@@ -133,7 +132,7 @@ describe('User Model', () => {
     it('User should be view the profile of users when the right username is used', async () => {
       const response = await chai
         .request(app)
-        .get(`/api/v1/users/jesseinit`)
+        .get('/api/v1/users/jesseinit')
         .set('Authorization', `Bearer ${userToken}`);
 
       expect(response.status).to.eqls(200);
@@ -145,7 +144,7 @@ describe('User Model', () => {
     it("User should show an error when the username does'nt exist", async () => {
       const response = await chai
         .request(app)
-        .get(`/api/v1/users/jesseinitjesseinit`)
+        .get('/api/v1/users/jesseinitjesseinit')
         .set('Authorization', `Bearer ${userToken}`);
 
       expect(response.status).to.eqls(404);
@@ -161,7 +160,7 @@ describe('User Model', () => {
 
       const response = await chai
         .request(app)
-        .get(`/api/v1/users/jesseinit`)
+        .get('/api/v1/users/jesseinit')
         .set('Authorization', `Bearer ${userToken}`);
       expect(response.status).to.eqls(500);
       stub.restore();
@@ -169,11 +168,10 @@ describe('User Model', () => {
   });
 
   describe('Update User Profile', () => {
-
     it('Should show error response when trying to update without being registered', async () => {
       const response = await chai
         .request(app)
-        .put(`/api/v1/users`)
+        .put('/api/v1/users')
         .send({ bio: 'I am so hungry' });
 
       expect(response.status).to.eqls(401);
@@ -184,23 +182,29 @@ describe('User Model', () => {
     it('Should show error response when trying to update without being fake token', async () => {
       const response = await chai
         .request(app)
-        .put(`/api/v1/users`)
+        .put('/api/v1/users')
         .set('Authorization', `Bearer ${invalidToken}`)
 
         .send({ bio: 'I am so hungry' });
       expect(response.status).to.eqls(401);
       expect(response.body.status).to.eqls('failure');
-      expect(response.body.data.message).to.eqls(
-        'Token is invalid, You need to log in again'
-      );
+      expect(response.body.data.message).to.eqls('Token is invalid, You need to log in again');
     });
 
     it('User should show proper error when user tries to edit profile with username that exists', async () => {
       const response = await chai
         .request(app)
-        .put(`/api/v1/users`)
+        .put('/api/v1/users')
         .set('Authorization', `Bearer ${userToken}`)
-        .send({ userName: 'jesseinit', fullName: 'Jesse', email: 'jesseinit@now.com', password: 'Blahblah', notifySettings: true, bio: '', img: '' });
+        .send({
+          userName: 'jesseinit',
+          fullName: 'Jesse',
+          email: 'jesseinit@now.com',
+          password: 'Blahblah',
+          notifySettings: true,
+          bio: '',
+          img: ''
+        });
       expect(response.status).to.eqls(409);
       expect(response.body.status).to.eqls('failure');
       expect(response.body.data.message).to.eqls('Username already exists');
@@ -210,9 +214,17 @@ describe('User Model', () => {
     it('User should show proper error when user tries to edit profile with invalid bio data', async () => {
       const response = await chai
         .request(app)
-        .put(`/api/v1/users`)
+        .put('/api/v1/users')
         .set('Authorization', `Bearer ${userToken}`)
-        .send({ bio: 1, userName: 'jesseinit', fullName: 'Jesse', email: 'jesseinit@now.com', password: 'Blahblah', notifySettings: true, img: '' });
+        .send({
+          bio: 1,
+          userName: 'jesseinit',
+          fullName: 'Jesse',
+          email: 'jesseinit@now.com',
+          password: 'Blahblah',
+          notifySettings: true,
+          img: ''
+        });
       expect(response.status).to.eqls(422);
       expect(response.body.status).to.eqls('failure');
       expect(response.body.data.error[0]).to.eqls('Bio can only be string');
@@ -221,50 +233,66 @@ describe('User Model', () => {
     it('User should show proper error when user tries to edit profile with invalid notifySetting data', async () => {
       const response = await chai
         .request(app)
-        .put(`/api/v1/users`)
+        .put('/api/v1/users')
         .set('Authorization', `Bearer ${userToken}`)
-        .send({ notifySettings: 3, userName: 'jesseinit', fullName: 'Jesse', email: 'jesseinit@now.com', password: 'Blahblah', bio: '', img: '' });
+        .send({
+          notifySettings: 3,
+          userName: 'jesseinit',
+          fullName: 'Jesse',
+          email: 'jesseinit@now.com',
+          password: 'Blahblah',
+          bio: '',
+          img: ''
+        });
       expect(response.status).to.eqls(422);
       expect(response.body.status).to.eqls('failure');
-      expect(response.body.data.error[0]).to.eqls(
-        'Notification settings must be a Boolean'
-      );
+      expect(response.body.data.error[0]).to.eqls('Notification settings must be a Boolean');
     });
 
     it('User should show proper error when user tries to edit profile with invalid username data', async () => {
       const response = await chai
         .request(app)
-        .put(`/api/v1/users`)
+        .put('/api/v1/users')
         .set('Authorization', `Bearer ${userToken}`)
-        .send({ userName: 3, fullName: 'Jesse', email: 'jesseinit@now.com', password: 'Blahblah', notifySettings: true, bio: '', img: '' });
+        .send({
+          userName: 3,
+          fullName: 'Jesse',
+          email: 'jesseinit@now.com',
+          password: 'Blahblah',
+          notifySettings: true,
+          bio: '',
+          img: ''
+        });
       expect(response.status).to.eqls(422);
       expect(response.body.status).to.eqls('failure');
-      expect(response.body.data.error[0]).to.eqls(
-        'Username has to be a string'
-      );
+      expect(response.body.data.error[0]).to.eqls('Username has to be a string');
     });
 
     it('User should show proper error when user tries to edit profile with empty Fullname', async () => {
       const response = await chai
         .request(app)
-        .put(`/api/v1/users`)
+        .put('/api/v1/users')
         .set('Authorization', `Bearer ${userToken}`)
-        .send({ fullName: '', userName: 'jesseinit', email: 'jesseinit@now.com', password: 'Blahblah', notifySettings: true, bio: '', img: '' });
+        .send({
+          fullName: '',
+          userName: 'jesseinit',
+          email: 'jesseinit@now.com',
+          password: 'Blahblah',
+          notifySettings: true,
+          bio: '',
+          img: ''
+        });
       expect(response.status).to.eqls(422);
       expect(response.body.status).to.eqls('failure');
-      expect(response.body.data.error[0]).to.eqls(
-        'fullname cannot be empty'
-      );
+      expect(response.body.data.error[0]).to.eqls('fullname cannot be empty');
     });
 
     it('Should should handle unexpected errors when updating the profile of the user', async () => {
-      const stub = sinon
-        .stub(User, 'findOne')
-        .rejects(new Error('Internal server error!'));
+      const stub = sinon.stub(User, 'findOne').rejects(new Error('Internal server error!'));
 
       const response = await chai
         .request(app)
-        .put(`/api/v1/users`)
+        .put('/api/v1/users')
         .set('Authorization', `Bearer ${userToken}`);
       expect(response.status).to.eqls(422);
       stub.restore();
@@ -272,15 +300,65 @@ describe('User Model', () => {
       it('User should update the user profile when the correct user tries to edit his profile', async () => {
         const response = await chai
           .request(app)
-          .put(`/api/v1/users`)
+          .put('/api/v1/users')
           .set('Authorization', `Bearer ${userToken}`)
           .send({ userName: 'john' });
         expect(response.status).to.eqls(205);
         expect(response.body.status).to.eqls('success');
-        expect(response.body.data.message).to.eqls(
-          'Profile updated successfully'
-        );
+        expect(response.body.data.message).to.eqls('Profile updated successfully');
       });
+    });
+  });
+
+  describe('Toggle User to Admin', () => {
+    it('Should throw an error when User tries to use a fake token', async () => {
+      const response = await chai
+        .request(app)
+        .put('/api/v1/upgrade/user/steve')
+        .set('Authorization', `Bearer ${invalidToken}`);
+      expect(response.status).to.eqls(401);
+      expect(response.body.status).to.eqls('failure');
+      expect(response.body.data.message).to.eqls('Token is invalid, You need to log in again');
+    });
+
+    it('Should throw an error if a Non-Super Admin tries to access the route', async () => {
+      const response = await chai
+        .request(app)
+        .put('/api/v1/upgrade/user/steve')
+        .set('Authorization', `Bearer ${userToken}`);
+      expect(response.status).to.eqls(403);
+      expect(response.body.status).to.eqls('failure');
+      expect(response.body.data.message).to.eqls('You are unauthorised to access this page.');
+    });
+
+    it('Should throw an error if the User is not found', async () => {
+      const response = await chai
+        .request(app)
+        .put('/api/v1/upgrade/user/dimeji')
+        .set('Authorization', `Bearer ${superAdminToken}`);
+      expect(response.status).to.eqls(404);
+      expect(response.body.status).to.eqls('failure');
+      expect(response.body.data.message).to.eqls('This User is not found');
+    });
+
+    it('Should upgrade a user to admin', async () => {
+      const response = await chai
+        .request(app)
+        .put('/api/v1/upgrade/user/steve')
+        .set('Authorization', `Bearer ${superAdminToken}`);
+      expect(response.status).to.eqls(200);
+      expect(response.body.status).to.eqls('success');
+      expect(response.body.data.message).to.eqls('The User role has been upgraded to Admin');
+    });
+
+    it('Should downgrade an admin to user', async () => {
+      const response = await chai
+        .request(app)
+        .put('/api/v1/upgrade/user/steve')
+        .set('Authorization', `Bearer ${superAdminToken}`);
+      expect(response.status).to.eqls(200);
+      expect(response.body.status).to.eqls('success');
+      expect(response.body.data.message).to.eqls('The User role has been downgraded to User');
     });
   });
 });

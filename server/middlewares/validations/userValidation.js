@@ -1,6 +1,5 @@
 import { checkSchema } from 'express-validator/check';
 
-
 const signUpSchema = checkSchema({
   fullName: {
     in: 'body',
@@ -126,7 +125,6 @@ const logInSchema = checkSchema({
   }
 });
 
-
 const editProfileSchema = checkSchema({
   fullName: {
     in: 'body',
@@ -226,8 +224,4 @@ const editProfileSchema = checkSchema({
   }
 });
 
-export {
-  signUpSchema,
-  logInSchema,
-  editProfileSchema
-};
+export { signUpSchema, logInSchema, editProfileSchema };

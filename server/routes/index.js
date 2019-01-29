@@ -5,6 +5,7 @@ import articleRoutes from './api/article';
 import commentRoutes from './api/comment';
 import likeRoutes from './api/likes';
 import readStats from './api/readStats';
+import reportArticleRoutes from './api/reportArticle';
 
 const routes = Router();
 
@@ -14,5 +15,6 @@ routes.use(articleRoutes);
 routes.use(commentRoutes);
 routes.use(likeRoutes);
 routes.use(readStats);
+routes.use(reportArticleRoutes);
 
 export default routes;

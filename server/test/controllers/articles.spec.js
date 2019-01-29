@@ -101,9 +101,7 @@ describe('API endpoint /articles/', () => {
     });
 
     it('should return a list of articles on the next page given a page limit', async () => {
-      const response = await chai
-        .request(app)
-        .get('/api/v1/articles??page=2&limit=1');
+      const response = await chai.request(app).get('/api/v1/articles??page=2&limit=1');
 
       expect(response.status).to.eqls(200);
       expect(response.body.status).to.eqls('success');
@@ -111,9 +109,7 @@ describe('API endpoint /articles/', () => {
     });
 
     it('should return error value passed to the limit is not a number', async () => {
-      const response = await chai
-        .request(app)
-        .get('/api/v1/articles?page=2&limit=a');
+      const response = await chai.request(app).get('/api/v1/articles?page=2&limit=a');
 
       expect(response.status).to.eqls(400);
       expect(response.body.status).to.eqls('failure');
@@ -123,9 +119,7 @@ describe('API endpoint /articles/', () => {
     });
 
     it('should return error value passed to the page is not a number', async () => {
-      const response = await chai
-        .request(app)
-        .get('/api/v1/articles?page=a&limit=1');
+      const response = await chai.request(app).get('/api/v1/articles?page=a&limit=1');
 
       expect(response.status).to.eqls(400);
       expect(response.body.status).to.eqls('failure');

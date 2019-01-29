@@ -18,12 +18,7 @@ class AuthMiddleware {
     try {
       const { authorization } = req.headers;
       if (!authorization) {
-        return response(
-          res,
-          401,
-          'failure',
-          'You are not logged in.'
-        );
+        return response(res, 401, 'failure', 'You are not logged in.');
       }
 
       const token = authorization.split(' ')[1];
@@ -36,21 +31,83 @@ class AuthMiddleware {
     } catch (error) {
       const { name } = error;
       if (name === 'TokenExpiredError' || name === 'JsonWebTokenError') {
-        return response(
-          res,
-          401,
-          'failure',
-          'Token is invalid, You need to log in again'
-        );
+        return response(res, 401, 'failure', 'Token is invalid, You need to log in again');
       }
 
-      return response(
-        res,
-        500,
-        'failure',
-        'An error occured on the server',
-        error
-      );
+      return response(res, 500, 'failure', 'An error occured on the server', error);
+    }
+  }
+
+  /**
+   * @static
+   * @description - a middleware that checks if the user is an admin
+   * @param {object} req - a request object
+   * @param {object} res - a response object
+   * @param {object} next - the next middleware function
+   * @returns {object} - a message whether the user is an admin or not
+   * @memberof AuthMiddleware
+   */
+  static checkIfUserIsAdmin(req, res, next) {
+    try {
+      const { authorization } = req.headers;
+      if (!authorization) {
+        return response(res, 401, 'failure', 'You are not logged in.');
+      }
+
+      const token = authorization.split(' ')[1];
+      const decoded = TokenManager.verify(token);
+
+      if (decoded) {
+        req.user = decoded;
+      }
+
+      if (req.user.role !== '3ceb546e-054d-4c1d-8860-e27c209d4ae4') {
+        return response(res, 403, 'failure', 'You are unauthorised to access this page.');
+      }
+      return next();
+    } catch (error) {
+      const { name } = error;
+      if (name === 'TokenExpiredError' || name === 'JsonWebTokenError') {
+        return response(res, 401, 'failure', 'Token is invalid, You need to log in again');
+      }
+
+      return response(res, 500, 'failure', 'An error occured on the server', error);
+    }
+  }
+
+  /**
+   * @static
+   * @description - a middleware that checks if the user is a  superadmin
+   * @param {object} req - a request object
+   * @param {object} res - a response object
+   * @param {object} next - the next middleware function
+   * @returns {object} - a message whether the user is an admin or not
+   * @memberof AuthMiddleware
+   */
+  static checkIfUserIsSuperAdmin(req, res, next) {
+    try {
+      const { authorization } = req.headers;
+      if (!authorization) {
+        return response(res, 401, 'failure', 'You are not logged in.');
+      }
+
+      const token = authorization.split(' ')[1];
+      const decoded = TokenManager.verify(token);
+
+      if (decoded) {
+        req.user = decoded;
+      }
+      if (req.user.roleId !== '2023afbb-7072-4759-8161-3d149c9589f2') {
+        return response(res, 403, 'failure', 'You are unauthorised to access this page.');
+      }
+      return next();
+    } catch (error) {
+      const { name } = error;
+      if (name === 'TokenExpiredError' || name === 'JsonWebTokenError') {
+        return response(res, 401, 'failure', 'Token is invalid, You need to log in again');
+      }
+
+      return response(res, 500, 'failure', 'An error occured on the server', error);
     }
   }
 }
