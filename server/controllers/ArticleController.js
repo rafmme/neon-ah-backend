@@ -65,7 +65,6 @@ class ArticleController {
         article
       );
     } catch (error) {
-      console.log(error);
       return response(
         res,
         500,

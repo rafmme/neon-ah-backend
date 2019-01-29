@@ -1,7 +1,9 @@
 import db from '../models';
 import response from '../helpers/response';
 
-const { Article, ArticleLikesDislike } = db;
+const {
+  Article, ArticleLikesDislike, Comment, CommentLike
+} = db;
 
 /**
  * @class LikesDislikeController
@@ -93,6 +95,91 @@ class LikesController {
         data: { status: 'failure', message: error }
       });
     }
+  }
+
+  /**
+   *
+   * @description Method to likes and unlike a comment
+   * @static
+   * @param {*} req
+   * @param {*} res
+   * @returns {object} Json response
+   * @memberof LikesController
+   */
+  static async likeComment(req, res) {
+    try {
+      const { commentId } = req.params;
+      const { userId } = req.user;
+      const commentFound = await Comment.findOne({
+        where: {
+          id: commentId
+        }
+      });
+      if (!commentFound) {
+        return response(res, 404, 'failure', 'Comment not found', null, null);
+      }
+
+      const unlikeTheComment = await CommentLike.findOne({
+        where: {
+          userId,
+          commentId
+        }
+      });
+
+      if (unlikeTheComment) {
+        await CommentLike.destroy({
+          where: {
+            userId,
+            commentId
+          }
+        });
+        return response(res, 200, 'success', 'You just unliked this comment', null, null);
+      }
+
+      const likeTheComment = await CommentLike.create({
+        userId,
+        commentId,
+        reaction: 'like'
+      });
+
+      if (likeTheComment) {
+        return response(res, 200, 'success', 'You just liked this comment', null, null);
+      }
+    } catch (error) {
+      return response(res, 500, 'failure', 'An error occured on the server', null, null);
+    }
+  }
+
+  /**
+   *
+   * @description Method to get all likes for a comment
+   * @static
+   * @param {*} req
+   * @param {*} res
+   * @returns {object} Json response
+   * @memberof LikesController
+   */
+  static async commentLikes(req, res) {
+    const { commentId } = req.params;
+    const commentFound = await Comment.findOne({
+      where: {
+        id: commentId
+      }
+    });
+    if (!commentFound) {
+      return response(res, 404, 'failure', 'Comment not foundd', null, null);
+    }
+
+    const allLikes = await CommentLike.findAndCountAll({
+      where: {
+        commentId
+      }
+    });
+    const commentLikesCount = allLikes.count;
+    if (allLikes.count === 0) {
+      return response(res, 404, 'failure', 'No likes for this comment', null, { commentLikesCount });
+    }
+    return response(res, 200, 'success', `There are ${allLikes.count} Likes for this comment`, null, { commentLikesCount });
   }
 }
 export default LikesController;
