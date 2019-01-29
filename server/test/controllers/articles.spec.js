@@ -272,4 +272,34 @@ describe('API endpoint /articles/', () => {
       expect(response.body.data.message).to.eqls('not found error');
     });
   });
+
+  describe('SHARE an article', () => {
+    it('should successfully share an article with the specified slug', async () => {
+      const response = await chai
+        .request(app)
+        .get('/api/v1/articles/share/how-to-be-a-10x-dev-sGNYfURm?platform=twitter');
+
+      expect(response.status).to.eqls(200);
+    });
+
+    it('should return not found if article does not exist', async () => {
+      const response = await chai
+        .request(app)
+        .get('/api/v1/articles/share/jwt-key-use-case-2?platform=whatsapp');
+
+      expect(response.status).to.eqls(404);
+      expect(response.body.status).to.eqls('failure');
+      expect(response.body.data.message).to.eqls('not found error');
+    });
+
+    it('should return bad request if no social media platform is specified', async () => {
+      const response = await chai
+        .request(app)
+        .get('/api/v1/articles/share/how-to-be-a-10x-dev-sGNYfURm?platform');
+
+      expect(response.status).to.eqls(400);
+      expect(response.body.status).to.eqls('failure');
+      expect(response.body.data.message).to.eqls('bad request error');
+    });
+  });
 });

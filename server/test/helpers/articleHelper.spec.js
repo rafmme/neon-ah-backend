@@ -37,4 +37,64 @@ describe('ArticleHelpers Test', () => {
       done();
     });
   });
+
+  describe('generateSocialShareLink function test', () => {
+    it('should successfully generate a twitter share link', (done) => {
+      const twitterShareLink = ArticleHelper.generateSocialShareLink({
+        platform: 'twitter',
+        title: 'Hello World',
+        url: 'https://test.com/hello',
+        body: 'Greetings to the world',
+        imageUrl:'https://imageUrl.com/img.jpg' 
+      });
+
+      expect(twitterShareLink).to.eql('https://twitter.com/share?url=https://test.com/hello&text=Hello World\nGreetings to the world...\nhttps://imageUrl.com/img.jpg\n');
+      done();
+    });
+
+    it('should successfully generate a facebook share link', (done) => {
+      const fbShareLink = ArticleHelper.generateSocialShareLink({
+        platform: 'facebook',
+        title: 'Hello World',
+        url: 'https://test.com/hello',
+        body: 'Greetings to the world',
+        imageUrl:'https://imageUrl.com/img.jpg' 
+      });
+
+      expect(fbShareLink).to.eql('https://facebook.com/sharer.php?&u=https://test.com/hello');
+      done();
+    });
+
+    it('should successfully generate a linkedIn share link', (done) => {
+      const lInShareLink = ArticleHelper.generateSocialShareLink({
+        platform: 'linkedIn',
+        title: 'Hello World',
+        url: 'https://test.com/hello',
+        body: 'Greetings to the world',
+        imageUrl:'https://imageUrl.com/img.jpg' 
+      });
+
+      expect(lInShareLink).to.eql('https://linkedin.com/shareArticle?&url=https://test.com/hello&title=Hello World&summary=Greetings to the world...');
+      done();
+    });
+
+    it('should successfully generate a whatsapp share link', (done) => {
+      const whatsappShareLink = ArticleHelper.generateSocialShareLink({
+        platform: 'whatsapp',
+        title: 'Hello World',
+        url: 'https://test.com/hello',
+        body: 'Greetings to the world',
+        imageUrl:'https://imageUrl.com/img.jpg' 
+      });
+
+      expect(whatsappShareLink).to.eql('https://wa.me?text=*Hello World*\n```Greetings to the world...```\nhttps://test.com/hello');
+      done();
+    });
+
+    it('should return empty string for unidentified social platform', (done) => {
+      const emptyShareLink = ArticleHelper.generateSocialShareLink({});
+      expect(emptyShareLink).to.eql('');
+      done();
+    });
+  });
 });

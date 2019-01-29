@@ -80,6 +80,7 @@ describe('Search Model', () => {
         .request(app)
         .get('/api/v1/search?author=s')
         .set('Authorization', `Bearer ${token}`)
+
       expect(response.body.data.statusCode).to.equal(500);
       stub.restore();
     });

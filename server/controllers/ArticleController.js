@@ -1,4 +1,3 @@
-import { Boolify } from 'node-boolify';
 import db from '../models';
 import ArticleHelper from '../helpers/ArticleHelper';
 import Util from '../helpers/Util';
@@ -36,29 +35,27 @@ class ArticleController {
         content,
         banner: banner || 'https://unsplash.com/photos/Q7wDdmgCBFg',
         tagsList: tagsArray,
-        isPublished: Boolify(isPublished) || true,
+        isPublished: Boolean(isPublished),
         isReported: false
       };
 
       let article = await Article.create(articleData);
+      article = article.toJSON();
+      article.tags = articleData.tagsList;
+      const { createdAt, updatedAt } = article;
 
-      if (article) {
-        article = article.toJSON();
-        article.tags = articleData.tagsList;
-        const { createdAt, updatedAt } = article;
-        await TagHelper.findOrAddTag(article.id, tagsArray);
-        article.createdAt = Util.formatDate(createdAt);
-        article.updatedAt = Util.formatDate(updatedAt);
+      await TagHelper.findOrAddTag(article.id, tagsArray);
+      article.createdAt = Util.formatDate(createdAt);
+      article.updatedAt = Util.formatDate(updatedAt);
 
-        return response(
-          res,
-          201,
-          'success',
-          'New article has been successfully created',
-          null,
-          article
-        );
-      }
+      return response(
+        res,
+        201,
+        'success',
+        'New article has been successfully created',
+        null,
+        article
+      );
     } catch (error) {
       console.log(error);
       return response(
@@ -235,10 +232,9 @@ class ArticleController {
         }
       });
       if (result) {
-        const articleSlug =
-          result.title.toLowerCase() === req.body.title.toLowerCase()
-            ? result.slug
-            : ArticleHelper.generateArticleSlug(req.body.title);
+        const articleSlug = result.title.toLowerCase() === req.body.title.toLowerCase()
+          ? result.slug
+          : ArticleHelper.generateArticleSlug(req.body.title);
 
         req.body.slug = articleSlug;
         let article = await result.update(req.body);
@@ -331,6 +327,53 @@ class ArticleController {
         null
       );
     }
+  }
+
+  /**
+   * @static
+   * @description this handles the sharing of articles on social media
+   * @param {object} req HTTP request object
+   * @param {object} res HTTP response object
+   * @returns {object} api route response
+   */
+  static async share(req, res) {
+    const { slug } = req.params;
+    const { platform } = req.query;
+    let article = await Article.findOne({ where: { slug, isPublished: true } });
+
+    if (!article) {
+      return response(
+        res,
+        404,
+        'failure',
+        'not found error',
+        { message: 'Article not found' },
+        null
+      );
+    }
+
+    article = article.toJSON();
+    const url = `https://neon-ah-staging.herokuapp.com/articles/${slug}`;
+    const postContent = {
+      platform,
+      title: article.title,
+      body: article.content,
+      imageUrl: article.banner,
+      url
+    };
+
+    const socialShareLink = ArticleHelper.generateSocialShareLink(postContent);
+    if (socialShareLink === '') {
+      return response(
+        res,
+        400,
+        'failure',
+        'bad request error',
+        { message: 'Invalid social media platform supplied' },
+        null
+      );
+    }
+    return res.redirect(socialShareLink);
   }
 }
 

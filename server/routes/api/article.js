@@ -33,5 +33,9 @@ articleRoutes.delete(
   ArticleValidation.verifyUserOwnStory,
   ArticleController.remove
 );
+articleRoutes.get(
+  '/articles/share/:slug',
+  ArticleController.share
+);
 
 export default articleRoutes;
