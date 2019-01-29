@@ -20,6 +20,22 @@ describe('Search Model', () => {
       expect(response.status).to.eqls(200);
       expect(response.body.status).to.eqls('success');
     });
+    it('It should be to search articles by tags', async () => {
+        const response = await chai
+          .request(app)
+          .get('/api/v1/search?tag=technology')
+          .set('Authorization', `Bearer ${token}`)
+        expect(response.status).to.eqls(200);
+        expect(response.body.status).to.eqls('success');
+    });
+    it('It should be to search articles by title or content', async () => {
+        const response = await chai
+          .request(app)
+          .get('/api/v1/search?title=to')
+          .set('Authorization', `Bearer ${token}`)
+        expect(response.status).to.eqls(200);
+        expect(response.body.status).to.eqls('success');
+    });
     it('It should not be able to search for authors if inputed value dont exits ', async () => {
         const response = await chai
           .request(app)
@@ -28,6 +44,24 @@ describe('Search Model', () => {
         expect(response.status).to.eqls(404);
         expect(response.body.status).to.eqls('failure');
         expect(response.body.data.message).to.eqls('Author not found');     
+      });
+      it('It should not be able to search for tags if inputed value dont exits ', async () => {
+        const response = await chai
+          .request(app)
+          .get('/api/v1/search?tag=3')
+          .set('Authorization', `Bearer ${token}`)
+        expect(response.status).to.eqls(404);
+        expect(response.body.status).to.eqls('failure');
+        expect(response.body.data.message).to.eqls('Tag not found');     
+      });
+      it('It should not be able to search for articles if inputed value dont exits ', async () => {
+        const response = await chai
+          .request(app)
+          .get('/api/v1/search?title=*')
+          .set('Authorization', `Bearer ${token}`)
+        expect(response.status).to.eqls(404);
+        expect(response.body.status).to.eqls('failure');
+        expect(response.body.data.message).to.eqls('Article not found');     
       });
       it('It should not be able to search for authors if inputed value is empty', async () => {
         const response = await chai
@@ -46,9 +80,9 @@ describe('Search Model', () => {
         .request(app)
         .get('/api/v1/search?author=s')
         .set('Authorization', `Bearer ${token}`)
-        console.log(response.body)
       expect(response.body.data.statusCode).to.equal(500);
       stub.restore();
     });
+    
   });
 });

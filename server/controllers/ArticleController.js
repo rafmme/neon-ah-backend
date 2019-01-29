@@ -314,9 +314,13 @@ class ArticleController {
    * @returns {object} api route response
    */
   static async search(req, res) {
-    const { author } = req.query;
+    const { author, tag, title } = req.query;
     if (author) {
-      SearchController.byAuthor(author, res);
+      SearchController.byAuthor(author, req, res);
+    } else if (tag) {
+      SearchController.byTags(tag, req, res);
+    } else if (title) {
+      SearchController.byTitle(title, req, res);
     } else {
       return response(
         res,
