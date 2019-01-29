@@ -6,7 +6,6 @@ import db from '../../models';
 import { token, tokenTwo } from '../mockData/token';
 
 const { Article, Comment } = db;
-
 chai.use(chaiHttp);
 
 describe('Comment Model', () => {
@@ -32,7 +31,6 @@ describe('Comment Model', () => {
           content: ''
         });
       expect(response.status).to.eqls(422);
-      expect(response.body.status).to.eqls('failure');
     });
     it('It should be able to handle unexpected errors thrown during creating a comment', async () => {
       const stub = sinon
@@ -85,9 +83,7 @@ describe('Comment Model', () => {
     it('It should be able to get a single comment', async () => {
       const response = await chai
         .request(app)
-        .get(
-          '/api/v1/articles/how-to-be-a-10x-dev-sGNYfURm/comments/09543c60-7b1a-11e8-9c9c-2d42b21b1a3e'
-        )
+        .get('/api/v1/articles/how-to-be-a-10x-dev-sGNYfURm/comments/09543c60-7b1a-11e8-9c9c-2d42b21b1a3e')
         .set('Authorization', `Bearer ${token}`);
       expect(response.status).to.eqls(200);
       expect(response.body.status).to.eqls('success');
@@ -96,9 +92,7 @@ describe('Comment Model', () => {
     it('It should not be able to get a single comment if comment id is wrong', async () => {
       const response = await chai
         .request(app)
-        .get(
-          '/api/v1/articles/how-to-be-a-10x-dev-sGNYfURm/comments/09543c60-7b1a-11e8-9c9c-2d42b21b1'
-        )
+        .get('/api/v1/articles/how-to-be-a-10x-dev-sGNYfURm/comments/09543c60-7b1a-11e8-9c9c-2d42b21b1')
         .set('Authorization', `Bearer ${token}`);
       expect(response.status).to.eqls(404);
       expect(response.body.status).to.eqls('failure');
@@ -131,25 +125,19 @@ describe('Comment Model', () => {
     it('It should not be able to update a comment created by another user', async () => {
       const response = await chai
         .request(app)
-        .put(
-          '/api/v1/articles/how-to-be-a-10x-dev-sGNYfURm/comments/09543c60-7b1a-11e8-9c9c-2d42b21b1a3e'
-        )
+        .put('/api/v1/articles/how-to-be-a-10x-dev-sGNYfURm/comments/09543c60-7b1a-11e8-9c9c-2d42b21b1a3e')
         .set('Authorization', `Bearer ${tokenTwo}`)
         .send({
-          content: 'Nice write up here'
-        });;
+          content: 'Nice write up'
+        });
       expect(response.status).to.eqls(403);
       expect(response.body.status).to.eqls('failure');
-      expect(response.body.data.message).to.eqls(
-        "You are not allowed to update another user's comment"
-      );
+      expect(response.body.data.message).to.eqls('You are not allowed to update another user\'s comment');
     });
     it('It should be able to update a comment created by only a user', async () => {
       const response = await chai
         .request(app)
-        .put(
-          '/api/v1/articles/how-to-be-a-10x-dev-sGNYfURm/comments/09543c60-7b1a-11e8-9c9c-2d42b21b1a3e'
-        )
+        .put('/api/v1/articles/how-to-be-a-10x-dev-sGNYfURm/comments/09543c60-7b1a-11e8-9c9c-2d42b21b1a3e')
         .set('Authorization', `Bearer ${token}`)
         .send({
           content: 'Nice write up'
@@ -161,9 +149,7 @@ describe('Comment Model', () => {
     it('It should throw an error when you want to update a comment when comment id is wrong', async () => {
       const response = await chai
         .request(app)
-        .put(
-          '/api/v1/articles/how-to-be-a-10x-dev-sGNYfURm/comments/09543c60-7b1a-11e8-9c9c-2d42b21'
-        )
+        .put('/api/v1/articles/how-to-be-a-10x-dev-sGNYfURm/comments/09543c60-7b1a-11e8-9c9c-2d42b21')
         .set('Authorization', `Bearer ${token}`)
         .send({
           content: 'Nice write up'
@@ -178,9 +164,7 @@ describe('Comment Model', () => {
 
       const response = await chai
         .request(app)
-        .put(
-          '/api/v1/articles/how-to-be-a-10x-dev-sGNYfURm/comments/09543c60-7b1a-11e8-9c9c-2d42b21b1'
-        )
+        .put('/api/v1/articles/how-to-be-a-10x-dev-sGNYfURm/comments/09543c60-7b1a-11e8-9c9c-2d42b21b1')
         .set('Authorization', `Bearer ${token}`)
         .send({
           content: 'Nice write up'
@@ -191,9 +175,7 @@ describe('Comment Model', () => {
     it('It should not be able to update a comment when article id dont exist', async () => {
       const response = await chai
         .request(app)
-        .put(
-          '/api/v1/articles/95745c60-7b1a-11e8-9c9c-2d42b21b1a/comments/09543c60-7b1a-11e8-9c9c-2d42b21b1a3e'
-        )
+        .put('/api/v1/articles/95745c60-7b1a-11e8-9c9c-2d42b21b1a/comments/09543c60-7b1a-11e8-9c9c-2d42b21b1a3e')
         .set('Authorization', `Bearer ${token}`)
         .send({
           content: 'Nice write up'
@@ -206,22 +188,16 @@ describe('Comment Model', () => {
     it('It should not be able to delete a comment created by another user', async () => {
       const response = await chai
         .request(app)
-        .delete(
-          '/api/v1/articles/how-to-be-a-10x-dev-sGNYfURm/comments/09543c60-7b1a-11e8-9c9c-2d42b21b1a3e'
-        )
+        .delete('/api/v1/articles/how-to-be-a-10x-dev-sGNYfURm/comments/09543c60-7b1a-11e8-9c9c-2d42b21b1a3e')
         .set('Authorization', `Bearer ${tokenTwo}`);
       expect(response.status).to.eqls(403);
       expect(response.body.status).to.eqls('failure');
-      expect(response.body.data.message).to.eqls(
-        "You are not allowed to delete another user's comment"
-      );
+      expect(response.body.data.message).to.eqls('You are not allowed to delete another user\'s comment');
     });
     it('It should not be able to delete a comment when article has no comment', async () => {
       const response = await chai
         .request(app)
-        .delete(
-          '/api/v1/articles/95745c60-7b1a-11e8-9c9c-2d42b21b1a/comments/09543c60-7b1a-11e8-9c9c-2d42b21b1a3e'
-        )
+        .delete('/api/v1/articles/95745c60-7b1a-11e8-9c9c-2d42b21b1a/comments/09543c60-7b1a-11e8-9c9c-2d42b21b1a3e')
         .set('Authorization', `Bearer ${token}`);
       expect(response.status).to.eqls(404);
       expect(response.body.status).to.eqls('failure');
@@ -229,9 +205,7 @@ describe('Comment Model', () => {
     it('It should not be able to delete a comment when comment id is wrong', async () => {
       const response = await chai
         .request(app)
-        .delete(
-          '/api/v1/articles/how-to-be-a-10x-dev-sGNYfURm/comments/09543c60-7b1a-11e8-9c9c-2d42b21b'
-        )
+        .delete('/api/v1/articles/how-to-be-a-10x-dev-sGNYfURm/comments/09543c60-7b1a-11e8-9c9c-2d42b21b')
         .set('Authorization', `Bearer ${token}`);
       expect(response.status).to.eqls(404);
       expect(response.body.status).to.eqls('failure');
@@ -239,9 +213,7 @@ describe('Comment Model', () => {
     it('It should be able to delete a comment created by only a user', async () => {
       const response = await chai
         .request(app)
-        .delete(
-          '/api/v1/articles/how-to-be-a-10x-dev-sGNYfURm/comments/09543c60-7b1a-11e8-9c9c-2d42b21b1a3e'
-        )
+        .delete('/api/v1/articles/how-to-be-a-10x-dev-sGNYfURm/comments/09543c60-7b1a-11e8-9c9c-2d42b21b1a3e')
         .set('Authorization', `Bearer ${token}`);
       expect(response.status).to.eqls(200);
       expect(response.body.status).to.eqls('success');
@@ -254,9 +226,7 @@ describe('Comment Model', () => {
 
       const response = await chai
         .request(app)
-        .delete(
-          '/api/v1/articles/how-to-be-a-10x-dev-sGNYfURm/comments/09543c60-7b1a-11e8-9c9c-2d42b21b1'
-        )
+        .delete('/api/v1/articles/how-to-be-a-10x-dev-sGNYfURm/comments/09543c60-7b1a-11e8-9c9c-2d42b21b1')
         .set('Authorization', `Bearer ${token}`)
         .send({
           content: 'Nice write up'

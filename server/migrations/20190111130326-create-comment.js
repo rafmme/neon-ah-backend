@@ -1,6 +1,7 @@
 export default {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.sequelize.query('CREATE EXTENSION IF NOT EXISTS "uuid-ossp";')
+    return queryInterface.sequelize
+      .query('CREATE EXTENSION IF NOT EXISTS "uuid-ossp";')
       .then(() => {
         return queryInterface.createTable('Comments', {
           id: {
@@ -18,8 +19,18 @@ export default {
             allowNull: false
           },
           articleId: {
-            type: Sequelize.STRING,
+            type: Sequelize.UUID,
             allowNull: false
+          },
+          history: {
+            type: Sequelize.ARRAY(Sequelize.JSON),
+            allowNull: true,
+            defaultValue: []
+          },
+          edited: {
+            type: Sequelize.BOOLEAN,
+            allowNull: false,
+            defaultValue: false
           },
           createdAt: {
             allowNull: false,

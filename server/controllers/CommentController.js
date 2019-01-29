@@ -20,9 +20,7 @@ class CommentController {
       const { userId } = req.user;
       const { content } = req.body;
       const { slug } = req.params;
-      if (!content) {
-        return response(res, 400, 'failure', 'Enter a comment', null, null);
-      }
+
       const articleFound = await Article.findOne({
         where: {
           slug
@@ -160,19 +158,32 @@ class CommentController {
       if (!articleFound) {
         return response(res, 404, 'failure', 'Article not found', null, null);
       }
-      const getCommentUpdate = await Comment.findOne({
+      const findComment = await Comment.findOne({
         where: {
           id: commentId
         }
       });
-      if (getCommentUpdate.dataValues.articleId !== articleFound.dataValues.id) {
+      const { dataValues: existingComment } = findComment;
+      if (existingComment.articleId !== articleFound.dataValues.id) {
         return response(res, 404, 'failure', 'Comment not found for article id', null, null);
       }
-      if (getCommentUpdate.dataValues.userId !== userId) {
+      if (existingComment.userId !== userId) {
         return response(res, 403, 'failure', 'You are not allowed to update another user\'s comment', null, null);
       }
-      const updateComment = await getCommentUpdate.update({
-        content
+      if (content === existingComment.content) {
+        return response(res, 200, 'success', 'Comment was not edited because content is the same', null, null);
+      }
+      const newEditHistory = {
+        content: existingComment.content,
+        updatedAt: existingComment.updatedAt
+      };
+      existingComment.history = !existingComment.history[0]
+        ? (existingComment.history = [newEditHistory])
+        : existingComment.history.concat([newEditHistory]);
+      const updateComment = await findComment.update({
+        content,
+        edited: true,
+        history: existingComment.history
       });
       if (updateComment) {
         return response(res, 200, 'success', 'Comment updated', null, updateComment.dataValues);
