@@ -14,7 +14,7 @@ class AuthMiddleware {
    * @param {function} next next middleware function
    * @returns {object} returns error message if user is not authenticated
    */
-  static checkIfUserIsAuthenticated(req, res, next) {
+  static async checkIfUserIsAuthenticated(req, res, next) {
     try {
       const { authorization } = req.headers;
       if (!authorization) {
@@ -34,7 +34,7 @@ class AuthMiddleware {
         return response(res, 401, 'failure', 'Token is invalid, You need to log in again');
       }
 
-      return response(res, 500, 'failure', 'An error occured on the server', error);
+      return response(res, 500, 'failure', 'An error occured on the server', error.message);
     }
   }
 

@@ -8,17 +8,25 @@ export default (sequelize, DataTypes) => {
       },
       articleId: {
         type: DataTypes.UUID,
-        allowNull: false
+        allowNull: false,
       },
       userId: {
         type: DataTypes.UUID,
         allowNull: false
       }
-    },
-    {}
+    }, {}
   );
+
   Rating.associate = (models) => {
-    Rating.belongsTo(models.User, {});
+    Rating.belongsTo(models.User, {
+      foreignKey: 'userId',
+      as: 'rater',
+      onDelete: 'CASCADE'
+    });
+    Rating.belongsTo(models.Article, {
+      foreignKey: 'articleId',
+      onDelete: 'CASCADE'
+    });
   };
   return Rating;
 };

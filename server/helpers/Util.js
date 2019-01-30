@@ -60,6 +60,20 @@ class Util {
     const date = `${new Date(dateString).toDateString()} ${new Date(dateString).toLocaleTimeString()}`;
     return date;
   }
+
+  /**
+   * @static
+   * @description a function to ascertain if a resource exists
+   * @param {object} model Model to check for resource existence
+   * @param {object} data
+   * @returns {object} returns resource if true or null otherwise
+   */
+  static async resourceExists(model, data) {
+    const resource = await model.findOne({
+      where: data
+    });
+    return resource;
+  }
 }
 
 export default Util;

@@ -58,7 +58,6 @@ export default (sequelize, DataTypes) => {
       Comment,
       ArticleLikesDislike,
       Bookmark,
-      Rating,
       Share,
       ReadingStats
     } = models;
@@ -75,7 +74,7 @@ export default (sequelize, DataTypes) => {
     Article.belongsToMany(User, {
       through: 'Rating',
       as: 'ratings',
-      foreignKey: 'articleId'
+      foreignKey: 'articleId',
     });
     Article.belongsToMany(Tag, {
       through: 'ArticleTag',
@@ -93,10 +92,6 @@ export default (sequelize, DataTypes) => {
     Article.hasOne(Bookmark, {
       foreignKey: 'articleId',
       as: 'bookmark'
-    });
-    Article.hasOne(Rating, {
-      foreignKey: 'articleId',
-      as: 'rating'
     });
     Article.hasMany(Share, {
       foreignKey: 'articleId',
