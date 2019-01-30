@@ -11,9 +11,14 @@ module.exports = (sequelize, DataTypes) => {
     {}
   );
   Tag.associate = (models) => {
-    Tag.belongsToMany(models.Article, {
+    const { Article, User } = models;
+    Tag.belongsToMany(Article, {
       through: 'ArticleTag',
       as: 'articles',
+      foreignKey: 'tagId'
+    });
+    Tag.belongsToMany(User, {
+      through: 'FollowedTags',
       foreignKey: 'tagId'
     });
   };

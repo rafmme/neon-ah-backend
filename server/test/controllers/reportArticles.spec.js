@@ -22,7 +22,7 @@ describe('Report Article Features', () => {
             expect(response.status).to.equal(401);
             expect(response.body.data).to.have.property('message');
             expect(response.body.data.message).to.be.a('string');
-            expect(response.body.data.message).to.be.eql('You need to log in again');
+            expect(response.body.data.message).to.be.eql('You need to log in again.');
             expect(response.body.data).to.have.property('statusCode');
             expect(response.body.data.statusCode).to.be.a('Number');
             expect(response.body.status).to.equal('failure');
@@ -104,7 +104,7 @@ describe('Report Article Features', () => {
             expect(response.status).to.equal(401);
             expect(response.body.data).to.have.property('message');
             expect(response.body.data.message).to.be.a('string');
-            expect(response.body.data.message).to.be.eql('You need to log in again');
+            expect(response.body.data.message).to.be.eql('You need to log in again.');
             expect(response.body.data).to.have.property('statusCode');
             expect(response.body.data.statusCode).to.be.a('Number');
             expect(response.body.status).to.equal('failure');
@@ -183,7 +183,7 @@ describe('Report Article Features', () => {
             expect(response.status).to.equal(401);
             expect(response.body.data).to.have.property('message');
             expect(response.body.data.message).to.be.a('string');
-            expect(response.body.data.message).to.be.eql('You need to log in again');
+            expect(response.body.data.message).to.be.eql('You need to log in again.');
             expect(response.body.data).to.have.property('statusCode');
             expect(response.body.data.statusCode).to.be.a('Number');
             expect(response.body.status).to.equal('failure');
@@ -210,7 +210,7 @@ describe('Report Article Features', () => {
             expect(response.status).to.equal(401);
             expect(response.body.data).to.have.property('message');
             expect(response.body.data.message).to.be.a('string');
-            expect(response.body.data.message).to.be.eql('You need to log in again');
+            expect(response.body.data.message).to.be.eql('You need to log in again.');
             expect(response.body.data).to.have.property('statusCode');
             expect(response.body.data.statusCode).to.be.a('Number');
             expect(response.body.status).to.equal('failure');
@@ -253,7 +253,7 @@ describe('Report Article Features', () => {
             expect(response.status).to.equal(401);
             expect(response.body.data).to.have.property('message');
             expect(response.body.data.message).to.be.a('string');
-            expect(response.body.data.message).to.be.eql('You need to log in again');
+            expect(response.body.data.message).to.be.eql('You need to log in again.');
             expect(response.body.data).to.have.property('statusCode');
             expect(response.body.data.statusCode).to.be.a('Number');
             expect(response.body.status).to.equal('failure');
@@ -283,7 +283,7 @@ describe('Report Article Features', () => {
             expect(response.status).to.equal(401);
             expect(response.body.data).to.have.property('message');
             expect(response.body.data.message).to.be.a('string');
-            expect(response.body.data.message).to.be.eql('You need to log in again');
+            expect(response.body.data.message).to.be.eql('You need to log in again.');
             expect(response.body.data).to.have.property('statusCode');
             expect(response.body.data.statusCode).to.be.a('Number');
             expect(response.body.status).to.equal('failure');

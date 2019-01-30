@@ -205,7 +205,7 @@ class UserController {
         }
       });
     } catch (err) {
-      res.status(400).send({
+      return res.status(400).send({
         status: 'failure',
         data: {
           statusCode: 400,
@@ -250,7 +250,7 @@ class UserController {
         }
       });
     } catch (err) {
-      res.status(400).send({
+      return res.status(400).send({
         status: 'failure',
         data: {
           error: err
@@ -448,8 +448,7 @@ class UserController {
       });
 
       if (!findProfile) {
-        response(res, 404, 'failure', 'User not found');
-        return;
+        return response(res, 404, 'failure', 'User not found');
       }
 
       const checkUserName = await User.findAndCountAll({
@@ -457,22 +456,20 @@ class UserController {
       });
 
       if (checkUserName.count > 0) {
-        response(res, 409, 'failure', 'Username already exists');
-        return;
+        return response(res, 409, 'failure', 'Username already exists');
       }
 
       if (req.user.authTypeId === '15745c60-7b1a-11e8-9c9c-2d42b21b1a3e') {
         await findProfile.update(req.body, {
           fields: [...editableFeilds, 'passsword']
         });
-        response(res, 200, 'success', 'Profile updated successfully');
-        return;
+        return response(res, 200, 'success', 'Profile updated successfully');
       }
 
       const updatedProfile = await findProfile.update(req.body, {
         fields: [...editableFeilds]
       });
-      response(
+      return response(
         res,
         200,
         'success',
@@ -480,9 +477,8 @@ class UserController {
         null,
         updatedProfile.dataValues
       );
-      return;
     } catch (error) {
-      response(res, 500, 'failure', 'An error occured on the server');
+      return response(res, 500, 'failure', 'An error occured on the server');
     }
   }
 

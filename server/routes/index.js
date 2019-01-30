@@ -7,6 +7,7 @@ import likeRoutes from './api/likes';
 import readStats from './api/readStats';
 import reportArticleRoutes from './api/reportArticle';
 import ratingRoutes from './api/rating';
+import tagRoutes from './api/tag';
 
 const routes = Router();
 
@@ -18,6 +19,7 @@ routes.use(likeRoutes);
 routes.use(readStats);
 routes.use(reportArticleRoutes);
 routes.use(ratingRoutes);
+routes.use(tagRoutes);
 routes.all('*', (req, res) => {
   res.status(404).json({
     status: 'failure',

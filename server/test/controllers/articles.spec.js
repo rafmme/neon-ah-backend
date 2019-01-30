@@ -62,7 +62,7 @@ describe('API endpoint /articles/', () => {
       expect(response.status).to.eqls(401);
       expect(response.body.status).to.eqls('failure');
       expect(response.body.data.message).to.eqls(
-        'You need to log in again'
+        'You need to log in again.'
       );
     });
 

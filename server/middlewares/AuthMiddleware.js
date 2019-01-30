@@ -32,9 +32,8 @@ class AuthMiddleware {
     } catch (error) {
       const { name } = error;
       if (name === 'TokenExpiredError' || name === 'JsonWebTokenError') {
-        return response(res, 401, 'failure', 'You need to log in again');
+        return response(res, 401, 'failure', 'You need to log in again.');
       }
-
       return response(res, 500, 'failure', 'An error occured on the server', error.message);
     }
   }
@@ -60,6 +59,7 @@ class AuthMiddleware {
     } catch (error) {
       req.isLoggedIn = false;
       next();
+      return response(res, 500, 'failure', 'An error occured on the server');
     }
   }
 
@@ -93,7 +93,7 @@ class AuthMiddleware {
     } catch (error) {
       const { name } = error;
       if (name === 'TokenExpiredError' || name === 'JsonWebTokenError') {
-        return response(res, 401, 'failure', 'You need to log in again');
+        return response(res, 401, 'failure', 'You need to log in again.');
       }
 
       return response(res, 500, 'failure', 'An error occured on the server', error);
@@ -129,7 +129,7 @@ class AuthMiddleware {
     } catch (error) {
       const { name } = error;
       if (name === 'TokenExpiredError' || name === 'JsonWebTokenError') {
-        return response(res, 401, 'failure', 'You need to log in again');
+        return response(res, 401, 'failure', 'You need to log in again.');
       }
 
       return response(res, 500, 'failure', 'An error occured on the server', error);

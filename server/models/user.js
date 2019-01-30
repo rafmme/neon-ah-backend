@@ -83,7 +83,8 @@ export default (sequelize, DataTypes) => {
       Role,
       Report,
       ArticleLikesDislike,
-      ReadingStats
+      ReadingStats,
+      Tag
     } = models;
     User.hasMany(Article, {
       as: 'articles',
@@ -154,6 +155,11 @@ export default (sequelize, DataTypes) => {
     });
     User.hasMany(ReadingStats, {
       foreignKey: 'userId'
+    });
+    User.belongsToMany(Tag, {
+      through: 'FollowedTags',
+      as: 'followedTags',
+      foreignKey: 'followerId'
     });
   };
   return User;

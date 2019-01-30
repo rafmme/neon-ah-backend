@@ -327,7 +327,7 @@ describe('User Model', () => {
         .send({ bio: 'I am so hungry' });
       expect(response.status).to.eqls(401);
       expect(response.body.status).to.eqls('failure');
-      expect(response.body.data.message).to.eqls('You need to log in again');
+      expect(response.body.data.message).to.eqls('You need to log in again.');
     });
 
     it('User should show conflict error when user tries to edit profile with username that exists', async () => {
@@ -452,7 +452,7 @@ describe('User Model', () => {
         .set('Authorization', `Bearer ${invalidToken}`);
       expect(response.status).to.eqls(401);
       expect(response.body.status).to.eqls('failure');
-      expect(response.body.data.message).to.eqls('You need to log in again');
+      expect(response.body.data.message).to.eqls('You need to log in again.');
     });
 
     it('Should throw an error if a Non-Super Admin tries to access the route', async () => {
