@@ -36,6 +36,20 @@ describe('Likes and Dislike feature', () => {
       expect(response.body.status).to.equal('success');
     });
 
+    it('returns article likes', async () => {
+      const response = await chai
+        .request(app)
+        .get('/api/v1/articles/how-to-say-hello-in-2019/likes')
+        .set('authorization', `Bearer ${userToken}`);
+      expect(response.status).to.equal(200);
+      expect(response.body.data).to.have.property('message');
+      expect(response.body.data.message).to.be.a('string');
+      expect(response.body.data).to.have.property('statusCode');
+      expect(response.body.data.statusCode).to.be.a('Number');
+      expect(response.body.status).to.equal('success');
+    });
+
+
     it('unlike articles', async () => {
       const response = await chai
         .request(app)

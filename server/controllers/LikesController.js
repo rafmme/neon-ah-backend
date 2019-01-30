@@ -2,7 +2,7 @@ import db from '../models';
 import response from '../helpers/response';
 
 const {
-  Article, ArticleLikesDislike, Comment, CommentLike
+  Article, ArticleLikesDislike, User, Comment, CommentLike
 } = db;
 
 /**
@@ -85,25 +85,28 @@ class LikesController {
         where: {
           articleId: theArticle.dataValues.id,
           reaction: 'like'
-        }
+        },
+        include: [
+          {
+            model: User,
+            as: 'Liked By',
+            attributes: ['id', 'userName', 'img'],
+          }
+        ],
+        attributes: [
+        ]
       });
       if (!allLikes) {
         return response(res, 404, 'failure', 'No likes for this Article', null, null);
       }
-      return response(
-        res,
-        200,
-        'success',
-        `There are ${allLikes.count} Likes for this article`,
-        null,
-        null
-      );
+      return response(res, 200, 'success', `There are ${allLikes.count} Likes for this article`, null, allLikes.rows);
     } catch (error) {
       return res.status(401).json({
         data: { status: 'failure', message: error }
       });
     }
   }
+
 
   /**
    *

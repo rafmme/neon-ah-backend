@@ -2,7 +2,6 @@ import { Router } from 'express';
 import ArticleController from '../../controllers/ArticleController';
 import ArticleValidation from '../../middlewares/validations/ArticleValidation';
 import AuthMiddleware from '../../middlewares/AuthMiddleware';
-import AuthManager from '../../middlewares/AuthManager';
 
 const articleRoutes = Router();
 articleRoutes.get('/search', ArticleController.search);
@@ -23,7 +22,6 @@ articleRoutes.get(
 );
 articleRoutes.get(
   '/articles/:slug',
-  AuthManager.checkAuthStatus,
   ArticleController.fetchOne
 );
 articleRoutes.put(

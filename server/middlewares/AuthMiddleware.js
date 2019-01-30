@@ -32,10 +32,34 @@ class AuthMiddleware {
     } catch (error) {
       const { name } = error;
       if (name === 'TokenExpiredError' || name === 'JsonWebTokenError') {
-        return response(res, 401, 'failure', 'Token is invalid, You need to log in again');
+        return response(res, 401, 'failure', 'You need to log in again');
       }
 
       return response(res, 500, 'failure', 'An error occured on the server', error.message);
+    }
+  }
+
+  /**
+     * @static
+     * @description checks login status of a request
+     * @param {*} req - request object
+     * @param {*} res response object
+     * @param {*} next - next callback
+     * @returns {*} calls the next middleware
+     * @memberof VerifyUser
+     */
+  static async checkAuthStatus(req, res, next) {
+    try {
+      const { authorization } = req.headers;
+      const token = authorization.split(' ')[1];
+      const decoded = TokenManager.verify(token);
+      if (decoded) {
+        req.user = decoded;
+        return next();
+      }
+    } catch (error) {
+      req.isLoggedIn = false;
+      next();
     }
   }
 
@@ -62,14 +86,14 @@ class AuthMiddleware {
         req.user = decoded;
       }
 
-      if (req.user.role !== '3ceb546e-054d-4c1d-8860-e27c209d4ae4') {
+      if (req.user.roleId !== '3ceb546e-054d-4c1d-8860-e27c209d4ae4' && req.user.roleId !== '2023afbb-7072-4759-8161-3d149c9589f2') {
         return response(res, 403, 'failure', 'You are unauthorised to access this page.');
       }
       return next();
     } catch (error) {
       const { name } = error;
       if (name === 'TokenExpiredError' || name === 'JsonWebTokenError') {
-        return response(res, 401, 'failure', 'Token is invalid, You need to log in again');
+        return response(res, 401, 'failure', 'You need to log in again');
       }
 
       return response(res, 500, 'failure', 'An error occured on the server', error);
@@ -105,7 +129,7 @@ class AuthMiddleware {
     } catch (error) {
       const { name } = error;
       if (name === 'TokenExpiredError' || name === 'JsonWebTokenError') {
-        return response(res, 401, 'failure', 'Token is invalid, You need to log in again');
+        return response(res, 401, 'failure', 'You need to log in again');
       }
 
       return response(res, 500, 'failure', 'An error occured on the server', error);

@@ -28,12 +28,8 @@ export default (sequelize, DataTypes) => {
   );
   Comment.associate = (models) => {
     const {
-      Reply,
-      Article,
-      User,
-      CommentLike,
+      Reply, Article, User, CommentLike
     } = models;
-
     Comment.hasMany(Reply, {
       foreignKey: 'commentId',
       as: 'replies'

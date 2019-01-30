@@ -17,6 +17,10 @@ export default {
             type: Sequelize.UUID,
             allowNull: false
           },
+          complaint: {
+            type: Sequelize.TEXT,
+            allowNull: true
+          },
           createdAt: {
             allowNull: false,
             type: Sequelize.DATE,

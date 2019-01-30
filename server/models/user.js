@@ -81,6 +81,8 @@ export default (sequelize, DataTypes) => {
       Bookmark,
       Share,
       Role,
+      Report,
+      ArticleLikesDislike,
       ReadingStats
     } = models;
     User.hasMany(Article, {
@@ -95,6 +97,14 @@ export default (sequelize, DataTypes) => {
     User.hasMany(Comment, {
       foreignKey: 'userId',
       as: 'comments'
+    });
+    User.hasMany(Report, {
+      foreignKey: 'userId',
+      as: 'reports'
+    });
+    User.hasMany(ArticleLikesDislike, {
+      foreignKey: 'userId',
+      as: 'likes'
     });
     User.hasMany(Reply, {
       as: 'replies',
@@ -117,6 +127,14 @@ export default (sequelize, DataTypes) => {
     User.hasMany(Share, {
       foreignKey: 'userId'
     });
+    User.belongsToMany(Article, {
+      through: 'Report',
+      foreignKey: 'userId'
+    });
+    User.belongsToMany(Article, {
+      through: 'ArticleLikesDislike',
+      foreignKey: 'userId'
+    });
     User.belongsTo(Role, {
       foreignKey: 'roleId'
     });
@@ -124,7 +142,6 @@ export default (sequelize, DataTypes) => {
       through: 'Rating',
       foreignKey: 'userId'
     });
-
     User.belongsToMany(User, {
       through: 'Follow',
       as: 'followers',

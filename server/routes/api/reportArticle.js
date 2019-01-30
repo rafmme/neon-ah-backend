@@ -7,22 +7,38 @@ import reportArticleSchema from '../../middlewares/validations/ReportArticleVali
 const reportArticleRoutes = Router();
 
 reportArticleRoutes.post(
-  '/articles/:slug/report',
+  '/articles/:slug/reports',
   AuthMiddleware.checkIfUserIsAuthenticated,
-  reportArticleSchema,
-  handleValidationErrors,
+  reportArticleSchema, handleValidationErrors,
   ReportArticleController.reportArticle
+);
+reportArticleRoutes.put(
+  '/articles/:slug/reports',
+  AuthMiddleware.checkIfUserIsAuthenticated,
+  reportArticleSchema, handleValidationErrors,
+  ReportArticleController.reportArticleUpdate
 );
 reportArticleRoutes.get(
   '/reports',
+  AuthMiddleware.checkIfUserIsSuperAdmin,
   AuthMiddleware.checkIfUserIsAuthenticated,
-  AuthMiddleware.checkIfUserIsAdmin,
   ReportArticleController.getReportedArticles
 );
 reportArticleRoutes.get(
-  '/articles/:slug/report',
+  '/articles/:slug/reports',
+  AuthMiddleware.checkIfUserIsAdmin,
   AuthMiddleware.checkIfUserIsAuthenticated,
   ReportArticleController.getReportsOnArticle
+);
+reportArticleRoutes.get(
+  '/myreports',
+  AuthMiddleware.checkIfUserIsAuthenticated,
+  ReportArticleController.getAllReportsByUser
+);
+reportArticleRoutes.delete(
+  '/articles/:slug/reports',
+  AuthMiddleware.checkIfUserIsAuthenticated,
+  ReportArticleController.deleteReportOnArticle
 );
 
 export default reportArticleRoutes;

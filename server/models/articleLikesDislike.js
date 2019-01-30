@@ -18,6 +18,11 @@ export default (sequelize, DataTypes) => {
     {}
   );
   ArticleLikesDislike.associate = (models) => {
+    ArticleLikesDislike.belongsTo(models.User, {
+      foreignKey: 'userId',
+      onDelete: 'CASCADE',
+      as: 'Liked By'
+    });
     ArticleLikesDislike.belongsTo(models.Article, {
       foreignKey: 'articleId',
       onDelete: 'CASCADE'
