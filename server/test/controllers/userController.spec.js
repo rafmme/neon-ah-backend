@@ -5,17 +5,154 @@ import { exists } from 'fs';
 import app from '../../..';
 import db from '../../models';
 import TokenManager from '../../helpers/TokenManager';
-// import { token } from '../mockData/token';
 import {
-  userToken, userToken2, invalidToken, superAdminToken
+  userToken, invalidToken, nonExistingUserToken, superAdminToken
 } from '../mockData/tokens';
-import token from '../mockData/tokens';
 
 const { User } = db;
 
 chai.use(chaiHttp);
 
 describe('User Model', () => {
+  const userInfo = {
+    fullName: 'Mmakwe Onyeka',
+    userName: 'mmakwe222',
+    email: 'jesseinit@nowt.com',
+    password: 'blahblah',
+    confirmPassword: 'blahblah',
+    bio: 'Gitting Started',
+    authTypeId: '15745c60-7b1a-11e8-9c9c-2d42b21b1a3e'
+  };
+
+  describe('User Sign up Test', () => {
+    it('should create user', async () => {
+      const response = await chai
+        .request(app)
+        .post('/api/v1/auth/signup')
+        .send({
+          userName: userInfo.userName,
+          fullName: userInfo.fullName,
+          email: userInfo.email,
+          password: userInfo.password,
+          confirmPassword: userInfo.confirmPassword,
+          authTypeId: userInfo.authTypeId
+        });
+      expect(response.status).to.equal(201);
+      expect(response.body).to.be.an('object');
+      expect(response.body).to.have.property('data');
+      expect(response.body.data).to.be.an('object');
+      expect(response.body.data).to.have.property('message');
+      expect(response.body.data.message).to.be.a('string');
+      expect(response.body.data.message).to.be.eql(
+        'Kindly your check your email to verify your account'
+      );
+      expect(response.body).to.have.property('status');
+      expect(response.body.status).to.be.a('string');
+      expect(response.body.status).to.equal('success');
+    });
+
+    it('should return error for existing email', async () => {
+      const response = await chai
+        .request(app)
+        .post('/api/v1/auth/signup')
+        .send({
+          userName: userInfo.userName,
+          fullName: userInfo.fullName,
+          email: userInfo.email,
+          password: userInfo.password,
+          confirmPassword: userInfo.confirmPassword,
+          authTypeId: userInfo.authTypeId
+        });
+
+      expect(response.status).to.equal(409);
+      expect(response.body).to.be.an('object');
+      expect(response.body).to.have.property('data');
+      expect(response.body.data).to.be.an('object');
+      expect(response.body.data).to.have.property('message');
+      expect(response.body.data.message).to.be.a('string');
+      expect(response.body.data.message).to.be.eql(
+        'The provided email has been taken. Kingly provide another.'
+      );
+      expect(response.body).to.have.property('status');
+      expect(response.body.status).to.be.a('string');
+      expect(response.body.status).to.equal('failure');
+    });
+  });
+
+  describe('Email Verification Link', () => {
+    it('It should verify a user on successful signup', async () => {
+      /*  */
+      const generatedToken = TokenManager.sign({
+        userEmail: 'jesseinit@now.com'
+      });
+
+      const response = await chai.request(app).post(`/api/v1/auth/verify/${generatedToken}`);
+      expect(response.status).to.equal(200);
+      expect(response.body.status).to.eqls('success');
+      expect(response.body.data.message).to.eqls('Your account has now been verified');
+    });
+
+    it('should return error for a user whose has been verified before', async () => {
+      const generatedToken = TokenManager.sign({
+        userEmail: 'jesseinit@now.com'
+      });
+      const response = await chai.request(app).post(`/api/v1/auth/verify/${generatedToken}`);
+
+      expect(response.status).to.eqls(409);
+      expect(response.body.status).to.eqls('failure');
+      expect(response.body.data.error).to.eqls('Your account has already been activated.');
+    });
+
+    it('User should get an error token is malformed', async () => {
+      const generatedToken = TokenManager.sign({
+        userEmail: 'jesseinit1@now.com'
+      });
+      const malformedToken = generatedToken.toUpperCase();
+
+      const response = await chai.request(app).post(`/api/v1/auth/verify/${malformedToken}`);
+
+      expect(response.status).to.eqls(400);
+      expect(response.body.data.error.name).to.eqls('JsonWebTokenError');
+    });
+  });
+
+  describe('User Login', () => {
+    it('User should get an error when provided email account is not found', async () => {
+      const response = await chai
+        .request(app)
+        .post('/api/v1/auth/login')
+        .send({
+          user: 'nonExistingUser',
+          password: '12345768'
+        });
+      expect(response.status).to.eql(404);
+      expect(response.body.status).to.eqls('failure');
+      expect(response.body.data.message).to.be.eql(
+        'Sorry!!, Your login information is not correct.'
+      );
+    });
+
+    it('User should get an error when wrong password is provided', async () => {
+      const response = await chai
+        .request(app)
+        .post('/api/v1/auth/login')
+        .send({ user: 'jesseinit@now.com', password: '123656745676' });
+      expect(response.status).to.eql(401);
+      expect(response.body.status).to.eqls('failure');
+      expect(response.body.data.message).to.eqls('Sorry!!, Your login information is not correct.');
+    });
+
+    it('User should get loggedIn and token returned when correct credentials are provided', async () => {
+      const response = await chai
+        .request(app)
+        .post('/api/v1/auth/login')
+        .send({ user: userInfo.userName, password: userInfo.password });
+      expect(response.status).to.eql(200);
+      expect(response.body.status).to.eqls('success');
+      expect(response.body.data.token).to.be.a('String');
+    });
+  });
+
   describe('Password Forget/Reset', () => {
     let generatedToken = null;
     it('User should get an error when provided email account is not found during password recovery', async () => {
@@ -84,7 +221,9 @@ describe('User Model', () => {
         });
 
       expect(response.status).to.eqls(401);
-      expect(response.body.data.message).to.eqls('JsonWebTokenError');
+      expect(response.body.data.message).to.eqls(
+        'Sorry! Link has expired. Kindly re-initiate password reset.'
+      );
     });
 
     it('It should be able to handle unexpected errors thrown during password reset', async () => {
@@ -168,7 +307,7 @@ describe('User Model', () => {
   });
 
   describe('Update User Profile', () => {
-    it('Should show error response when trying to update without being registered', async () => {
+    it('Should show error response when trying to update without being authenticated', async () => {
       const response = await chai
         .request(app)
         .put('/api/v1/users')
@@ -191,7 +330,7 @@ describe('User Model', () => {
       expect(response.body.data.message).to.eqls('Token is invalid, You need to log in again');
     });
 
-    it('User should show proper error when user tries to edit profile with username that exists', async () => {
+    it('User should show conflict error when user tries to edit profile with username that exists', async () => {
       const response = await chai
         .request(app)
         .put('/api/v1/users')
@@ -201,7 +340,6 @@ describe('User Model', () => {
           fullName: 'Jesse',
           email: 'jesseinit@now.com',
           password: 'Blahblah',
-          notifySettings: true,
           bio: '',
           img: ''
         });
@@ -222,7 +360,6 @@ describe('User Model', () => {
           fullName: 'Jesse',
           email: 'jesseinit@now.com',
           password: 'Blahblah',
-          notifySettings: true,
           img: ''
         });
       expect(response.status).to.eqls(422);
@@ -236,7 +373,7 @@ describe('User Model', () => {
         .put('/api/v1/users')
         .set('Authorization', `Bearer ${userToken}`)
         .send({
-          notifySettings: 3,
+          getInAppNotification: 3,
           userName: 'jesseinit',
           fullName: 'Jesse',
           email: 'jesseinit@now.com',
@@ -246,7 +383,7 @@ describe('User Model', () => {
         });
       expect(response.status).to.eqls(422);
       expect(response.body.status).to.eqls('failure');
-      expect(response.body.data.error[0]).to.eqls('Notification settings must be a Boolean');
+      expect(response.body.data.error[0]).to.eqls('In-app notification settings must be a Boolean');
     });
 
     it('User should show proper error when user tries to edit profile with invalid username data', async () => {
@@ -259,12 +396,12 @@ describe('User Model', () => {
           fullName: 'Jesse',
           email: 'jesseinit@now.com',
           password: 'Blahblah',
-          notifySettings: true,
           bio: '',
           img: ''
         });
       expect(response.status).to.eqls(422);
       expect(response.body.status).to.eqls('failure');
+      expect(response.body.data.error).to.be.an('Array');
       expect(response.body.data.error[0]).to.eqls('Username has to be a string');
     });
 
@@ -272,41 +409,38 @@ describe('User Model', () => {
       const response = await chai
         .request(app)
         .put('/api/v1/users')
-        .set('Authorization', `Bearer ${userToken}`)
+        .set('Authorization', `Bearer ${nonExistingUserToken}`)
         .send({
-          fullName: '',
-          userName: 'jesseinit',
-          email: 'jesseinit@now.com',
-          password: 'Blahblah',
-          notifySettings: true,
-          bio: '',
-          img: ''
+          fullName: 'Jeese'
         });
-      expect(response.status).to.eqls(422);
+      expect(response.status).to.eqls(404);
       expect(response.body.status).to.eqls('failure');
-      expect(response.body.data.error[0]).to.eqls('fullname cannot be empty');
+      expect(response.body.data.message).to.eqls('User not found');
     });
 
-    it('Should should handle unexpected errors when updating the profile of the user', async () => {
+    it('User should update the user profile when the correct user tries to edit his profile', async () => {
+      const response = await chai
+        .request(app)
+        .put('/api/v1/users')
+        .set('Authorization', `Bearer ${userToken}`)
+        .send({ userName: 'john' });
+      expect(response.status).to.eqls(200);
+      expect(response.body.status).to.eqls('success');
+      expect(response.body.data.message).to.eqls('Profile updated successfully');
+    });
+
+    it('Should should handle DB errors when updating the profile of the user', async () => {
       const stub = sinon.stub(User, 'findOne').rejects(new Error('Internal server error!'));
 
       const response = await chai
         .request(app)
         .put('/api/v1/users')
-        .set('Authorization', `Bearer ${userToken}`);
-      expect(response.status).to.eqls(422);
+        .set('Authorization', `Bearer ${userToken}`)
+        .send({ userName: 'john' });
+      expect(response.status).to.eqls(500);
+      expect(response.body.status).to.eqls('failure');
+      expect(response.body.data.message).to.eqls('An error occured on the server');
       stub.restore();
-
-      it('User should update the user profile when the correct user tries to edit his profile', async () => {
-        const response = await chai
-          .request(app)
-          .put('/api/v1/users')
-          .set('Authorization', `Bearer ${userToken}`)
-          .send({ userName: 'john' });
-        expect(response.status).to.eqls(205);
-        expect(response.body.status).to.eqls('success');
-        expect(response.body.data.message).to.eqls('Profile updated successfully');
-      });
     });
   });
 

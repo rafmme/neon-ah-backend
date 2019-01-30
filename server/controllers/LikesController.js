@@ -28,6 +28,7 @@ class LikesController {
       if (!theArticle) {
         return response(res, 404, 'failure', 'Article Not Found', null, null);
       }
+
       const unlikeTheArticle = await ArticleLikesDislike.findOne({
         where: {
           userId: req.user.userId,
@@ -89,7 +90,14 @@ class LikesController {
       if (!allLikes) {
         return response(res, 404, 'failure', 'No likes for this Article', null, null);
       }
-      return response(res, 200, 'success', `There are ${allLikes.count} Likes for this article`, null, null);
+      return response(
+        res,
+        200,
+        'success',
+        `There are ${allLikes.count} Likes for this article`,
+        null,
+        null
+      );
     } catch (error) {
       return res.status(401).json({
         data: { status: 'failure', message: error }

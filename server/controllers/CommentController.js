@@ -1,7 +1,13 @@
 import db from '../models';
 import response from '../helpers/response';
+import MailManager from '../helpers/MailManager';
+import newCommentTemplate from '../helpers/emailTemplates/newCommentTemplate';
+import Util from '../helpers/Util';
+import eventHandler from '../helpers/eventsHandler';
 
-const { Article, Comment, User } = db;
+const {
+  Article, Comment, User, Notification
+} = db;
 /**
  * @class CommentController
  */
@@ -21,28 +27,61 @@ class CommentController {
       const { content } = req.body;
       const { slug } = req.params;
 
-      const articleFound = await Article.findOne({
+      const { dataValues: article } = await Article.findOne({
         where: {
           slug
         }
       });
-      if (articleFound) {
-        const commentCreated = await Comment.create({
-          content,
-          userId,
-          articleId: articleFound.dataValues.id
-        });
-        if (commentCreated) {
-          return response(res, 201, 'success', 'Comment created', null, commentCreated.dataValues);
-        }
-      } else {
+
+      if (!article) {
         return response(res, 404, 'failure', 'Article with the id not found', null, null);
       }
+
+      const getAuthorPromise = User.findOne({ where: { id: article.userId } });
+      const getCommenterPromise = User.findOne({ where: { id: userId } });
+      const createCommentPromise = Comment.create({
+        content,
+        userId,
+        articleId: article.id
+      });
+
+      const [
+        { dataValues: articleAuthor },
+        { dataValues: createdComment },
+        { dataValues: commenter }
+      ] = await Promise.all([getAuthorPromise, createCommentPromise, getCommenterPromise]);
+
+      const { dataValues: notification } = await Notification.create({
+        message: `${commenter.fullName} commented on your article`,
+        senderId: userId,
+        receiverId: articleAuthor.id
+      });
+
+      const newCommentMailConfig = {
+        to: `${articleAuthor.email}`,
+        from: 'notification@neon-ah.com',
+        subject: 'New Comment Alert',
+        html: newCommentTemplate(articleAuthor, article)
+      };
+
+      if (articleAuthor.getEmailsNotification) {
+        eventHandler.on('sendMail', MailManager.sendMailNotification);
+        eventHandler.emit('sendMail', newCommentMailConfig);
+      }
+
+      if (articleAuthor.getInAppNotification) {
+        Util.sendInAppNotification([articleAuthor], notification.message);
+      }
+
+      response(res, 201, 'success', 'Comment created', null, createdComment);
     } catch (error) {
       return response(
-        res, 500, 'failure',
-        'server error',
-        { message: 'Something went wrong on the server' }, null
+        res,
+        500,
+        'failure',
+        error,
+        { message: 'Something went wrong on the server' },
+        null
       );
     }
   }
@@ -64,29 +103,39 @@ class CommentController {
           slug
         }
       });
+
       if (!articleFound) {
         return response(res, 404, 'failure', 'Article not found', null, null);
       }
+
       const commentsQuery = await Comment.findAll({
-        include: [{
-          model: User,
-          attributes: ['userName', 'img']
-        }],
+        include: [
+          {
+            model: User,
+            attributes: ['userName', 'img']
+          }
+        ],
         where: {
           articleId: articleFound.dataValues.id
-        },
+        }
       });
+
       if (commentsQuery.length === 0) {
         return response(res, 404, 'failure', 'Comment with the articleId not found', null, null);
       }
+
       const comments = [];
       commentsQuery.map(comment => comments.push(comment.dataValues));
+
       return response(res, 200, 'success', 'Comment found', null, comments);
     } catch (error) {
       return response(
-        res, 500, 'failure',
+        res,
+        500,
+        'failure',
         'server error',
-        { message: 'Something went wrong on the server' }, null
+        { message: 'Something went wrong on the server' },
+        null
       );
     }
   }
@@ -108,19 +157,24 @@ class CommentController {
           slug
         }
       });
+
       if (!articleFound) {
         return response(res, 404, 'failure', 'Article not found', null, null);
       }
+
       const comment = await Comment.findOne({
-        include: [{
-          model: User,
-          attributes: ['userName', 'img']
-        }],
+        include: [
+          {
+            model: User,
+            attributes: ['userName', 'img']
+          }
+        ],
         where: {
           articleId: articleFound.dataValues.id,
           id: commentId
-        },
+        }
       });
+
       if (comment) {
         return response(res, 200, 'success', 'Comment found', null, comment.dataValues);
       }
@@ -129,9 +183,12 @@ class CommentController {
         return response(res, 404, 'failure', 'Comment not found', null, null);
       }
       return response(
-        res, 500, 'failure',
+        res,
+        500,
+        'failure',
         'server error',
-        { message: 'Something went wrong on the server' }, null
+        { message: 'Something went wrong on the server' },
+        null
       );
     }
   }
@@ -168,10 +225,24 @@ class CommentController {
         return response(res, 404, 'failure', 'Comment not found for article id', null, null);
       }
       if (existingComment.userId !== userId) {
-        return response(res, 403, 'failure', 'You are not allowed to update another user\'s comment', null, null);
+        return response(
+          res,
+          403,
+          'failure',
+          "You are not allowed to update another user's comment",
+          null,
+          null
+        );
       }
       if (content === existingComment.content) {
-        return response(res, 200, 'success', 'Comment was not edited because content is the same', null, null);
+        return response(
+          res,
+          200,
+          'success',
+          'Comment was not edited because content is the same',
+          null,
+          null
+        );
       }
       const newEditHistory = {
         content: existingComment.content,
@@ -193,9 +264,12 @@ class CommentController {
         return response(res, 404, 'failure', 'Comment  not found', null, null);
       }
       return response(
-        res, 500, 'failure',
+        res,
+        500,
+        'failure',
         'server error',
-        { message: 'Something went wrong on the server' }, null
+        { message: 'Something went wrong on the server' },
+        null
       );
     }
   }
@@ -230,7 +304,14 @@ class CommentController {
         return response(res, 404, 'failure', 'Comment not found for article id', null, null);
       }
       if (getCommentDelete.dataValues.userId !== userId) {
-        return response(res, 403, 'failure', 'You are not allowed to delete another user\'s comment', null, null);
+        return response(
+          res,
+          403,
+          'failure',
+          "You are not allowed to delete another user's comment",
+          null,
+          null
+        );
       }
       const deleteComment = await getCommentDelete.destroy();
       if (deleteComment) {
@@ -241,9 +322,12 @@ class CommentController {
         return response(res, 404, 'failure', 'Comment not found', null, null);
       }
       return response(
-        res, 500, 'failure',
+        res,
+        500,
+        'failure',
         'server error',
-        { message: 'Something went wrong on the server' }, null
+        { message: 'Something went wrong on the server' },
+        null
       );
     }
   }

@@ -46,6 +46,7 @@ package-lock.json
 
 # dotenv file
 .env
+client
 
 # personal files
 swagger.1.yaml

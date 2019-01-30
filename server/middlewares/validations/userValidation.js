@@ -55,9 +55,6 @@ const signUpSchema = checkSchema({
   },
   password: {
     in: 'body',
-    customSanitizer: {
-      options: password => password.trim()
-    },
     isEmpty: {
       negated: true,
       errorMessage: 'Password cannot be empty'
@@ -109,9 +106,6 @@ const logInSchema = checkSchema({
   },
   password: {
     in: 'body',
-    customSanitizer: {
-      options: password => password.trim()
-    },
     isEmpty: {
       negated: true,
       errorMessage: 'Password cannot be empty'
@@ -128,6 +122,7 @@ const logInSchema = checkSchema({
 const editProfileSchema = checkSchema({
   fullName: {
     in: 'body',
+    optional: true,
     customSanitizer: {
       options: fullName => fullName.trim()
     },
@@ -147,6 +142,7 @@ const editProfileSchema = checkSchema({
   },
   userName: {
     in: 'body',
+    optional: true,
     customSanitizer: {
       options: UserName => UserName.trim()
     },
@@ -166,6 +162,7 @@ const editProfileSchema = checkSchema({
   },
   email: {
     in: 'body',
+    optional: true,
     customSanitizer: {
       options: email => email.trim()
     },
@@ -180,6 +177,7 @@ const editProfileSchema = checkSchema({
   },
   password: {
     in: 'body',
+    optional: true,
     customSanitizer: {
       options: password => password.trim()
     },
@@ -196,6 +194,7 @@ const editProfileSchema = checkSchema({
   },
   bio: {
     in: 'body',
+    optional: true,
     customSanitizer: {
       options: bio => bio.trim()
     },
@@ -203,18 +202,31 @@ const editProfileSchema = checkSchema({
       errorMessage: 'Bio can only be string'
     }
   },
-  notifySettings: {
+  getEmailsNotification: {
     in: 'body',
+    optional: true,
     isEmpty: {
       negated: true,
-      errorMessage: 'Notification settings cannot be empty'
+      errorMessage: 'Email notification settings cannot be empty'
     },
     isBoolean: {
-      errorMessage: 'Notification settings must be a Boolean'
+      errorMessage: 'Email notification settings must be a Boolean'
+    }
+  },
+  getInAppNotification: {
+    in: 'body',
+    optional: true,
+    isEmpty: {
+      negated: true,
+      errorMessage: 'In-app notification settings cannot be empty'
+    },
+    isBoolean: {
+      errorMessage: 'In-app notification settings must be a Boolean'
     }
   },
   img: {
     in: 'body',
+    optional: true,
     customSanitizer: {
       options: img => img.trim()
     },

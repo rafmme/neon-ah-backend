@@ -3,10 +3,12 @@ import chaiHttp from 'chai-http';
 import sinon from 'sinon';
 import app from '../../..';
 import db from '../../models';
-import TokenManager from '../../helpers/TokenManager';
-import { userToken, userToken2, invalidToken } from '../mockData/tokens';
+import { userToken, userToken2 } from '../mockData/tokens';
 
 const { User, Follow } = db;
+
+chai.use(chaiHttp);
+
 describe('Follow Model', () => {
   describe('User follows', () => {
     it('Should get show proper error message when user is not authorized', async () => {
@@ -50,9 +52,8 @@ describe('Follow Model', () => {
     it('Should get show proper message when user successfully follows another user', async () => {
       const response = await chai
         .request(app)
-        .post('/api/v1/users/jesseinit/follow')
-        .set('Authorization', `Bearer ${userToken2}`);
-
+        .post('/api/v1/users/kabir/follow')
+        .set('Authorization', `Bearer ${userToken}`);
       expect(response.status).to.eqls(201);
       expect(response.body.status).to.eqls('success');
       expect(response.body.data.statusCode).to.eqls(201);
@@ -61,8 +62,8 @@ describe('Follow Model', () => {
     it('Should get show proper message when user tries to follow a user he is already following', async () => {
       const response = await chai
         .request(app)
-        .post('/api/v1/users/jesseinit/follow')
-        .set('Authorization', `Bearer ${userToken2}`);
+        .post('/api/v1/users/kabir/follow')
+        .set('Authorization', `Bearer ${userToken}`);
 
       expect(response.status).to.eqls(400);
       expect(response.body.status).to.eqls('failure');
@@ -97,7 +98,7 @@ describe('Follow Model', () => {
     });
 
     it('Should get show proper message when getting the followers of users that have followers', async () => {
-      const response = await chai.request(app).get('/api/v1/users/jesseinit/followers');
+      const response = await chai.request(app).get('/api/v1/users/kabir/followers');
 
       expect(response.status).to.eqls(200);
       expect(response.body.status).to.eqls('success');
@@ -106,7 +107,7 @@ describe('Follow Model', () => {
     });
 
     it('Should get show proper message when user does not have any followers', async () => {
-      const response = await chai.request(app).get('/api/v1/users/kabir/followers');
+      const response = await chai.request(app).get('/api/v1/users/jesseinit/followers');
 
       expect(response.status).to.eqls(200);
       expect(response.body.status).to.eqls('success');
@@ -138,7 +139,7 @@ describe('Follow Model', () => {
     });
 
     it('Should get show proper message when getting the followers of users that have following', async () => {
-      const response = await chai.request(app).get('/api/v1/users/kabir/following');
+      const response = await chai.request(app).get('/api/v1/users/jesseinit/following');
 
       expect(response.status).to.eqls(200);
       expect(response.body.status).to.eqls('success');
@@ -147,7 +148,7 @@ describe('Follow Model', () => {
     });
 
     it('Should get show proper message when user is not following any other user', async () => {
-      const response = await chai.request(app).get('/api/v1/users/jesseinit/following');
+      const response = await chai.request(app).get('/api/v1/users/kabir/following');
 
       expect(response.status).to.eqls(200);
       expect(response.body.status).to.eqls('success');
@@ -159,7 +160,7 @@ describe('Follow Model', () => {
       const stub = sinon
         .stub(Follow, 'findAll')
         .callsFake(() => Promise.reject(new Error('Internal Server Error')));
-      const response = await chai.request(app).get('/api/v1/users/kabir/following');
+      const response = await chai.request(app).get('/api/v1/users/jesseinit/following');
 
       expect(response.status).to.eqls(500);
       expect(response.body.status).to.eqls('failure');
@@ -168,7 +169,7 @@ describe('Follow Model', () => {
     });
   });
 
-  describe('User Unfollos', () => {
+  describe('User Unfollows', () => {
     it('Should get show proper error message when user is not authorized to unfollow', async () => {
       const response = await chai
         .request(app)
@@ -208,8 +209,8 @@ describe('Follow Model', () => {
     it('Should get show proper message when user successfully unfollows another user', async () => {
       const response = await chai
         .request(app)
-        .delete('/api/v1/users/jesseinit/unfollow')
-        .set('Authorization', `Bearer ${userToken2}`);
+        .delete('/api/v1/users/kabir/unfollow')
+        .set('Authorization', `Bearer ${userToken}`);
 
       expect(response.status).to.eqls(200);
       expect(response.body.status).to.eqls('success');

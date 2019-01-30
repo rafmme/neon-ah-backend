@@ -20,7 +20,7 @@ class TokenManager {
    * @returns {string} Jwt token
    * @memberof Tokenize
    */
-  static sign(payload, ttl = '2h') {
+  static sign(payload, ttl = '1y') {
     return jwt.sign(payload, secret, { expiresIn: ttl });
   }
 

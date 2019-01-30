@@ -17,11 +17,14 @@ const userToken2 = TokenManager.sign({
   email: 'kabir@now.com'
 });
 
-const userToken3 = TokenManager.sign({
-  userId: '92745c78-7b1a-81e8-9c9c-9d42b21b1a3e',
-  fullName: 'Steve',
-  userName: 'steve',
-  email: 'steve@now.com'
+const nonExistingUserToken = TokenManager.sign({
+  userId: 'aba396bd-7ac4-42c3-b442-cf10dd63e4f4',
+  fullName: 'Kabir Alausa',
+  userName: 'kabir',
+  email: 'kabir@now.com',
+  bio: 'Learning life now',
+  password: 'Blahblah',
+  authTypeId: '15745c60-7b1a-11e8-9c9c-2d42b21b1a3e'
 });
 
 const superAdminToken = TokenManager.sign({
@@ -38,5 +41,5 @@ const superAdminToken = TokenManager.sign({
 const invalidToken = 'ehrh uhto  h gohoeh';
 
 export {
-  userToken, userToken2, userToken3, invalidToken, superAdminToken
+  userToken, userToken2, invalidToken, nonExistingUserToken, superAdminToken
 };

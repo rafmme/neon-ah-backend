@@ -1,3 +1,6 @@
+import Pusher from 'pusher';
+import 'dotenv/config';
+
 /**
  * @class Util
  */
@@ -11,7 +14,7 @@ class Util {
   static extractErrorMessages(errors) {
     const error = {
       hasError: false,
-      errorMessages: {},
+      errorMessages: {}
     };
 
     if (errors === false || typeof errors !== 'object') {
@@ -46,7 +49,10 @@ class Util {
    */
   static createArrayOfStrings(text) {
     const tagText = `${text}`;
-    const arrayOfStrings = tagText.trim().split(',').map(str => this.removeExtraWhitespace(str));
+    const arrayOfStrings = tagText
+      .trim()
+      .split(',')
+      .map(str => this.removeExtraWhitespace(str));
     return arrayOfStrings;
   }
 
@@ -57,7 +63,9 @@ class Util {
    * @returns {string} returns the date in formatted string
    */
   static formatDate(dateString) {
-    const date = `${new Date(dateString).toDateString()} ${new Date(dateString).toLocaleTimeString()}`;
+    const date = `${new Date(dateString).toDateString()} ${new Date(
+      dateString
+    ).toLocaleTimeString()}`;
     return date;
   }
 
@@ -73,6 +81,30 @@ class Util {
       where: data
     });
     return resource;
+  }
+
+  /**
+   * @description Util method used to send in-app notification to the user
+   * @static
+   * @param {array} users An array of users which would be recieving the notification
+   * @param {string} message Message to be sent to the users
+   * @returns {void} Void
+   * @memberof Util
+   */
+  static sendInAppNotification(users, message) {
+    const pusher = new Pusher({
+      appId: process.env.PUSHER_APP_ID,
+      key: process.env.PUSHER_KEY,
+      secret: process.env.PUSHER_SECRET,
+      cluster: process.env.PUSHER_CLUSTER,
+      useTLS: true
+    });
+
+    users.forEach((user) => {
+      if (user.getInAppNotification) {
+        pusher.trigger('notification', `${user.id}-event`, message);
+      }
+    });
   }
 }
 

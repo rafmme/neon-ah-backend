@@ -55,7 +55,11 @@ export default (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: true
       },
-      notifySettings: {
+      getEmailsNotification: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true
+      },
+      getInAppNotification: {
         type: DataTypes.BOOLEAN,
         defaultValue: true
       },

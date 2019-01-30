@@ -22,6 +22,7 @@ class AuthMiddleware {
       }
 
       const token = authorization.split(' ')[1];
+
       const decoded = TokenManager.verify(token);
 
       if (decoded) {

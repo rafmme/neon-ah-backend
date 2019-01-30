@@ -3,22 +3,20 @@ import response from '../helpers/response';
 import db from '../models';
 import pagination from '../helpers/pagination';
 
-const {
-  User, Tag, Article
-} = db;
+const { User, Tag, Article } = db;
 const { Op } = Sequelize;
 /**
  * @class SearchController
  */
 class SearchController {
-/**
- * @static
- * @description a function that handles searching articles by author
- * @param {String} author
- * @param {object} req HTTP request object
- * @param {object} res HTTP response object
- * @returns {object} api route response with created article info
- */
+  /**
+   * @static
+   * @description a function that handles searching articles by author
+   * @param {String} author
+   * @param {object} req HTTP request object
+   * @param {object} res HTTP response object
+   * @returns {object} api route response with created article info
+   */
   static async byAuthor(author, req, res) {
     try {
       const { query } = req;
@@ -60,13 +58,13 @@ class SearchController {
   }
 
   /**
- * @static
- * @description a function that handles searching articles by author
- * @param {String} tag
- * @param {object} req HTTP request object
- * @param {object} res HTTP response object
- * @returns {object} api route response with created article info
- */
+   * @static
+   * @description a function that handles searching articles by author
+   * @param {String} tag
+   * @param {object} req HTTP request object
+   * @param {object} res HTTP response object
+   * @returns {object} api route response with created article info
+   */
   static async byTags(tag, req, res) {
     try {
       const { query } = req;
@@ -80,15 +78,16 @@ class SearchController {
           }
         },
         attributes: ['id', 'name'],
-        include:
-          [{
+        include: [
+          {
             model: Article,
             as: 'articles',
             attributes: ['id', 'slug', 'title', 'content'],
             through: {
               attributes: []
             }
-          }],
+          }
+        ],
         limit,
         offset
       });
@@ -108,13 +107,13 @@ class SearchController {
   }
 
   /**
- * @static
- * @description a function that handles searching articles by author
- * @param {String} title
- * @param {object} req HTTP request object
- * @param {object} res HTTP response object
- * @returns {object} api route response with created article info
- */
+   * @static
+   * @description a function that handles searching articles by author
+   * @param {String} title
+   * @param {object} req HTTP request object
+   * @param {object} res HTTP response object
+   * @returns {object} api route response with created article info
+   */
   static async byTitle(title, req, res) {
     try {
       const { query } = req;

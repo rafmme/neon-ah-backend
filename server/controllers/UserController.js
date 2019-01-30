@@ -1,11 +1,13 @@
-import Sequelize from 'sequelize';
 import TokenManager from '../helpers/TokenManager';
 import MailManager from '../helpers/MailManager';
 import db from '../models';
 import PasswordManager from '../helpers/PasswordManager';
+
 import response from '../helpers/response';
 
-const { User } = db;
+import passwordResetEmailTemplate from '../helpers/emailTemplates/resetPasswordTemplate';
+
+const { User, Sequelize } = db;
 const { Op } = Sequelize;
 
 /**
@@ -46,15 +48,19 @@ class UserController {
         '24h'
       );
 
-      await MailManager.sendPasswordResetLink({
-        user,
-        token
-      });
+      const passwordResetEmail = {
+        to: `${user.email}`,
+        from: 'notification@neon-ah.com',
+        subject: 'Password Reset Link',
+        html: passwordResetEmailTemplate(user, token)
+      };
 
-      res.status(200).send({
+      await MailManager.sendMailNotification(passwordResetEmail);
+
+      res.status(200).json({
         status: 'success',
         data: {
-          statusCode: 200,
+          statusCode: '200',
           message: 'Kindly check your mail to reset your password'
         }
       });
@@ -131,8 +137,8 @@ class UserController {
         return res.status(401).send({
           status: 'failure',
           data: {
-            statusCode: 401,
-            message: error.name
+            statusCode: '401',
+            message: 'Sorry! Link has expired. Kindly re-initiate password reset.'
           }
         });
       }
@@ -149,11 +155,11 @@ class UserController {
   /**
    * @static
    * @param {object} req - request object
-   * @param {object} response - response object
+   * @param {object} res - response object
    * @return {res} res - Response object
    * @memberof userController
    */
-  static async signUp(req, response) {
+  static async signUp(req, res) {
     try {
       const {
         fullName, userName, email, password
@@ -164,11 +170,11 @@ class UserController {
       const foundUser = await User.findOne({ where: { email } });
 
       if (foundUser) {
-        return response.status(409).send({
+        return res.status(409).send({
           status: 'failure',
           data: {
             statusCode: 409,
-            message: 'Email already exists.Enter another email'
+            message: 'The provided email has been taken. Kingly provide another.'
           }
         });
       }
@@ -189,10 +195,9 @@ class UserController {
         role: createdUser.roleId
       };
 
-      const token = await TokenManager.sign(payload, '24h');
+      const token = await TokenManager.sign(payload, '1y');
       await MailManager.sendVerificationEmail({ createdUser, token });
-
-      return response.status(201).send({
+      return res.status(201).send({
         status: 'success',
         data: {
           statusCode: 201,
@@ -200,7 +205,7 @@ class UserController {
         }
       });
     } catch (err) {
-      response.status(400).send({
+      res.status(400).send({
         status: 'failure',
         data: {
           statusCode: 400,
@@ -224,7 +229,7 @@ class UserController {
 
       const foundUser = await User.findOne({ where: { email: userEmail } });
 
-      if (foundUser.isVerified === true) {
+      if (foundUser.isVerified) {
         return res.status(409).send({
           status: 'failure',
           data: {
@@ -256,64 +261,63 @@ class UserController {
 
   /**
    * @static
-   * @param {*} req
-   * @param {*} response
+   * @param {*} req Request
+   * @param {*} res Response
    * @returns {object} Json response
    * @memberof Auth
    */
-  static async logIn(req, response) {
+  static async logIn(req, res) {
     try {
       const { user, password } = req.body;
 
-      const userSearch = await User.findOne({
+      const foundUser = await User.findOne({
         where: {
           [Op.or]: [{ email: user }, { userName: user }]
         }
       });
 
-      if (!userSearch) {
-        return response.status(404).send({
+      if (!foundUser) {
+        return res.status(404).send({
           status: 'failure',
           data: {
             statusCode: 404,
-            message: 'user not found'
+            message: 'Sorry!!, Your login information is not correct.'
           }
         });
       }
-      const isValidPassword = PasswordManager.decryptPassword(
+      const isValidPassword = PasswordManager.verifyPassword(
         password,
-        userSearch.dataValues.password
+        foundUser.dataValues.password
       );
 
       if (!isValidPassword) {
-        return response.status(401).send({
+        return res.status(401).send({
           status: 'failure',
           data: {
             statusCode: 401,
-            auth: false,
-            token: null,
-            message: 'Wrong login details'
+            message: 'Sorry!!, Your login information is not correct.'
           }
         });
       }
 
       const payload = {
-        userId: userSearch.id,
-        userName: userSearch.username,
-        userEmail: userSearch.email,
-        roleId: userSearch.roleId
+        userId: foundUser.id,
+        userName: foundUser.userName,
+        userEmail: foundUser.email,
+        roleId: foundUser.roleId
       };
-      const token = TokenManager.sign(payload, '1y');
-      return response.status(200).send({
-        status: 'Success',
+
+      const token = TokenManager.sign(payload);
+      return res.status(200).send({
+        status: 'success',
         data: {
           statusCode: 200,
           message: 'You have successfully logged in',
-          token: `${token}`
+          token
         }
       });
     } catch (error) {
-      return response.status(400).send(error);
+      return res.status(400).send(error);
     }
   }
 
@@ -330,23 +334,37 @@ class UserController {
    */
   static async strategyCallback(accessToken, refreshToken, profile, done) {
     try {
-      const providerList = ['google', 'facebook', 'twitter', 'linkedin'];
+      const providerList = {
+        google: {
+          id: '25745c60-7b1a-11e8-9c9c-2d42b21b1a3e',
+          type: 'google'
+        },
+        facebook: {
+          id: '35745c60-7b1a-11e8-9c9c-2d42b21b1a3e',
+          type: 'facebook'
+        },
+        twitter: {
+          id: '45745c60-7b1a-11e8-9c9c-2d42b21b1a3e',
+          type: 'twitter'
+        },
+        linkedin: {
+          id: '55745c60-7b1a-11e8-9c9c-2d42b21b1a3e',
+          type: 'linkedin'
+        }
+      };
 
       const {
         id, displayName, emails, photos, provider
       } = profile;
-
-      const syncValue = 2;
-      const authType = providerList.indexOf(provider);
 
       const [user] = await User.findOrCreate({
         where: { email: emails[0].value },
         defaults: {
           fullName: displayName,
           userName: `user${id}`,
-          password: id,
-          authTypeId: authType + syncValue,
-          roleId: 1,
+          password: PasswordManager.hashPassword(id),
+          authTypeId: providerList[provider].id,
+          roleId: '3ceb546e-054d-4c1d-8860-e27c209d4ae3',
           isVerified: true,
           email: emails[0].value,
           img: photos[0].value
@@ -368,7 +386,13 @@ class UserController {
    * @memberof UserController
    */
   static handleSocialAuth(req, res) {
-    const token = TokenManager.sign(req.user);
+    const payload = {
+      userId: req.user.id,
+      userName: req.user.userName,
+      userEmail: req.user.email,
+      roleId: req.user.roleId
+    };
+    const token = TokenManager.sign(payload, '1y');
     return res.redirect(`/?token=${token}`);
   }
 
@@ -409,7 +433,14 @@ class UserController {
    */
   static async updateProfile(req, res) {
     try {
-      const editableFeilds = ['fullName', 'img', 'bio', 'notifySettings', 'userName'];
+      const editableFeilds = [
+        'fullName',
+        'img',
+        'bio',
+        'getEmailsNotification',
+        'getInAppNotification',
+        'userName'
+      ];
 
       const findProfile = await User.findOne({
         where: { id: req.user.userId },
@@ -417,7 +448,7 @@ class UserController {
       });
 
       if (!findProfile) {
-        response(res, 404, 'failiure', 'User not found');
+        response(res, 404, 'failure', 'User not found');
         return;
       }
 
@@ -430,7 +461,7 @@ class UserController {
         return;
       }
 
-      if (req.user.authTypeId === 1) {
+      if (req.user.authTypeId === '15745c60-7b1a-11e8-9c9c-2d42b21b1a3e') {
         await findProfile.update(req.body, {
           fields: [...editableFeilds, 'passsword']
         });

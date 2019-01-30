@@ -1,8 +1,6 @@
-// import 'babel-polyfill';
 import express from 'express';
 import cors from 'cors';
 import env from 'dotenv';
-import volleyLogger from 'volleyball';
 import expressValidator from 'express-validator';
 import swaggerUi from 'swagger-ui-express';
 import passport from 'passport';
@@ -11,13 +9,13 @@ import routes from './server/routes';
 import googleStrategy from './server/config/passportConfigs/googleStrategy';
 import facebookStrategy from './server/config/passportConfigs/facebookStragegy';
 import linkedinStrategy from './server/config/passportConfigs/linkednStrategy';
+import twitterStrategy from './server/config/passportConfigs/twitterStrategy';
 
 env.config();
 const swaggerDocument = YAML.load('swagger.yaml');
 const app = express();
 
 app.use(cors());
-// app.use(volleyLogger);
 app.use(expressValidator());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -28,6 +26,7 @@ app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 passport.use(googleStrategy);
 passport.use(facebookStrategy);
 passport.use(linkedinStrategy);
+passport.use(twitterStrategy);
 app.use(passport.initialize());
 
 app.use('/api/v1', routes);

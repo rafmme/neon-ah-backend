@@ -7,9 +7,7 @@ const handleValidationErrors = (req, res, next) => {
       status: 'failure',
       data: {
         statusCode: 422,
-        error: validationErrors.array().map(err => (
-          err.msg
-        ))
+        error: validationErrors.array().map(err => err.msg)
       }
     });
   }

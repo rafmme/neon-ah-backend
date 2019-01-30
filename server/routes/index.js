@@ -18,5 +18,14 @@ routes.use(likeRoutes);
 routes.use(readStats);
 routes.use(reportArticleRoutes);
 routes.use(ratingRoutes);
+routes.all('*', (req, res) => {
+  res.status(404).json({
+    status: 'failure',
+    data: {
+      statusCode: 404,
+      message: 'Route does not exist'
+    }
+  });
+});
 
 export default routes;

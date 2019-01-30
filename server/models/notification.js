@@ -6,9 +6,14 @@ export default (sequelize, DataTypes) => {
         type: DataTypes.UUID,
         allowNull: false
       },
-      typeId: {
-        type: DataTypes.UUID,
+      message: {
+        type: DataTypes.STRING,
         allowNull: false
+      },
+      isRead: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
       },
       receiverId: {
         type: DataTypes.UUID,

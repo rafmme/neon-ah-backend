@@ -15,6 +15,7 @@ const googleStrategy = new GoogleStrategy(
 );
 
 const mockStrategy = new MockStrategy('google', UserController.strategyCallback);
+/* istanbul ignore next */
 const google = process.env.NODE_ENV === 'test' ? mockStrategy : googleStrategy;
 
 export default google;

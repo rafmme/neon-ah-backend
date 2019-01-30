@@ -16,6 +16,7 @@ const linkedinStrategy = new LinkedInStrategy(
 );
 
 const mockStrategy = new MockStrategy('linkedin', UserController.strategyCallback);
+/* istanbul ignore next */
 const linkedin = process.env.NODE_ENV === 'test' ? mockStrategy : linkedinStrategy;
 
 export default linkedin;

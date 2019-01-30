@@ -1,14 +1,18 @@
 import db from '../models';
 import response from '../helpers/response';
+import Util from '../helpers/Util';
+import MailManager from '../helpers/MailManager';
+import eventHandler from '../helpers/eventsHandler';
+import newFollowerTemplate from '../helpers/emailTemplates/newFollowerTemplate';
 
-const { User, Follow } = db;
+const { User, Follow, Notification } = db;
 
 /**
  *
  *
  * @class followContoller
  */
-class followContoller {
+class FollowContoller {
   /**
    *
    * @description Method to follow user
@@ -16,7 +20,7 @@ class followContoller {
    * @param {*} req
    * @param {*} res
    * @returns {object} Json response
-   * @memberof followContoller
+   * @memberof FollowContoller
    */
   static async followUser(req, res) {
     try {
@@ -33,30 +37,43 @@ class followContoller {
 
       const userId = user.id;
       const followersId = req.user.userId;
+      const followersUserName = req.user.userName;
 
       if (user.id === req.user.userId) {
         return response(res, 400, 'failure', 'You cannot follow yourself');
       }
 
-      Follow.findOrCreate({
+      const [, isCreated] = await Follow.findOrCreate({
         where: { userId, followersId },
         attributes: ['id', 'followersId', 'userId']
-      }).spread((follow, created) => {
-        if (created) {
-          return response(
-            res,
-            201,
-            'success',
-            `You are now following ${user.userName}`
-          );
-        }
-        return response(
-          res,
-          400,
-          'failure',
-          `You are already following ${user.userName}`
-        );
       });
+
+      if (isCreated) {
+        const { dataValues: notification } = await Notification.create({
+          message: `${followersUserName} just followed you.`,
+          senderId: followersId,
+          receiverId: userId
+        });
+
+        const newFollowingMailConfig = {
+          to: `${user.email}`,
+          from: 'notification@neon-ah.com',
+          subject: 'New Follower Alert',
+          html: newFollowerTemplate(user, followersUserName)
+        };
+
+        if (user.getEmailsNotification) {
+          eventHandler.on('sendMail', MailManager.sendMailNotification);
+          eventHandler.emit('sendMail', newFollowingMailConfig);
+        }
+
+        if (user.getInAppNotification) {
+          Util.sendInAppNotification([user], notification.message);
+        }
+
+        return response(res, 201, 'success', `You are now following ${user.userName}`);
+      }
+      return response(res, 400, 'failure', `You are already following ${user.userName}`);
     } catch (error) {
       response(res, 500, 'failure', error.name);
     }
@@ -98,12 +115,7 @@ class followContoller {
       });
 
       if (!userUnfollow) {
-        return response(
-          res,
-          400,
-          'failure',
-          `You are not following ${user.userName}`
-        );
+        return response(res, 400, 'failure', `You are not following ${user.userName}`);
       }
 
       userUnfollow.destroy();
@@ -142,10 +154,8 @@ class followContoller {
             model: User,
             as: 'followingUser',
             attributes: ['id', 'fullName', 'userName', 'img', 'bio']
-
           }
-        ],
-
+        ]
       });
 
       if (followers.length === 0) {
@@ -159,14 +169,7 @@ class followContoller {
         }
       };
 
-      response(
-        res,
-        200,
-        'success',
-        'Followers returned successfully',
-        null,
-        payload
-      );
+      response(res, 200, 'success', 'Followers returned successfully', null, payload);
     } catch (error) {
       response(res, 500, 'failure', error.name);
     }
@@ -216,17 +219,10 @@ class followContoller {
         }
       };
 
-      response(
-        res,
-        200,
-        'success',
-        'Following returned successfully',
-        null,
-        payload
-      );
+      response(res, 200, 'success', 'Following returned successfully', null, payload);
     } catch (error) {
       response(res, 500, 'failure', error.name);
     }
   }
 }
-export default followContoller;
+export default FollowContoller;

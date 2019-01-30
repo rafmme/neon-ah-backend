@@ -24,7 +24,6 @@ describe('Middlewares function test', () => {
       sinon.restore();
       done();
     });
-
     it('it should throw a 500 server error', async (done) => {
       const req = {};
       const res = {
@@ -38,7 +37,6 @@ describe('Middlewares function test', () => {
       sinon.restore();
       done();
     });
-
     it('it should throw a 500 server error', async (done) => {
       const req = {};
       const res = {

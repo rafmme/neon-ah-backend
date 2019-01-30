@@ -7,12 +7,12 @@ import SearchController from './SearchController';
 import pagination from '../helpers/pagination';
 import TimeToRead from '../helpers/TimeToRead';
 import ReadingStatsContoller from './ReadingStatsController';
+import eventHandler from '../helpers/eventsHandler';
+import MailManager from '../helpers/MailManager';
+import newArticleTemplate from '../helpers/emailTemplates/newArticleTemplate';
 
 const {
-  Article,
-  Tag,
-  User,
-  Sequelize
+  Article, Tag, User, Follow, Comment, Notification, Sequelize
 } = db;
 const { Op } = Sequelize;
 const { createReadingStats } = ReadingStatsContoller;
@@ -30,7 +30,7 @@ class ArticleController {
    */
   static async create(req, res) {
     try {
-      const { userId } = req.user;
+      const { userId, userName } = req.user;
       const {
         title, content, isPublished, banner, tagsList
       } = req.body;
@@ -48,10 +48,49 @@ class ArticleController {
       };
 
       let article = await Article.create(articleData);
+
+      const myFollowersList = await Follow.findAll({
+        where: { userId },
+        include: [
+          {
+            model: User,
+            as: 'followingUser',
+            attributes: ['id', 'fullName', 'email', 'getEmailsNotification', 'getInAppNotification']
+          }
+        ]
+      });
+
+      const myFollowers = myFollowersList.map(user => user.dataValues.followingUser.dataValues);
+
+      if (articleData.isPublished) {
+        myFollowers.forEach(async (follower) => {
+          await Notification.create({
+            message: `${userName} just published a new article`,
+            senderId: userId,
+            receiverId: follower.id
+          });
+
+          const newArticleMailConfig = {
+            to: `${follower.email}`,
+            from: 'notification@neon-ah.com',
+            subject: 'New Article Alert',
+            html: newArticleTemplate(follower, articleData, userName)
+          };
+
+          if (follower.getEmailsNotification) {
+            eventHandler.on('sendMail', MailManager.sendMailNotification);
+            eventHandler.emit('sendMail', newArticleMailConfig);
+          }
+
+          if (follower.getInAppNotification) {
+            Util.sendInAppNotification([follower], `${userName} just published a new article`);
+          }
+        });
+      }
+
       article = article.toJSON();
       article.tags = articleData.tagsList;
       const { createdAt, updatedAt } = article;
-
       await TagHelper.findOrAddTag(article.id, tagsArray);
       article.createdAt = Util.formatDate(createdAt);
       article.updatedAt = Util.formatDate(updatedAt);
@@ -91,20 +130,9 @@ class ArticleController {
       const currentPage = Number(query.page) || 1;
       const offset = (currentPage - 1) * limit;
 
-      const articlesCount = await Article.findAndCountAll({
-        where: { isPublished: true },
-        attributes: { exclude: ['userId'] },
-        include: [
-          {
-            model: User,
-            as: 'author',
-            attributes: ['userName', 'bio', 'img']
-          }
-        ]
-      });
-      const totalArticles = articlesCount.count;
+      const totalArticlesPromise = Article.count({ where: { isPublished: true } });
 
-      const articles = await Article.findAndCountAll({
+      const articlesPromise = Article.findAndCountAll({
         where: { isPublished: true },
         include: [
           {
@@ -123,6 +151,8 @@ class ArticleController {
         offset
       });
 
+      const [totalArticles, articles] = await Promise.all([totalArticlesPromise, articlesPromise]);
+
       if (articles.count > 0) {
         const articleList = articles.rows.map((article) => {
           article = article.toJSON();
@@ -131,19 +161,14 @@ class ArticleController {
           return article;
         });
 
-        const paginatedData = pagination(
-          articleList.length,
-          limit,
-          currentPage,
-          totalArticles
-        );
-        const data = {
+        const paginatedData = pagination(articleList.length, limit, currentPage, totalArticles);
+
+        return response(res, 200, 'success', 'All articles', null, {
           articles: articleList,
           paginatedData
-        };
-
-        return response(res, 200, 'success', 'All articles', null, data);
+        });
       }
+
       return response(res, 200, 'success', 'All articles', null, {
         message: 'No articles posted yet'
       });
@@ -174,20 +199,30 @@ class ArticleController {
       let article = await Article.findOne({
         where: {
           slug,
-          [Op.or]: [{ isPublished: true }, { userId }],
+          [Op.or]: [{ isPublished: true }, { userId }]
         },
-        attributes: { exclude: ['userId'] },
-        include: [{
-          model: User,
-          as: 'author',
-          attributes: ['userName', 'bio', 'img'],
-        },
-        {
-          model: Tag,
-          as: 'tags',
-          attributes: ['name'],
-          through: { attributes: [] }
-        },
+        include: [
+          {
+            model: User,
+            as: 'author',
+            attributes: ['userName', 'bio', 'img', 'fullName']
+          },
+          {
+            model: Tag,
+            as: 'tags',
+            attributes: ['name']
+          },
+          {
+            model: Comment,
+            as: 'comments',
+            attributes: ['content'],
+            include: [
+              {
+                model: User,
+                attributes: ['userName', 'img', 'fullName']
+              }
+            ]
+          }
         ]
       });
 
@@ -196,6 +231,7 @@ class ArticleController {
         const tags = article.tags.map(tag => tag.name);
         article.tags = tags;
         article.timeToRead = TimeToRead.readTime(article);
+
         article.createdAt = Util.formatDate(article.createdAt);
         article.updatedAt = Util.formatDate(article.updatedAt);
 
@@ -203,23 +239,14 @@ class ArticleController {
           await createReadingStats(req, res);
         }
 
-        return response(
-          res, 200, 'success',
-          'Article was fetched successfully',
-          null, article
-        );
+        return response(res, 200, 'success', 'Article was fetched successfully', null, article);
       }
-      return response(
-        res, 404, 'failure',
-        'not found error',
-        { message: 'Article not found' }
-      );
+
+      return response(res, 404, 'failure', 'not found error', { message: 'Article not found' });
     } catch (error) {
-      return response(
-        res, 500, 'failure',
-        'server error',
-        { message: 'Something went wrong on the server' }
-      );
+      return response(res, 500, 'failure', 'server error', {
+        message: 'Something went wrong on the server'
+      });
     }
   }
 
@@ -234,12 +261,14 @@ class ArticleController {
     try {
       const { userId } = req.user;
       const { slug } = req.params;
+
       const result = await Article.findOne({
         where: {
           slug,
           userId
         }
       });
+
       if (result) {
         const articleSlug = result.title.toLowerCase() === req.body.title.toLowerCase()
           ? result.slug
@@ -251,14 +280,7 @@ class ArticleController {
         article.timeToRead = TimeToRead.readTime(article);
         article.createdAt = Util.formatDate(article.createdAt);
         article.updatedAt = Util.formatDate(article.updatedAt);
-        return response(
-          res,
-          200,
-          'success',
-          'Article was updated successfully',
-          null,
-          article
-        );
+        return response(res, 200, 'success', 'Article was updated successfully', null, article);
       }
     } catch (error) {
       return response(
@@ -291,14 +313,7 @@ class ArticleController {
       });
       if (article) {
         await article.destroy();
-        return response(
-          res,
-          200,
-          'success',
-          'Article was deleted successfully',
-          null,
-          null
-        );
+        return response(res, 200, 'success', 'Article was deleted successfully', null, null);
       }
     } catch (error) {
       return response(
@@ -328,14 +343,7 @@ class ArticleController {
     } else if (title) {
       SearchController.byTitle(title, req, res);
     } else {
-      return response(
-        res,
-        400,
-        'failure',
-        'No search parameters supplied',
-        null,
-        null
-      );
+      return response(res, 400, 'failure', 'No search parameters supplied', null, null);
     }
   }
 
@@ -397,10 +405,7 @@ class ArticleController {
     try {
       const { userId } = req.user;
       const {
-        tag,
-        drafts,
-        published,
-        page
+        tag, drafts, published, page
       } = req.query;
 
       const limit = Number(req.query.limit) || 20;
@@ -414,8 +419,8 @@ class ArticleController {
             model: User,
             as: 'author',
             attributes: ['userName', 'bio', 'img']
-          },
-        ],
+          }
+        ]
       });
       const totalArticles = articlesCount.count;
 
@@ -437,7 +442,6 @@ class ArticleController {
         limit,
         offset
       });
-
 
       if (articles.count > 0) {
         let articleList = articles.rows.map((article) => {

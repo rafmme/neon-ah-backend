@@ -1,10 +1,10 @@
 import { expect } from 'chai';
-import passwordManager from '../../helpers/PasswordManager';
+import PasswordManager from '../../helpers/PasswordManager';
 
-describe('It should check password manager', () => {
+describe('Password Manager Utility Class', () => {
   const password = 'password';
-  it('It should return hashed password', () => {
-    const hash = passwordManager.hashPassword(password);
+  it('It should be able to hash a provided password', () => {
+    const hash = PasswordManager.hashPassword(password);
     expect(hash).to.be.a('string');
   });
 });

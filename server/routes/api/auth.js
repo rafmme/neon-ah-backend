@@ -25,4 +25,11 @@ authRoutes.get(
   UserController.handleSocialAuth
 );
 
+authRoutes.get('/auth/twitter', passport.authenticate('twitter'));
+authRoutes.get(
+  '/auth/twitter/callback',
+  passport.authenticate('twitter', { session: false }),
+  UserController.handleSocialAuth
+);
+
 export default authRoutes;

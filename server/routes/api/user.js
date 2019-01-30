@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import UserController from '../../controllers/UserController';
-import followController from '../../controllers/followController';
+import FollowController from '../../controllers/followController';
 import AuthMiddleware from '../../middlewares/AuthMiddleware';
 import handleValidationErrors from '../../middlewares/validations/handleValidationErrors';
 import {
@@ -40,20 +40,21 @@ userRoutes.get(
   AuthMiddleware.checkIfUserIsAuthenticated,
   UserController.getProfile
 );
-userRoutes.get('/users/:userName/followers', followController.getFollowers);
 
-userRoutes.get('/users/:userName/following', followController.getFollowing);
+userRoutes.get('/users/:userName/followers', FollowController.getFollowers);
+
+userRoutes.get('/users/:userName/following', FollowController.getFollowing);
 
 userRoutes.post(
   '/users/:userName/follow',
   AuthMiddleware.checkIfUserIsAuthenticated,
-  followController.followUser
+  FollowController.followUser
 );
 
 userRoutes.delete(
   '/users/:userName/unfollow',
   AuthMiddleware.checkIfUserIsAuthenticated,
-  followController.unfollowUser
+  FollowController.unfollowUser
 );
 userRoutes.get(
   '/myArticles',

@@ -24,25 +24,25 @@ class ArticleValidation {
     req.sanitizeBody('content').trim();
     req.sanitizeBody('banner').trim();
 
-    req.checkBody(
-      'title',
-      'Article title missing'
-    ).notEmpty().isString();
-    req.checkBody(
-      'content',
-      'Article content is missing'
-    ).notEmpty().isString();
+    req
+      .checkBody('title', 'Article title missing')
+      .notEmpty()
+      .isString();
+    req
+      .checkBody('content', 'Article content is missing')
+      .notEmpty()
+      .isString();
 
-    let {
-      hasError, errorMessages
-    } = Util.extractErrorMessages(req.validationErrors());
+    let { hasError, errorMessages } = Util.extractErrorMessages(req.validationErrors());
 
     if (banner) {
       const imgExtensionPattern = /\.(svg|png|jpg|jpeg|gif)$/g;
       const urlPattern = /^(https?|ftp|torrent|image|irc):\/\/(-\.)?([^\s\/?\.#-]+\.?)+(\/[^\s]*)?$/i;
       req.body.banner = `${banner}`;
-      errorMessages.banner = urlPattern.test(banner) || imgExtensionPattern.test(banner) ? undefined : 'banner url is not a valid one';
-      errorMessages.banner ? hasError = true : undefined;
+      errorMessages.banner = urlPattern.test(banner) || imgExtensionPattern.test(banner)
+        ? undefined
+        : 'banner url is not a valid one';
+      errorMessages.banner ? (hasError = true) : undefined;
     }
     if (hasError === true) {
       return response(res, 400, 'failure', 'Field validation error', errorMessages, null);
@@ -77,20 +77,25 @@ class ArticleValidation {
     try {
       const { content } = req.body;
       const article = await Article.findOne({ where: { content } });
-      if (article === null
-        || article.content.toLowerCase() !== content.toLowerCase()) {
+      if (article === null || article.content.toLowerCase() !== content.toLowerCase()) {
         return next();
       }
       return response(
-        res, 409, 'failure', 'conflict error',
+        res,
+        409,
+        'failure',
+        'conflict error',
         { message: 'Oops! there is another article with same content' },
         null
       );
     } catch (error) {
       return response(
-        res, 500, 'failure',
+        res,
+        500,
+        'failure',
         'server error',
-        { message: 'Something went wrong on the server' }, null
+        { message: 'Something went wrong on the server' },
+        null
       );
     }
   }
@@ -110,29 +115,38 @@ class ArticleValidation {
       const { slug } = req.params;
       const article = await Article.findOne({
         where: {
-          slug,
+          slug
         }
       });
       if (article && article.userId === userId) {
         return next();
-      } if (article && article.userId !== userId) {
+      }
+      if (article && article.userId !== userId) {
         return response(
-          res, 403, 'failure',
+          res,
+          403,
+          'failure',
           'authorization error',
-          { message: 'You don\'t have permission to perform this action' },
+          { message: "You don't have permission to perform this action" },
           null
         );
       }
       return response(
-        res, 404, 'failure',
+        res,
+        404,
+        'failure',
         'not found error',
-        { message: 'Article not found' }, null
+        { message: 'Article not found' },
+        null
       );
     } catch (error) {
       return response(
-        res, 500, 'failure',
+        res,
+        500,
+        'failure',
         'server error',
-        { message: 'Something went wrong on the server' }, null
+        { message: 'Something went wrong on the server' },
+        null
       );
     }
   }
@@ -150,8 +164,8 @@ class ArticleValidation {
       const { slug } = req.params;
       let article = await Article.findOne({
         where: {
-          slug,
-        },
+          slug
+        }
       });
       if (article) {
         article = article.toJSON();
@@ -159,25 +173,31 @@ class ArticleValidation {
           ? Util.removeExtraWhitespace(req.body.title)
           : article.title;
         req.body.content = req.body.content
-          ? Util.removeExtraWhitespace(req.body.content) : article.content;
+          ? Util.removeExtraWhitespace(req.body.content)
+          : article.content;
         req.body.banner = req.body.banner
-          ? Util.removeExtraWhitespace(req.body.banner) : article.banner;
-        req.body.isPublished = req.body.isPublished !== undefined
-          ? Boolean(req.body.isPublished) : article.isPublished;
-        req.body.isReported = req.body.isReported !== undefined
-          ? Boolean(req.body.isReported) : article.isReported;
+          ? Util.removeExtraWhitespace(req.body.banner)
+          : article.banner;
+        req.body.isPublished = req.body.isPublished !== undefined ? Boolean(req.body.isPublished) : article.isPublished;
+        req.body.isReported = req.body.isReported !== undefined ? Boolean(req.body.isReported) : article.isReported;
         return next();
       }
       return response(
-        res, 404, 'failure',
+        res,
+        404,
+        'failure',
         'not found error',
-        { message: 'Article not found' }, null
+        { message: 'Article not found' },
+        null
       );
     } catch (error) {
       return response(
-        res, 500, 'failure',
+        res,
+        500,
+        'failure',
         'server error',
-        { message: 'Something went wrong on the server' }, null
+        { message: 'Something went wrong on the server' },
+        null
       );
     }
   }
@@ -203,15 +223,17 @@ class ArticleValidation {
       return next();
     } catch (error) {
       return response(
-        res, 500, 'failure',
+        res,
+        500,
+        'failure',
         'server error',
         {
           message: 'Something went wrong on the server'
-        }, null
+        },
+        null
       );
     }
   }
-
 
   /**
    *
@@ -230,17 +252,13 @@ class ArticleValidation {
         return next();
       }
       if (!Number.isSafeInteger(parseInt(page, 10))) {
-        response(res, 400, 'failure', 'There was an issue with your query');
+        return response(res, 400, 'failure', 'There was an issue with your query');
       }
       return next();
     } catch (error) {
-      return response(
-        res, 500, 'failure',
-        'server error',
-        {
-          message: 'Something went wrong on the server'
-        }
-      );
+      return response(res, 500, 'failure', 'server error', {
+        message: 'Something went wrong on the server'
+      });
     }
   }
 }

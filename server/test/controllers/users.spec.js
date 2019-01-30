@@ -81,7 +81,9 @@ describe('User Model', () => {
       expect(response.body.data).to.be.an('object');
       expect(response.body.data).to.have.property('message');
       expect(response.body.data.message).to.be.a('string');
-      expect(response.body.data.message).to.be.eql('Email already exists.Enter another email');
+      expect(response.body.data.message).to.be.eql(
+        'The provided email has been taken. Kingly provide another.'
+      );
       expect(response.body).to.have.property('status');
       expect(response.body.status).to.be.a('string');
       expect(response.body.status).to.equal('failure');
@@ -134,7 +136,9 @@ describe('User Model', () => {
         });
       expect(response.status).to.equal(404);
       expect(response.body.status).to.eqls('failure');
-      expect(response.body.data.message).to.be.eql('user not found');
+      expect(response.body.data.message).to.be.eql(
+        'Sorry!!, Your login information is not correct.'
+      );
     });
 
     it('User should get an error when wrong password is provided', async () => {
@@ -144,7 +148,7 @@ describe('User Model', () => {
         .send({ user: 'jesseinit@now.com', password: '1234657890B' });
       expect(response.status).to.eql(401);
       expect(response.body.status).to.eqls('failure');
-      expect(response.body.data.message).to.eqls('Wrong login details');
+      expect(response.body.data.message).to.eqls('Sorry!!, Your login information is not correct.');
     });
 
     it('User should get a token on successful login', async () => {

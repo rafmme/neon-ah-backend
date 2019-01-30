@@ -1,6 +1,5 @@
 import sgMail from '@sendgrid/mail';
 import env from 'dotenv';
-import passwordResetEmailTemplate from './emailTemplates/resetPasswordTemplate';
 import verifyEmailTemplate from './emailTemplates/verifyEmailTemplate';
 
 env.config();
@@ -14,20 +13,13 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
  */
 class MailManager {
   /**
-   * @description Utility funcion to send password reset link
+   * @description Utility funcion to sends mails
    * @returns {Promise} promise object that represents mail success
    * @static
-   * @param {string} email Email address if the user
+   * @param {object} message message object containing email configuration
    * @memberof MailManager
    */
-  static sendPasswordResetLink({ user, token }) {
-    const message = {
-      to: `${user.email}`,
-      from: 'notification@neon-ah.com',
-      subject: 'Password Reset Link',
-      html: passwordResetEmailTemplate(user, token)
-    };
-
+  static sendMailNotification(message) {
     return sgMail.send(message);
   }
 

@@ -9,7 +9,7 @@ const user = {
   username: 'jesseinit',
   emails: [{ value: 'jesseinit@now.com' }],
   photos: [{ value: 'https://imgur.com/jesse.jpg' }],
-  provider: 'mock'
+  provider: ''
 };
 
 /**

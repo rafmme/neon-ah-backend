@@ -22,7 +22,7 @@ class PasswordManager {
    * @returns {string} The original password
    * @memberof PasswordManager
    */
-  static decryptPassword(password, hashedPassword) {
+  static verifyPassword(password, hashedPassword) {
     return bcrypt.compareSync(password, hashedPassword);
   }
 }

@@ -21,11 +21,10 @@ describe('API endpoint /articles/', () => {
         .post('/api/v1/articles')
         .set({ authorization: `Bearer ${userToken}` })
         .send(mockArticles[1]);
+
       expect(response.status).to.eqls(201);
       expect(response.body.status).to.eqls('success');
-      expect(response.body.data.message).to.eqls(
-        'New article has been successfully created'
-      );
+      expect(response.body.data.message).to.eqls('New article has been successfully created');
       newArticleSlug = response.body.data.payload.slug;
     });
 
@@ -62,9 +61,7 @@ describe('API endpoint /articles/', () => {
 
       expect(response.status).to.eqls(401);
       expect(response.body.status).to.eqls('failure');
-      expect(response.body.data.message).to.eqls(
-        'Token is invalid, You need to log in again'
-      );
+      expect(response.body.data.message).to.eqls('Token is invalid, You need to log in again');
     });
 
     it('It should not allow user with invalid token to post an article', async () => {
@@ -113,9 +110,7 @@ describe('API endpoint /articles/', () => {
 
       expect(response.status).to.eqls(400);
       expect(response.body.status).to.eqls('failure');
-      expect(response.body.data.message).to.eqls(
-        'There was an issue with your query'
-      );
+      expect(response.body.data.message).to.eqls('There was an issue with your query');
     });
 
     it('should return error value passed to the page is not a number', async () => {
@@ -123,9 +118,7 @@ describe('API endpoint /articles/', () => {
 
       expect(response.status).to.eqls(400);
       expect(response.body.status).to.eqls('failure');
-      expect(response.body.data.message).to.eqls(
-        'There was an issue with your query'
-      );
+      expect(response.body.data.message).to.eqls('There was an issue with your query');
     });
 
     it('It should be able to handle unexpected errors thrown when creating articles', async () => {
@@ -145,23 +138,16 @@ describe('API endpoint /articles/', () => {
   });
 
   describe('GET one article', () => {
-
     it('should successfully return an article with the specified slug', async () => {
-      const response = await chai
-        .request(app)
-        .get('/api/v1/articles/What-a-mighty-God');
+      const response = await chai.request(app).get('/api/v1/articles/What-a-mighty-God');
 
       expect(response.status).to.eqls(200);
       expect(response.body.status).to.eqls('success');
-      expect(response.body.data.message).to.eqls(
-        'Article was fetched successfully'
-      );
+      expect(response.body.data.message).to.eqls('Article was fetched successfully');
     });
 
     it('should return not found if article does not exist', async () => {
-      const response = await chai
-        .request(app)
-        .get('/api/v1/articles/jwt-key-use-case-2');
+      const response = await chai.request(app).get('/api/v1/articles/jwt-key-use-case-2');
 
       expect(response.status).to.eqls(404);
       expect(response.body.status).to.eqls('failure');
@@ -185,7 +171,6 @@ describe('API endpoint /articles/', () => {
   });
 
   describe('UPDATE an article', () => {
-
     it('should successfully update an article with the specified slug', async () => {
       const response = await chai
         .request(app)
@@ -195,12 +180,10 @@ describe('API endpoint /articles/', () => {
 
       expect(response.status).to.eqls(200);
       expect(response.body.status).to.eqls('success');
-      expect(response.body.data.message).to.eqls(
-        'Article was updated successfully'
-      );
+      expect(response.body.data.message).to.eqls('Article was updated successfully');
     });
 
-    it('should not allow another user update story that isn\'t there own', async () => {
+    it("should not allow another user update story that isn't there own", async () => {
       const response = await chai
         .request(app)
         .put(`/api/v1/articles/${newArticleSlug}`)
@@ -252,7 +235,6 @@ describe('API endpoint /articles/', () => {
   });
 
   describe('DELETE an article', () => {
-
     it('should successfully delete an article with the specified slug', async () => {
       const response = await chai
         .request(app)
@@ -261,15 +243,11 @@ describe('API endpoint /articles/', () => {
 
       expect(response.status).to.eqls(200);
       expect(response.body.status).to.eqls('success');
-      expect(response.body.data.message).to.eqls(
-        'Article was deleted successfully'
-      );
+      expect(response.body.data.message).to.eqls('Article was deleted successfully');
     });
 
     it('It should not allow unauthenticated users to delete article', async () => {
-      const response = await chai
-        .request(app)
-        .delete('/api/v1/articles/What-a-mighty-God');
+      const response = await chai.request(app).delete('/api/v1/articles/What-a-mighty-God');
 
       expect(response.status).to.eqls(401);
       expect(response.body.status).to.eqls('failure');
@@ -320,7 +298,6 @@ describe('API endpoint /articles/', () => {
 });
 
 describe('API endpoint /myArticles', () => {
-
   describe('GET /myArticles', () => {
     it('should successfully get all articles of a particular user', async () => {
       const response = await chai
@@ -355,7 +332,7 @@ describe('API endpoint /myArticles', () => {
       expect(response.body.data.message).to.eqls('All User articles');
     });
 
-    it('should filter a user\'s articles by tag', async () => {
+    it("should filter a user's articles by tag", async () => {
       const response = await chai
         .request(app)
         .get('/api/v1/myArticles?tag=welcome')
@@ -366,7 +343,7 @@ describe('API endpoint /myArticles', () => {
       expect(response.body.data.message).to.eqls('All User articles');
     });
 
-    it('It should be able to handle unexpected errors thrown when getting all user\'s articles', async () => {
+    it("It should be able to handle unexpected errors thrown when getting all user's articles", async () => {
       const stub = sinon
         .stub(Article, 'findAll')
         .callsFake(() => Promise.reject(new Error('Internal Server Error')));
@@ -380,12 +357,10 @@ describe('API endpoint /myArticles', () => {
       expect(response.body.status).to.eqls('failure');
       expect(response.body.data.message).to.eqls('server error');
       stub.restore();
- 
     });
   });
 
   describe('GET /myArticles/:slug', () => {
-
     it('should successfully return an article of a user with the specified slug', async () => {
       const response = await chai
         .request(app)
