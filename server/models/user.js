@@ -78,7 +78,6 @@ export default (sequelize, DataTypes) => {
       Reply,
       CommentLike,
       Notification,
-      Bookmark,
       Share,
       Role,
       Report,
@@ -122,9 +121,6 @@ export default (sequelize, DataTypes) => {
       as: 'receiver',
       foreignKey: 'receiverId'
     });
-    User.hasMany(Bookmark, {
-      foreignKey: 'userId'
-    });
     User.hasMany(Share, {
       foreignKey: 'userId'
     });
@@ -141,6 +137,14 @@ export default (sequelize, DataTypes) => {
     });
     User.belongsToMany(Article, {
       through: 'Rating',
+      foreignKey: 'userId'
+    });
+    User.belongsToMany(Article, {
+      through: 'Bookmark',
+      foreignKey: 'userId'
+    });
+    User.belongsToMany(Article, {
+      through: 'Report',
       foreignKey: 'userId'
     });
     User.belongsToMany(User, {

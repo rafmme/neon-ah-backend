@@ -81,13 +81,13 @@ class AuthMiddleware {
 
       const token = authorization.split(' ')[1];
       const decoded = TokenManager.verify(token);
-
       if (decoded) {
         req.user = decoded;
       }
 
-      if (req.user.roleId !== '3ceb546e-054d-4c1d-8860-e27c209d4ae4' && req.user.roleId !== '2023afbb-7072-4759-8161-3d149c9589f2') {
-        return response(res, 403, 'failure', 'You are unauthorised to access this page.');
+      const { roleId } = req.user;
+      if (roleId !== '3ceb546e-054d-4c1d-8860-e27c209d4ae4' && roleId !== '2023afbb-7072-4759-8161-3d149c9589f2') {
+        return response(res, 401, 'failure', 'You are unauthorised to access this page.');
       }
       return next();
     } catch (error) {

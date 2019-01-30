@@ -26,7 +26,7 @@ export default {
         bio: 'Learning life now',
         password: '$2y$10$QCQ1uW0OWH7xKOvJ9gNWsewzoXSjvAmXw21mcZBEB52TN6T/f2Xfy',
         authTypeId: '15745c60-7b1a-11e8-9c9c-2d42b21b1a3e',
-        roleId: '3ceb546e-054d-4c1d-8860-e27c209d4ae3',
+        roleId: '3ceb546e-054d-4c1d-8860-e27c209d4ae4',
         getEmailsNotification: true,
         getInAppNotification: false
       },
@@ -39,8 +39,6 @@ export default {
         password: '$2y$10$5hj02gtnG2xxYHqpkrqeXOs3kj0t3uTKUMqdKBYGeHOKRNrZdTT9O',
         authTypeId: '15745c60-7b1a-11e8-9c9c-2d42b21b1a3e',
         roleId: '3ceb546e-054d-4c1d-8860-e27c209d4ae3',
-        password: 'Blahblah',
-        authTypeId: '15745c60-7b1a-11e8-9c9c-2d42b21b1a3e'
       },
       {
         id: 'b9aef994-d8ea-4b42-88be-999d57d68891',
