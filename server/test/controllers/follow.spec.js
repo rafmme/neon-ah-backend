@@ -111,7 +111,7 @@ describe('Follow Model', () => {
 
       expect(response.status).to.eqls(200);
       expect(response.body.status).to.eqls('success');
-      expect(response.body.data.message).to.eqls('You currenly have no followers');
+      expect(response.body.data.message).to.eqls('Followers returned successfully');
       expect(response.body.data.statusCode).to.eqls(200);
     });
 

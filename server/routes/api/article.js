@@ -2,10 +2,11 @@ import { Router } from 'express';
 import ArticleController from '../../controllers/ArticleController';
 import ArticleValidation from '../../middlewares/validations/ArticleValidation';
 import AuthMiddleware from '../../middlewares/AuthMiddleware';
+import FollowFeedContoller from '../../controllers/FollowFeedController';
+
 
 const articleRoutes = Router();
 articleRoutes.get('/search', ArticleController.search);
-
 articleRoutes.post(
   '/articles',
   AuthMiddleware.checkIfUserIsAuthenticated,
@@ -19,6 +20,11 @@ articleRoutes.get(
   ArticleValidation.verifyLimitParams,
   ArticleValidation.verifyPageParams,
   ArticleController.fetchAll
+);
+articleRoutes.get(
+  '/articles/feeds',
+  AuthMiddleware.checkIfUserIsAuthenticated,
+  FollowFeedContoller.getFollowingArticles
 );
 articleRoutes.get(
   '/articles/:slug',
@@ -42,5 +48,6 @@ articleRoutes.get(
   '/articles/share/:slug',
   ArticleController.share
 );
+
 
 export default articleRoutes;
