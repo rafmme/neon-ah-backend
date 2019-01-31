@@ -16,7 +16,7 @@ describe('API endpoint /tags/', () => {
     it('should not allow unauthenticated user follow tags', async () => {
         const response = await chai
           .request(app)
-          .post('/api/v1/tags/Technology/follow')
+          .post('/api/v1/tags/technology/follow')
           .send();
   
         expect(response.status).to.eqls(401);
@@ -27,28 +27,28 @@ describe('API endpoint /tags/', () => {
     it('should successfully make the user follow the tag', async () => {
       const response = await chai
         .request(app)
-        .post('/api/v1/tags/Technology/follow')
+        .post('/api/v1/tags/technology/follow')
         .set({ authorization: `Bearer ${userToken}` })
         .send();
 
       expect(response.status).to.eqls(201);
       expect(response.body.status).to.eqls('success');
       expect(response.body.data.message).to.eqls(
-        'You are now following the Technology tag'
+        'You are now following the technology tag'
       );
     });
 
     it('should give conflict error if user tries to follow the same tag twice', async () => {
         const response = await chai
           .request(app)
-          .post('/api/v1/tags/Technology/follow')
+          .post('/api/v1/tags/technology/follow')
           .set({ authorization: `Bearer ${userToken}` })
           .send();
   
         expect(response.status).to.eqls(409);
         expect(response.body.status).to.eqls('failure');
         expect(response.body.data.message).to.eqls(
-          'You are already following the Technology tag'
+          'You are already following the technology tag'
         );
     });
 
@@ -72,7 +72,7 @@ describe('API endpoint /tags/', () => {
     it('should not allow unauthenticated user unfollow tags', async () => {
         const response = await chai
           .request(app)
-          .delete('/api/v1/tags/Technology/unfollow')
+          .delete('/api/v1/tags/technology/unfollow')
           .send();
   
         expect(response.status).to.eqls(401);
@@ -83,28 +83,28 @@ describe('API endpoint /tags/', () => {
     it('should successfully make the user unfollow the tag', async () => {
       const response = await chai
         .request(app)
-        .delete('/api/v1/tags/Technology/unfollow')
+        .delete('/api/v1/tags/technology/unfollow')
         .set({ authorization: `Bearer ${userToken}` })
         .send();
 
       expect(response.status).to.eqls(200);
       expect(response.body.status).to.eqls('success');
       expect(response.body.data.message).to.eqls(
-        'You have now unfollowed the Technology tag'
+        'You have now unfollowed the technology tag'
       );
     });
 
     it('should give conflict error if user tries to unfollow the tag they are not following', async () => {
         const response = await chai
           .request(app)
-          .delete('/api/v1/tags/Technology/unfollow')
+          .delete('/api/v1/tags/technology/unfollow')
           .set({ authorization: `Bearer ${userToken}` })
           .send();
   
         expect(response.status).to.eqls(400);
         expect(response.body.status).to.eqls('failure');
         expect(response.body.data.message).to.eqls(
-          'You are not following the Technology tag'
+          'You are not following the technology tag'
         );
     });
 

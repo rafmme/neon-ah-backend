@@ -18,7 +18,9 @@ class TagController {
   static async follow(req, res) {
     try {
       const { userId } = req.user;
-      const { tagName } = req.params;
+
+      let { tagName } = req.params;
+      tagName = tagName.toLowerCase();
       const tag = await Tag.findOne({ where: { name: tagName } });
 
       if (!tag) {
@@ -100,8 +102,10 @@ class TagController {
    */
   static async unFollow(req, res) {
     try {
-      const { tagName } = req.params;
       const { userId } = req.user;
+
+      let { tagName } = req.params;
+      tagName = tagName.toLowerCase();
       const tag = await Tag.findOne({
         where: { name: tagName }
       });

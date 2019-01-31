@@ -82,7 +82,7 @@ describe('User Model', () => {
       expect(response.body.data).to.have.property('message');
       expect(response.body.data.message).to.be.a('string');
       expect(response.body.data.message).to.be.eql(
-        'The provided email has been taken. Kingly provide another.'
+        'The provided email has been taken. Kindly provide another.'
       );
       expect(response.body).to.have.property('status');
       expect(response.body.status).to.be.a('string');

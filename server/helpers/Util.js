@@ -50,7 +50,7 @@ class Util {
   static createArrayOfStrings(text) {
     const tagText = `${text}`;
     const arrayOfStrings = tagText
-      .trim()
+      .trim().toLowerCase()
       .split(',')
       .map(str => this.removeExtraWhitespace(str));
     return arrayOfStrings;

@@ -174,15 +174,15 @@ class UserController {
           status: 'failure',
           data: {
             statusCode: 409,
-            message: 'The provided email has been taken. Kingly provide another.'
+            message: 'The provided email has been taken. Kindly provide another.'
           }
         });
       }
 
       const createdUser = await User.create({
-        userName,
-        fullName,
-        email,
+        userName: userName.toLowerCase(),
+        fullName: fullName.toLowerCase(),
+        email: email.toLowerCase(),
         password: hashedPassword,
         roleId: '{3ceb546e-054d-4c1d-8860-e27c209d4ae3}',
         authTypeId: '{15745c60-7b1a-11e8-9c9c-2d42b21b1a3e}'
@@ -268,7 +268,9 @@ class UserController {
    */
   static async logIn(req, res) {
     try {
-      const { user, password } = req.body;
+      const { password } = req.body;
+      let { user } = req.body;
+      user = user.toLowerCase();
 
       const foundUser = await User.findOne({
         where: {
@@ -366,17 +368,18 @@ class UserController {
       const {
         id, displayName, emails, photos, provider
       } = profile;
+      const emailValue = emails[0].value.toLowerCase();
 
       const [user] = await User.findOrCreate({
-        where: { email: emails[0].value },
+        where: { email: emailValue },
         defaults: {
-          fullName: displayName,
+          fullName: displayName.toLowerCase(),
           userName: `user${id}`,
           password: PasswordManager.hashPassword(id),
           authTypeId: providerList[provider].id,
           roleId: '3ceb546e-054d-4c1d-8860-e27c209d4ae3',
           isVerified: true,
-          email: emails[0].value,
+          email: emailValue,
           img: photos[0].value
         }
       });
@@ -398,8 +401,8 @@ class UserController {
   static handleSocialAuth(req, res) {
     const payload = {
       userId: req.user.id,
-      userName: req.user.userName,
-      userEmail: req.user.email,
+      userName: req.user.userName.toLowerCase(),
+      userEmail: req.user.email.toLowerCase(),
       roleId: req.user.roleId
     };
     const token = TokenManager.sign(payload, '1y');
@@ -418,7 +421,7 @@ class UserController {
     try {
       const { userName } = req.params;
       const userProfile = await User.findOne({
-        where: { userName },
+        where: { userName: userName.toLowerCase() },
         attributes: ['id', 'fullName', 'userName', 'img', 'bio']
       });
 
@@ -461,6 +464,7 @@ class UserController {
         return response(res, 404, 'failure', 'User not found');
       }
 
+      req.body.userName = req.body.userName.toLowerCase();
       const checkUserName = await User.findAndCountAll({
         where: { userName: req.body.userName }
       });
@@ -507,7 +511,7 @@ class UserController {
       const userRole = { roleId: '3ceb546e-054d-4c1d-8860-e27c209d4ae3' };
       const { userName } = req.params;
       const user = await User.findOne({
-        where: { userName }
+        where: { userName: userName.toLowerCase() }
       });
 
       if (!user) {

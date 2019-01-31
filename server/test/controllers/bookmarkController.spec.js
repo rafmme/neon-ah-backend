@@ -91,7 +91,6 @@ describe('Bookmark Model', () => {
         .request(app)
         .get(`/api/v1/articles/article/bookmarks`)
         .set('Authorization', `Bearer ${adminToken}`)
-      console.log('resp::', response.toJSON())
       expect(response.status).to.eqls(404);
       expect(response.body.status).to.eqls('failure');
       expect(response.body.data.message).to.eqls('Article not found');
@@ -101,7 +100,6 @@ describe('Bookmark Model', () => {
         .request(app)
         .get(`/api/v1/articles/how-to-be-a-10x-dev-sGNYfURm/bookmarks`)
         .set('Authorization', `Bearer ${adminToken}`)
-        console.log('resp2::', response.toJSON())
       expect(response.status).to.eqls(200);
       expect(response.body.status).to.eqls('success');
       expect(response.body.data.message).to.eqls('This article has not been bookmarked yet');

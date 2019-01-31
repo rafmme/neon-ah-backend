@@ -14,9 +14,9 @@ describe('Util helpers functions test', () => {
     it('should create an array of string from a text', (done) => {
       const arrayOfStrings = Util.createArrayOfStrings('AI, Technology, Business');
 
-      expect(arrayOfStrings[0]).to.eqls('AI');
-      expect(arrayOfStrings[1]).to.eqls('Technology');
-      expect(arrayOfStrings[2]).to.eqls('Business');
+      expect(arrayOfStrings[0]).to.eqls('ai');
+      expect(arrayOfStrings[1]).to.eqls('technology');
+      expect(arrayOfStrings[2]).to.eqls('business');
       done();
     });
   });
