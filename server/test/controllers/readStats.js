@@ -3,7 +3,6 @@ import chaiHttp from 'chai-http';
 import sinon from 'sinon';
 import app from '../../..';
 import db from '../../models';
-import TokenManager from '../../helpers/TokenManager';
 import { userToken, userToken2, invalidToken } from '../mockData/tokens';
 
 const { User, Article, ReadStats } = db;

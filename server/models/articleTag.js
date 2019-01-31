@@ -9,8 +9,9 @@ export default (sequelize, DataTypes) => {
       tagId: {
         type: DataTypes.UUID,
         allowNull: false
-      },
-    }, {}
+      }
+    },
+    {}
   );
   ArticleTag.associate = (models) => {
     ArticleTag.belongsTo(models.Article, {
