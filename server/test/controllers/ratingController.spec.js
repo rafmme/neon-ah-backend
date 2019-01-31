@@ -216,7 +216,7 @@ describe('Rating Model', () => {
     });
     it('Should handle unexpected errors thrown when updating or creating ratings', async () => {
       const stub = sinon
-        .stub(Rating, 'findOne')
+        .stub(Article, 'findOne')
         .callsFake(() => Promise.reject(new Error('Internal Server Error')));
 
       const response = await chai

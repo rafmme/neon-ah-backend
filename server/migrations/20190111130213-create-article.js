@@ -43,6 +43,10 @@ export default {
           userId: {
             type: Sequelize.UUID
           },
+          averageRating: {
+            type: Sequelize.INTEGER,
+            defaultValue: 0
+          },
           createdAt: {
             allowNull: false,
             type: Sequelize.DATE,

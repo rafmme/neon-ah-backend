@@ -118,9 +118,16 @@ class RatingController {
         return response(res, 400, 'failure', 'Rating should be between 1 and 5');
       }
 
-      const rated = await Util.resourceExists(Rating, {
-        articleId: article.dataValues.id,
-        userId
+      const checkRating = await Rating.findAndCountAll({
+        where: {
+          articleId: article.dataValues.id
+        }
+      });
+      const { count, rows } = checkRating;
+      const rated = rows.find(data => data.userId === userId);
+      let totalRating = 0;
+      rows.forEach((rateObj) => {
+        totalRating += rateObj.rating;
       });
       if (!rated) {
         if (article.dataValues.userId === userId) return response(res, 403, 'failure', 'You cannot rate your own article');
@@ -129,9 +136,11 @@ class RatingController {
           articleId: article.dataValues.id,
           userId
         });
+        totalRating += rate.dataValues.rating;
+        const averageRating = Math.round(totalRating / (count + 1));
+        Util.updateAverageRating(article, averageRating);
         return response(res, 201, 'success', 'You have successfully rated this article', null, rate.dataValues);
       }
-
       const previousRating = rated.dataValues.rating;
       if (previousRating === Number(rating)) {
         return response(res, 200, 'success', 'You did not update the rating');
@@ -139,6 +148,9 @@ class RatingController {
       const newRating = await rated.update({
         rating: Number(rating)
       });
+      totalRating = ((totalRating - previousRating) + Number(rating));
+      const averageRating = Math.round(totalRating / (count));
+      Util.updateAverageRating(article, averageRating);
       const { articleId, createdAt, updatedAt } = newRating.dataValues;
       return response(
         res, 200, 'success', 'You have successfully updated your rating', null,

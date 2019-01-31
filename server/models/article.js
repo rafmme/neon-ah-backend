@@ -38,6 +38,10 @@ export default (sequelize, DataTypes) => {
       userId: {
         type: DataTypes.UUID,
         allowNull: false
+      },
+      averageRating: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0
       }
     },
     {
