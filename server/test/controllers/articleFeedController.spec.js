@@ -14,7 +14,7 @@ describe('Article Feed Controller Model', () => {
         .request(app)
         .get('/api/v1/articles/feeds')
         .set('Authorization', `Bearer ${tokenTwo}`)
-        console.log(response.body)
+
       expect(response.status).to.eqls(200);
       expect(response.body.status).to.eqls('success');
       expect(response.body.data.message).to.eqls('Article found.');
@@ -24,7 +24,7 @@ describe('Article Feed Controller Model', () => {
           .request(app)
           .get('/api/v1/articles/feeds')
           .set('Authorization', `Bearer ${token}`)
-          console.log(response.body)
+
         expect(response.status).to.eqls(404);
         expect(response.body.status).to.eqls('failure');
         expect(response.body.data.message).to.eqls('Article not found, no author has been followed.');

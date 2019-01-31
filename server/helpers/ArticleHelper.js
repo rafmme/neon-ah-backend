@@ -15,7 +15,8 @@ class ArticleHelper {
       throw new TypeError('Passed in title argument is not valid, expects it to be a string');
     } else {
       const generatedRandomString = randomString.generate(8);
-      const slug = `${title.trim().toLowerCase().replace(/[ ]+/g, '-')}-${generatedRandomString}`;
+      const slug = `${title.trim().toLowerCase().replace(/[^A-Za-z0-9]+/g, '-')}-${generatedRandomString}`
+        .replace('--', '-');
       return slug;
     }
   }
@@ -47,7 +48,7 @@ class ArticleHelper {
         return arrayOfArticles;
     }
   }
-  
+
   /**
    * @static
    * @description a function for generating social share link

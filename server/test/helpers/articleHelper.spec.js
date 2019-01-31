@@ -9,13 +9,18 @@ describe('ArticleHelpers Test', () => {
     it('it should successfully generate an article slug', (done) => {
       const firstSlugPattern = /how-to-train-your-dragon-[a-zA-Z0-9]{8}/i;
       const secondSlugPattern = /5-steps-to-learn-riding-a-bike-[a-zA-Z0-9]{8}/i;
-      const firstArticleSlug = ArticleHelper.generateArticleSlug('How to train your dragon');
+      const thirdSlugPattern = /CR7-I-am-the-GOAT-BOAT-Messi-who-[a-zA-Z0-9]{8}/i;
 
+      const firstArticleSlug = ArticleHelper.generateArticleSlug('How to train your dragon');
       const secondArticleSlug = ArticleHelper.generateArticleSlug(' 5 steps to learn riding a bike ');
+      const thirdArticleSlug = ArticleHelper.generateArticleSlug(' CR7:  I am the GOAT & BOAT, Messi who?  ');
+
       expect(firstSlugPattern.test(firstArticleSlug)).to.equals(true);
       expect(secondSlugPattern.test(secondArticleSlug)).to.equals(true);
+      expect(thirdSlugPattern.test(thirdArticleSlug)).to.equals(true);
       expect(typeof firstArticleSlug).to.be.equals('string');
       expect(typeof secondArticleSlug).to.be.equals('string');
+      expect(typeof thirdArticleSlug).to.be.equals('string');
       done();
     });
 
