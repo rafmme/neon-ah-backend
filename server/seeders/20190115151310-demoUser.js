@@ -25,6 +25,7 @@ export default {
         email: 'kabir@now.com',
         bio: 'Learning life now',
         password: '$2y$10$QCQ1uW0OWH7xKOvJ9gNWsewzoXSjvAmXw21mcZBEB52TN6T/f2Xfy',
+        isVerified: true,
         authTypeId: '15745c60-7b1a-11e8-9c9c-2d42b21b1a3e',
         roleId: '3ceb546e-054d-4c1d-8860-e27c209d4ae4',
         getEmailsNotification: true,

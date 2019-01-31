@@ -142,11 +142,21 @@ describe('User Model', () => {
       expect(response.body.data.message).to.eqls('Sorry!!, Your login information is not correct.');
     });
 
+    it('User should get an error for unverified account', async () => {
+      const response = await chai
+        .request(app)
+        .post('/api/v1/auth/login')
+        .send({ user: userInfo.email, password: userInfo.password });
+      expect(response.status).to.eql(401);
+      expect(response.body.status).to.eqls('failure');
+      expect(response.body.data.message).to.eqls('Your account has not been verified');
+    });
+
     it('User should get loggedIn and token returned when correct credentials are provided', async () => {
       const response = await chai
         .request(app)
         .post('/api/v1/auth/login')
-        .send({ user: userInfo.userName, password: userInfo.password });
+        .send({ user: 'kabir', password: 'Blahblah' });
       expect(response.status).to.eql(200);
       expect(response.body.status).to.eqls('success');
       expect(response.body.data.token).to.be.a('String');

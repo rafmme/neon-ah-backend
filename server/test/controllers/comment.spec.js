@@ -191,6 +191,7 @@ describe('Comment Model', () => {
         });
       expect(response.status).to.eqls(404);
       expect(response.body.status).to.eqls('failure');
+      expect(response.body.data.message).to.eqls('Article not found');
     });
   });
   describe('Delete comment', () => {

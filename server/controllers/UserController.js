@@ -300,6 +300,16 @@ class UserController {
         });
       }
 
+      if (foundUser.dataValues.isVerified !== true) {
+        return res.status(401).send({
+          status: 'failure',
+          data: {
+            statusCode: 401,
+            message: 'Your account has not been verified'
+          }
+        });
+      }
+
       const payload = {
         userId: foundUser.id,
         userName: foundUser.userName,
