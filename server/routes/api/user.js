@@ -17,6 +17,7 @@ userRoutes.post('/password/forgot', UserController.forgotPassword);
 
 userRoutes.post('/password/reset/:token', UserController.passwordReset);
 userRoutes.post('/auth/verify/:token', UserController.verifyEmail);
+userRoutes.post('/auth/resend-verification-link', UserController.resendVerificationEmail);
 userRoutes.post('/auth/signup', signUpSchema, handleValidationErrors, UserController.signUp);
 userRoutes.post('/auth/login', logInSchema, handleValidationErrors, UserController.logIn);
 

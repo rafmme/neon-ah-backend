@@ -4,6 +4,8 @@ import sinon from 'sinon';
 import app from '../../../index';
 import db from '../../models';
 import TokenManager from '../../helpers/TokenManager';
+import MailManager from '../../helpers/MailManager';
+import UserController from '../../controllers/UserController';
 
 const { User } = db;
 
@@ -63,7 +65,7 @@ describe('User Model', () => {
       expect(response.body.status).to.equal('success');
     });
 
-    it('should return error for existing email', async () => {
+    it('Should send verification email to an unverified but signed up user', async () => {
       const response = await chai
         .request(app)
         .post('/api/v1/auth/signup')
@@ -75,18 +77,19 @@ describe('User Model', () => {
           confirmPassword: userInfo.password,
           authTypeId: userInfo.authTypeId
         });
-      expect(response.status).to.equal(409);
+      expect(response.status).to.equal(200);
       expect(response.body).to.be.an('object');
       expect(response.body).to.have.property('data');
       expect(response.body.data).to.be.an('object');
       expect(response.body.data).to.have.property('message');
       expect(response.body.data.message).to.be.a('string');
       expect(response.body.data.message).to.be.eql(
-        'The provided email has been taken. Kindly provide another.'
+        'You had started your registration process earlier. '
+          + 'Kindly check your email to complete your registration'
       );
       expect(response.body).to.have.property('status');
       expect(response.body.status).to.be.a('string');
-      expect(response.body.status).to.equal('failure');
+      expect(response.body.status).to.equal('success');
     });
   });
 
@@ -113,6 +116,32 @@ describe('User Model', () => {
       expect(response.body.data.error).to.eqls('Your account has already been activated.');
     });
 
+    it('Should inform the user to proceed to login', async () => {
+      const response = await chai
+        .request(app)
+        .post('/api/v1/auth/signup')
+        .send({
+          userName: userInfo.userName,
+          fullName: userInfo.fullName,
+          email: userInfo.email,
+          password: userInfo.password,
+          confirmPassword: userInfo.password,
+          authTypeId: userInfo.authTypeId
+        });
+      expect(response.status).to.equal(200);
+      expect(response.body).to.be.an('object');
+      expect(response.body).to.have.property('data');
+      expect(response.body.data).to.be.an('object');
+      expect(response.body.data).to.have.property('message');
+      expect(response.body.data.message).to.be.a('string');
+      expect(response.body.data.message).to.be.eql(
+        "You have already been registered on Author's Haven. Kindly proceed to login"
+      );
+      expect(response.body).to.have.property('status');
+      expect(response.body.status).to.be.a('string');
+      expect(response.body.status).to.equal('success');
+    });
+
     it('User should get an error token is malformed', async () => {
       const generatedToken = TokenManager.sign({
         userEmail: 'jesseinit1@now.com'
@@ -122,7 +151,49 @@ describe('User Model', () => {
       const response = await chai.request(app).post(`/api/v1/auth/verify/${malformedToken}`);
 
       expect(response.status).to.eqls(400);
-      expect(response.body.data.error.name).to.eqls('JsonWebTokenError');
+      expect(response.body.data.error).to.eqls('The Verification link has expired.');
+    });
+
+    it('Should account for an unexpected error on the server.', async () => {
+      const req = {};
+      const res = {
+        status() {},
+        send() {}
+      };
+
+      sinon.stub(res, 'status').returnsThis();
+      await UserController.verifyEmail(req, res);
+      sinon.stub(User, 'update').throws();
+      expect(res.status).to.have.been.calledWith(500);
+    });
+  });
+
+  describe('Resend Email Verification Link', () => {
+    it('Should send an email verification link', async () => {
+      const response = await chai
+        .request(app)
+        .post('/api/v1/auth/resend-verification-link')
+        .send({
+          email: 'jesseinit1@now.com'
+        });
+      expect(response.status).to.equal(200);
+      expect(response.body.status).to.eqls('success');
+      expect(response.body.data.message).to.be.eql(
+        'Kindly your check your email to verify your account'
+      );
+    });
+
+    it('Should account for an unexpected error on the server.', async () => {
+      const req = {};
+      const res = {
+        status() {},
+        send() {}
+      };
+
+      sinon.stub(res, 'status').returnsThis();
+      await UserController.signUp(req, res);
+      sinon.stub(MailManager, 'sendVerificationEmail').throws();
+      expect(res.status).to.have.been.calledWith(500);
     });
   });
   describe('User Login', () => {

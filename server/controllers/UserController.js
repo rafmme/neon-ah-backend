@@ -156,7 +156,7 @@ class UserController {
    * @static
    * @param {object} req - request object
    * @param {object} res - response object
-   * @return {res} res - Response object
+   * @return {object} A JSON Response object
    * @memberof userController
    */
   static async signUp(req, res) {
@@ -170,13 +170,32 @@ class UserController {
       const foundUser = await User.findOne({ where: { email } });
 
       if (foundUser) {
-        return res.status(409).send({
-          status: 'failure',
-          data: {
-            statusCode: 409,
-            message: 'The provided email has been taken. Kindly provide another.'
+        if (foundUser.isVerified === false) {
+          const initialToken = TokenManager.sign({ userEmail: foundUser.email }, '24h');
+          const sentEmail = await MailManager.sendVerificationEmail({
+            createdUser: foundUser,
+            token: initialToken
+          });
+          if (sentEmail) {
+            return res.status(200).send({
+              status: 'success',
+              data: {
+                statusCode: 200,
+                message:
+                  'You had started your registration process earlier. '
+                  + 'Kindly check your email to complete your registration'
+              }
+            });
           }
-        });
+        }
+        if (foundUser.isVerified === true) {
+          return res.status(200).send({
+            status: 'success',
+            data: {
+              message: "You have already been registered on Author's Haven. Kindly proceed to login"
+            }
+          });
+        }
       }
 
       const createdUser = await User.create({
@@ -205,10 +224,10 @@ class UserController {
         }
       });
     } catch (err) {
-      return res.status(400).send({
+      res.status(500).send({
         status: 'failure',
         data: {
-          statusCode: 400,
+          statusCode: 500,
           error: err.message
         }
       });
@@ -250,7 +269,50 @@ class UserController {
         }
       });
     } catch (err) {
-      return res.status(400).send({
+      if (err.name === 'JsonWebTokenError') {
+        return res.status(400).send({
+          status: 'failure',
+          data: {
+            statusCode: 400,
+            error: 'The Verification link has expired.'
+          }
+        });
+      }
+      return res.status(500).send({
+        status: 'failure',
+        data: {
+          statusCode: 500,
+          error: err
+        }
+      });
+    }
+  }
+
+  /**
+   * @static
+   * @param {*} req - request object
+   * @param {*} res - response object
+   * @returns {object} - JSON response object.
+   * @memberof UserController
+   */
+  static async resendVerificationEmail(req, res) {
+    try {
+      const { email } = req.body;
+      const foundUser = await User.findOne({ where: { email } });
+
+      const token = TokenManager.sign({ userEmail: email }, '24h');
+
+      await MailManager.sendVerificationEmail({ createdUser: foundUser, token });
+
+      return res.status(200).send({
+        status: 'success',
+        data: {
+          statusCode: 200,
+          message: 'Kindly your check your email to verify your account'
+        }
+      });
+    } catch (err) {
+      res.status(400).send({
         status: 'failure',
         data: {
           error: err

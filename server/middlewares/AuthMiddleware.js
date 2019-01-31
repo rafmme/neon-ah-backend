@@ -39,14 +39,14 @@ class AuthMiddleware {
   }
 
   /**
-     * @static
-     * @description checks login status of a request
-     * @param {*} req - request object
-     * @param {*} res response object
-     * @param {*} next - next callback
-     * @returns {*} calls the next middleware
-     * @memberof VerifyUser
-     */
+   * @static
+   * @description checks login status of a request
+   * @param {*} req - request object
+   * @param {*} res response object
+   * @param {*} next - next callback
+   * @returns {*} calls the next middleware
+   * @memberof VerifyUser
+   */
   static async checkAuthStatus(req, res, next) {
     try {
       const { authorization } = req.headers;
@@ -86,7 +86,10 @@ class AuthMiddleware {
       }
 
       const { roleId } = req.user;
-      if (roleId !== '3ceb546e-054d-4c1d-8860-e27c209d4ae4' && roleId !== '2023afbb-7072-4759-8161-3d149c9589f2') {
+      if (
+        roleId !== '3ceb546e-054d-4c1d-8860-e27c209d4ae4'
+        && roleId !== '2023afbb-7072-4759-8161-3d149c9589f2'
+      ) {
         return response(res, 401, 'failure', 'You are unauthorised to access this page.');
       }
       return next();
@@ -122,6 +125,7 @@ class AuthMiddleware {
       if (decoded) {
         req.user = decoded;
       }
+
       if (req.user.roleId !== '2023afbb-7072-4759-8161-3d149c9589f2') {
         return response(res, 403, 'failure', 'You are unauthorised to access this page.');
       }

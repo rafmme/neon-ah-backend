@@ -50,33 +50,6 @@ describe('User Model', () => {
       expect(response.body.status).to.be.a('string');
       expect(response.body.status).to.equal('success');
     });
-
-    it('should return error for existing email', async () => {
-      const response = await chai
-        .request(app)
-        .post('/api/v1/auth/signup')
-        .send({
-          userName: userInfo.userName,
-          fullName: userInfo.fullName,
-          email: userInfo.email,
-          password: userInfo.password,
-          confirmPassword: userInfo.confirmPassword,
-          authTypeId: userInfo.authTypeId
-        });
-
-      expect(response.status).to.equal(409);
-      expect(response.body).to.be.an('object');
-      expect(response.body).to.have.property('data');
-      expect(response.body.data).to.be.an('object');
-      expect(response.body.data).to.have.property('message');
-      expect(response.body.data.message).to.be.a('string');
-      expect(response.body.data.message).to.be.eql(
-        'The provided email has been taken. Kindly provide another.'
-      );
-      expect(response.body).to.have.property('status');
-      expect(response.body.status).to.be.a('string');
-      expect(response.body.status).to.equal('failure');
-    });
   });
 
   describe('Email Verification Link', () => {
@@ -112,7 +85,7 @@ describe('User Model', () => {
       const response = await chai.request(app).post(`/api/v1/auth/verify/${malformedToken}`);
 
       expect(response.status).to.eqls(400);
-      expect(response.body.data.error.name).to.eqls('JsonWebTokenError');
+      expect(response.body.data.error).to.eqls('The Verification link has expired.');
     });
   });
 
@@ -455,11 +428,21 @@ describe('User Model', () => {
   });
 
   describe('Toggle User to Admin', () => {
+    it('Should throw an error if request headers is empty', async () => {
+      const response = await chai
+        .request(app)
+        .put('/api/v1/upgrade/user/steve')
+        .set('Authorization', '');
+      expect(response.status).to.eqls(401);
+      expect(response.body.status).to.eqls('failure');
+      expect(response.body.data.message).to.eqls('You are not logged in.');
+    });
+
     it('Should throw an error when User tries to use a fake token', async () => {
       const response = await chai
         .request(app)
         .put('/api/v1/upgrade/user/steve')
-        .set('Authorization', `Bearer ${invalidToken}`);
+        .set('Authorization', 'Bearer yfffff');
       expect(response.status).to.eqls(401);
       expect(response.body.status).to.eqls('failure');
       expect(response.body.data.message).to.eqls('You need to log in again.');
