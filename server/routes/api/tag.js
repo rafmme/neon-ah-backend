@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import TagController from '../../controllers/TagController';
+import TagFeedController from '../../controllers/TagFeedContoller';
 import AuthMiddleware from '../../middlewares/AuthMiddleware';
-
 
 const tagRoutes = Router();
 
@@ -23,4 +23,9 @@ tagRoutes.get(
   TagController.getFollowedTags
 );
 
+tagRoutes.get(
+  '/tags/feeds',
+  AuthMiddleware.checkIfUserIsAuthenticated,
+  TagFeedController.getFollowingTagArticles
+);
 export default tagRoutes;

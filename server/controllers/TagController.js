@@ -1,7 +1,6 @@
 import db from '../models';
 import response from '../helpers/response';
 
-
 const { FollowedTags, Tag } = db;
 
 /**
@@ -18,9 +17,9 @@ class TagController {
   static async follow(req, res) {
     try {
       const { userId } = req.user;
-
       let { tagName } = req.params;
       tagName = tagName.toLowerCase();
+
       const tag = await Tag.findOne({ where: { name: tagName } });
 
       if (!tag) {
@@ -72,7 +71,12 @@ class TagController {
       });
 
       if (followedTags.length === 0) {
-        return response(res, 200, 'success', 'You are currenly not following any tag');
+        return response(
+          res,
+          200,
+          'success',
+          'You are currenly not following any tag'
+        );
       }
 
       response(
@@ -106,6 +110,7 @@ class TagController {
 
       let { tagName } = req.params;
       tagName = tagName.toLowerCase();
+
       const tag = await Tag.findOne({
         where: { name: tagName }
       });
@@ -128,7 +133,12 @@ class TagController {
       }
 
       followingTag.destroy();
-      response(res, 200, 'success', `You have now unfollowed the ${tagName} tag`);
+      response(
+        res,
+        200,
+        'success',
+        `You have now unfollowed the ${tagName} tag`
+      );
     } catch (error) {
       return response(
         res,
