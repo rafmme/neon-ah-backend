@@ -16,6 +16,20 @@ const commentSchema = checkSchema({
       },
       errorMessage: 'content is too short'
     }
+  },
+  highlightedText: {
+    in: 'body',
+    customSanitizer: {
+      options: content => content.trim()
+    },
+    optional: true,
+    isString: {
+      errorMessage: 'Highlighted text must be a string'
+    },
+    isEmpty: {
+      negated: true,
+      errorMessage: 'Highlighted text cannot be empty'
+    }
   }
 });
 

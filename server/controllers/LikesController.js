@@ -124,6 +124,9 @@ class LikesController {
       const commentFound = await Comment.findOne({
         where: {
           id: commentId
+        },
+        attributes: {
+          exclude: ['commentId']
         }
       });
       if (!commentFound) {
@@ -175,6 +178,9 @@ class LikesController {
     const commentFound = await Comment.findOne({
       where: {
         id: commentId
+      },
+      attributes: {
+        exclude: ['commentId']
       }
     });
     if (!commentFound) {
@@ -188,9 +194,18 @@ class LikesController {
     });
     const commentLikesCount = allLikes.count;
     if (allLikes.count === 0) {
-      return response(res, 404, 'failure', 'No likes for this comment', null, { commentLikesCount });
+      return response(res, 404, 'failure', 'No likes for this comment', null, {
+        commentLikesCount
+      });
     }
-    return response(res, 200, 'success', `There are ${allLikes.count} Likes for this comment`, null, { commentLikesCount });
+    return response(
+      res,
+      200,
+      'success',
+      `There are ${allLikes.count} Likes for this comment`,
+      null,
+      { commentLikesCount }
+    );
   }
 }
 export default LikesController;

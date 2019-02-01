@@ -24,11 +24,12 @@ export default (sequelize, DataTypes) => {
         allowNull: false,
         defaultValue: false
       }
-    }, {}
+    },
+    {}
   );
   Comment.associate = (models) => {
     const {
-      Reply, Article, User, CommentLike
+      Reply, Article, User, CommentLike, Highlight
     } = models;
     Comment.hasMany(Reply, {
       foreignKey: 'commentId',
@@ -44,6 +45,12 @@ export default (sequelize, DataTypes) => {
     });
     Comment.belongsTo(User, {
       foreignKey: 'userId',
+      onDelete: 'CASCADE'
+    });
+
+    Comment.hasOne(Highlight, {
+      as: 'highlight',
+      foreignKey: 'commentId',
       onDelete: 'CASCADE'
     });
   };

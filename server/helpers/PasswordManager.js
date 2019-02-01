@@ -12,7 +12,7 @@ class PasswordManager {
    * @memberof PasswordManager
    */
   static hashPassword(password) {
-    return bcrypt.hashSync(password, 10);
+    return bcrypt.hash(password, 10);
   }
 
   /**

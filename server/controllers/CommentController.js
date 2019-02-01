@@ -6,7 +6,7 @@ import Util from '../helpers/Util';
 import eventHandler from '../helpers/eventsHandler';
 
 const {
-  Article, Comment, User, Notification
+  Article, Comment, User, Notification, Highlight
 } = db;
 /**
  * @class CommentController
@@ -24,7 +24,7 @@ class CommentController {
   static async addComment(req, res) {
     try {
       const { userId } = req.user;
-      const { content } = req.body;
+      const { content, highlightedText } = req.body;
       const { slug } = req.params;
 
       const { dataValues: article } = await Article.findOne({
@@ -34,7 +34,27 @@ class CommentController {
       });
 
       if (!article) {
-        return response(res, 404, 'failure', 'Article with the id not found', null, null);
+        return response(
+          res,
+          404,
+          'failure',
+          'Sorry!! Your comment could not be created',
+          null,
+          null
+        );
+      }
+
+      const isValidHighlight = article.content.includes(highlightedText);
+
+      if (highlightedText && !isValidHighlight) {
+        return response(
+          res,
+          400,
+          'failure',
+          'Article does not contain the highlighted text',
+          null,
+          null
+        );
       }
 
       const getAuthorPromise = User.findOne({ where: { id: article.userId } });
@@ -50,6 +70,24 @@ class CommentController {
         { dataValues: createdComment },
         { dataValues: commenter }
       ] = await Promise.all([getAuthorPromise, createCommentPromise, getCommenterPromise]);
+
+      if (isValidHighlight) {
+        await Highlight.create({
+          articleId: article.id,
+          commentId: createdComment.id,
+          highlightedText
+        });
+      }
+
+      const thisComment = await Comment.findOne({
+        where: { id: createdComment.id },
+        include: [
+          {
+            model: Highlight,
+            as: 'highlight'
+          }
+        ]
+      });
 
       const { dataValues: notification } = await Notification.create({
         message: `${commenter.fullName} commented on your article`,
@@ -73,7 +111,7 @@ class CommentController {
         Util.sendInAppNotification([articleAuthor], notification.message);
       }
 
-      response(res, 201, 'success', 'Comment created', null, createdComment);
+      response(res, 201, 'success', 'Comment created', null, thisComment.dataValues);
     } catch (error) {
       return response(
         res,
@@ -117,7 +155,8 @@ class CommentController {
         ],
         where: {
           articleId: articleFound.dataValues.id
-        }
+        },
+        attributes: []
       });
 
       if (commentsQuery.length === 0) {
@@ -172,7 +211,8 @@ class CommentController {
         where: {
           articleId: articleFound.dataValues.id,
           id: commentId
-        }
+        },
+        attributes: []
       });
 
       if (comment) {
@@ -207,23 +247,43 @@ class CommentController {
       const { userId } = req.user;
       const { slug, commentId } = req.params;
       const { content } = req.body;
+
       const articleFound = await Article.findOne({
         where: {
           slug
         }
       });
+
       if (!articleFound) {
-        return response(res, 404, 'failure', 'Article not found', null, null);
+        return response(
+          res,
+          404,
+          'failure',
+          'Sorry, the article was not found - Update Failed',
+          null,
+          null
+        );
       }
-      const findComment = await Comment.findOne({
+
+      const foundComment = await Comment.findOne({
         where: {
           id: commentId
+        },
+        attributes: {
+          exclude: ['commentId']
         }
       });
-      const { dataValues: existingComment } = findComment;
-      if (existingComment.articleId !== articleFound.dataValues.id) {
-        return response(res, 404, 'failure', 'Comment not found for article id', null, null);
+
+      if (!foundComment) {
+        return response(res, 404, 'failure', 'Update Failed - Comment not found', null, null);
       }
+
+      const { dataValues: existingComment } = foundComment;
+
+      if (existingComment.articleId !== articleFound.id) {
+        return response(res, 404, 'failure', 'Update Failed - Comment not found', null, null);
+      }
+
       if (existingComment.userId !== userId) {
         return response(
           res,
@@ -234,6 +294,7 @@ class CommentController {
           null
         );
       }
+
       if (content === existingComment.content) {
         return response(
           res,
@@ -244,25 +305,26 @@ class CommentController {
           null
         );
       }
+
       const newEditHistory = {
         content: existingComment.content,
         updatedAt: existingComment.updatedAt
       };
+
       existingComment.history = !existingComment.history[0]
         ? (existingComment.history = [newEditHistory])
         : existingComment.history.concat([newEditHistory]);
-      const updateComment = await findComment.update({
+
+      const updateComment = await foundComment.update({
         content,
         edited: true,
         history: existingComment.history
       });
+
       if (updateComment) {
         return response(res, 200, 'success', 'Comment updated', null, updateComment.dataValues);
       }
     } catch (error) {
-      if (error.name === 'SequelizeDatabaseError') {
-        return response(res, 404, 'failure', 'Comment  not found', null, null);
-      }
       return response(
         res,
         500,
@@ -298,6 +360,9 @@ class CommentController {
       const getCommentDelete = await Comment.findOne({
         where: {
           id: commentId
+        },
+        attributes: {
+          exclude: ['commentId']
         }
       });
       if (getCommentDelete.dataValues.articleId !== articleFound.dataValues.id) {

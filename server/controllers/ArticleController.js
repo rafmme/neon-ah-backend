@@ -12,7 +12,7 @@ import MailManager from '../helpers/MailManager';
 import newArticleTemplate from '../helpers/emailTemplates/newArticleTemplate';
 
 const {
-  Article, Tag, User, Follow, Comment, Notification, Sequelize
+  Article, Tag, User, Follow, Comment, Notification, Sequelize, Highlight
 } = db;
 const { Op } = Sequelize;
 const { createReadingStats } = ReadingStatsContoller;
@@ -41,7 +41,9 @@ class ArticleController {
         slug: ArticleHelper.generateArticleSlug(title),
         title,
         content,
-        banner: banner || 'https://unsplash.com/photos/Q7wDdmgCBFg',
+        banner:
+          banner
+          || 'https://res.cloudinary.com/jesseinit/image/upload/v1548941969/photo-1476242906366-d8eb64c2f661.jpg',
         tagsList: tagsArray,
         isPublished: Boolean(isPublished),
         isReported: false
@@ -215,34 +217,44 @@ class ArticleController {
           {
             model: Comment,
             as: 'comments',
-            attributes: ['content'],
+            attributes: ['id', 'content', 'createdAt'],
             include: [
               {
                 model: User,
                 attributes: ['userName', 'img', 'fullName']
+              },
+              {
+                model: Highlight,
+                as: 'highlight'
               }
             ]
           }
         ]
       });
 
-      if (article) {
-        article = article.toJSON();
-        const tags = article.tags.map(tag => tag.name);
-        article.tags = tags;
-        article.timeToRead = TimeToRead.readTime(article);
-
-        article.createdAt = Util.formatDate(article.createdAt);
-        article.updatedAt = Util.formatDate(article.updatedAt);
-
-        if (req.user) {
-          await createReadingStats(req, res);
-        }
-
-        return response(res, 200, 'success', 'Article was fetched successfully', null, article);
+      if (!article) {
+        return response(res, 404, 'failure', 'not found error', { message: 'Article not found' });
       }
 
-      return response(res, 404, 'failure', 'not found error', { message: 'Article not found' });
+      article = article.toJSON();
+      const tags = article.tags.map(tag => tag.name);
+      article.tags = tags;
+      article.timeToRead = TimeToRead.readTime(article);
+      article.comments = article.comments.map((comment) => {
+        if (comment.highlight) {
+          comment.highlight = comment.highlight.highlightedText;
+        }
+        return comment;
+      });
+
+      article.createdAt = Util.formatDate(article.createdAt);
+      article.updatedAt = Util.formatDate(article.updatedAt);
+
+      if (req.user) {
+        await createReadingStats(req, res);
+      }
+
+      return response(res, 200, 'success', 'Article was fetched successfully', null, article);
     } catch (error) {
       return response(res, 500, 'failure', 'server error', {
         message: 'Something went wrong on the server'

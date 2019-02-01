@@ -5,6 +5,7 @@ import app from '../../..';
 import db from '../../models';
 import { userToken, userToken2, invalidToken } from '../mockData/tokens';
 import mockArticles from '../mockData/dummyArticleData';
+import { token } from '../mockData/token';
 
 const { Article } = db;
 
@@ -139,7 +140,16 @@ describe('API endpoint /articles/', () => {
 
   describe('GET one article', () => {
     it('should successfully return an article with the specified slug', async () => {
-      const response = await chai.request(app).get('/api/v1/articles/What-a-mighty-God');
+      await chai
+        .request(app)
+        .post('/api/v1/articles/how-to-be-a-10x-dev-sGNYfURm/comments')
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          content: 'Nice write up',
+          highlightedText: 'Hallelujah'
+        });
+
+      const response = await chai.request(app).get('/api/v1/articles/how-to-be-a-10x-dev-sGNYfURm');
 
       expect(response.status).to.eqls(200);
       expect(response.body.status).to.eqls('success');

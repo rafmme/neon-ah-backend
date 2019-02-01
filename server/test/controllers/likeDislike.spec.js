@@ -49,7 +49,6 @@ describe('Likes and Dislike feature', () => {
       expect(response.body.status).to.equal('success');
     });
 
-
     it('unlike articles', async () => {
       const response = await chai
         .request(app)
@@ -86,7 +85,7 @@ describe('Likes and Dislike feature', () => {
       const response = await chai
         .request(app)
         .get(
-          '/api/v1/articles/how-to-google-in-2019/comments/09543c60-7b1a-11e8-9c9c-2d42b21b1a31/likes'
+          '/api/v1/articles/What-a-mighty-God/comments/09543c60-7b1a-11e8-9c9c-2d42b21b1a3d/likes'
         )
         .set('authorization', `Bearer ${userToken}`);
       expect(response.status).to.equal(404);
@@ -102,7 +101,7 @@ describe('Likes and Dislike feature', () => {
       const response = await chai
         .request(app)
         .post(
-          '/api/v1/articles/how-to-google-in-2019/comments/09543c60-7b1a-11e8-9c9c-2d42b21b1a31/likes'
+          '/api/v1/articles/What-a-mighty-God/comments/09543c60-7b1a-11e8-9c9c-2d42b21b1a3d/likes'
         )
         .set('authorization', `Bearer ${userToken}`);
       expect(response.status).to.equal(200);
@@ -118,7 +117,7 @@ describe('Likes and Dislike feature', () => {
       const response = await chai
         .request(app)
         .get(
-          '/api/v1/articles/how-to-google-in-2019/comments/09543c60-7b1a-11e8-9c9c-2d42b21b1a31/likes'
+          '/api/v1/articles/What-a-mighty-God/comments/09543c60-7b1a-11e8-9c9c-2d42b21b1a3d/likes'
         )
         .set('authorization', `Bearer ${userToken}`);
       expect(response.status).to.equal(200);
@@ -133,7 +132,7 @@ describe('Likes and Dislike feature', () => {
       const response = await chai
         .request(app)
         .post(
-          '/api/v1/articles/how-to-google-in-2019/comments/09543c60-7b1a-11e8-9c9c-2d42b21b1a31/likes'
+          '/api/v1/articles/What-a-mighty-God/comments/09543c60-7b1a-11e8-9c9c-2d42b21b1a3d/likes'
         )
         .set('authorization', `Bearer ${userToken}`);
       expect(response.status).to.equal(200);

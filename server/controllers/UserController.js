@@ -116,7 +116,7 @@ class UserController {
 
       await User.update(
         {
-          password: PasswordManager.hashPassword(newPassword)
+          password: await PasswordManager.hashPassword(newPassword)
         },
         {
           where: {
@@ -165,8 +165,6 @@ class UserController {
         fullName, userName, email, password
       } = req.body;
 
-      const hashedPassword = await PasswordManager.hashPassword(password);
-
       const foundUser = await User.findOne({ where: { email } });
 
       if (foundUser) {
@@ -198,6 +196,7 @@ class UserController {
         }
       }
 
+      const hashedPassword = await PasswordManager.hashPassword(password);
       const createdUser = await User.create({
         userName: userName.toLowerCase(),
         fullName: fullName.toLowerCase(),
@@ -430,6 +429,7 @@ class UserController {
       const {
         id, displayName, emails, photos, provider
       } = profile;
+
       const emailValue = emails[0].value.toLowerCase();
 
       const [user] = await User.findOrCreate({
@@ -437,7 +437,7 @@ class UserController {
         defaults: {
           fullName: displayName.toLowerCase(),
           userName: `user${id}`,
-          password: PasswordManager.hashPassword(id),
+          password: await PasswordManager.hashPassword(id),
           authTypeId: providerList[provider].id,
           roleId: '3ceb546e-054d-4c1d-8860-e27c209d4ae3',
           isVerified: true,
@@ -445,6 +445,7 @@ class UserController {
           img: photos[0].value
         }
       });
+
       return done(null, user.dataValues);
     } catch (error) {
       return done(error, null);

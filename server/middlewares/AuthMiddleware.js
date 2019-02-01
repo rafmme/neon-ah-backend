@@ -40,31 +40,6 @@ class AuthMiddleware {
 
   /**
    * @static
-   * @description checks login status of a request
-   * @param {*} req - request object
-   * @param {*} res response object
-   * @param {*} next - next callback
-   * @returns {*} calls the next middleware
-   * @memberof VerifyUser
-   */
-  static async checkAuthStatus(req, res, next) {
-    try {
-      const { authorization } = req.headers;
-      const token = authorization.split(' ')[1];
-      const decoded = TokenManager.verify(token);
-      if (decoded) {
-        req.user = decoded;
-        return next();
-      }
-    } catch (error) {
-      req.isLoggedIn = false;
-      next();
-      return response(res, 500, 'failure', 'An error occured on the server');
-    }
-  }
-
-  /**
-   * @static
    * @description - a middleware that checks if the user is an admin
    * @param {object} req - a request object
    * @param {object} res - a response object

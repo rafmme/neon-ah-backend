@@ -4,10 +4,9 @@ import ArticleValidation from '../../middlewares/validations/ArticleValidation';
 import AuthMiddleware from '../../middlewares/AuthMiddleware';
 import FollowFeedContoller from '../../controllers/FollowFeedController';
 
-
-
 const articleRoutes = Router();
 articleRoutes.get('/search', ArticleController.search);
+
 articleRoutes.post(
   '/articles',
   AuthMiddleware.checkIfUserIsAuthenticated,
@@ -16,21 +15,22 @@ articleRoutes.post(
   ArticleValidation.checkIfArticleExist,
   ArticleController.create
 );
+
 articleRoutes.get(
   '/articles',
   ArticleValidation.verifyLimitParams,
   ArticleValidation.verifyPageParams,
   ArticleController.fetchAll
 );
+
 articleRoutes.get(
   '/articles/feeds',
   AuthMiddleware.checkIfUserIsAuthenticated,
   FollowFeedContoller.getFollowingArticles
 );
-articleRoutes.get(
-  '/articles/:slug',
-  ArticleController.fetchOne
-);
+
+articleRoutes.get('/articles/:slug', ArticleController.fetchOne);
+
 articleRoutes.put(
   '/articles/:slug',
   AuthMiddleware.checkIfUserIsAuthenticated,
@@ -39,16 +39,14 @@ articleRoutes.put(
   ArticleValidation.validateArticleData,
   ArticleController.update
 );
+
 articleRoutes.delete(
   '/articles/:slug',
   AuthMiddleware.checkIfUserIsAuthenticated,
   ArticleValidation.verifyUserOwnStory,
   ArticleController.remove
 );
-articleRoutes.get(
-  '/articles/share/:slug',
-  ArticleController.share
-);
 
+articleRoutes.get('/articles/share/:slug', ArticleController.share);
 
 export default articleRoutes;

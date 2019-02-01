@@ -25,21 +25,21 @@ class FollowContoller {
   static async followUser(req, res) {
     try {
       const { userName } = req.params;
-      const user = await User.findOne({
+      const userToBeFollowed = await User.findOne({
         where: {
           userName
         }
       });
 
-      if (!user) {
+      if (!userToBeFollowed) {
         return response(res, 404, 'failure', 'User not found');
       }
 
-      const userId = user.id;
+      const userId = userToBeFollowed.id;
       const followersId = req.user.userId;
       const followersUserName = req.user.userName;
 
-      if (user.id === req.user.userId) {
+      if (userToBeFollowed.id === req.user.userId) {
         return response(res, 400, 'failure', 'You cannot follow yourself');
       }
 
@@ -48,32 +48,37 @@ class FollowContoller {
         attributes: ['id', 'followersId', 'userId']
       });
 
-      if (isCreated) {
-        const { dataValues: notification } = await Notification.create({
-          message: `${followersUserName} just followed you.`,
-          senderId: followersId,
-          receiverId: userId
-        });
-
-        const newFollowingMailConfig = {
-          to: `${user.email}`,
-          from: 'notification@neon-ah.com',
-          subject: 'New Follower Alert',
-          html: newFollowerTemplate(user, followersUserName)
-        };
-
-        if (user.getEmailsNotification) {
-          eventHandler.on('sendMail', MailManager.sendMailNotification);
-          eventHandler.emit('sendMail', newFollowingMailConfig);
-        }
-
-        if (user.getInAppNotification) {
-          Util.sendInAppNotification([user], notification.message);
-        }
-
-        return response(res, 201, 'success', `You are now following ${user.userName}`);
+      if (!isCreated) {
+        return response(
+          res,
+          400,
+          'failure',
+          `You are already following ${userToBeFollowed.userName}`
+        );
       }
-      return response(res, 400, 'failure', `You are already following ${user.userName}`);
+      const { dataValues: notification } = await Notification.create({
+        message: `${followersUserName} just followed you.`,
+        senderId: followersId,
+        receiverId: userId
+      });
+
+      const newFollowingMailConfig = {
+        to: `${userToBeFollowed.email}`,
+        from: 'notification@neon-ah.com',
+        subject: 'New Follower Alert',
+        html: newFollowerTemplate(userToBeFollowed, followersUserName)
+      };
+
+      if (userToBeFollowed.getEmailsNotification) {
+        eventHandler.on('sendMail', MailManager.sendMailNotification);
+        eventHandler.emit('sendMail', newFollowingMailConfig);
+      }
+
+      if (userToBeFollowed.getInAppNotification) {
+        Util.sendInAppNotification([userToBeFollowed], notification.message);
+      }
+
+      return response(res, 201, 'success', `You are now following ${userToBeFollowed.fullName}`);
     } catch (error) {
       response(res, 500, 'failure', error.name);
     }
