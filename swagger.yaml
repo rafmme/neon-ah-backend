@@ -6,38 +6,39 @@ info:
   contact:
     name: Andela Cohort 43 Team Neon
 servers:
-  - url: http://localhost:3000/
+  - url: https://neon-ah-staging.herokuapp.com/api/v1/
 tags:
   - name: Authentication
     description: Authentication-related endpoints
   - name: Users
     description: User-related endpoints
-  - name: Profile
-    description: Profile-related endpoints
   - name: Articles
     description: Article-related endpoints
   - name: Comments
     description: Comment-related endpoints
+  - name: Likes
+    description: Likes-related endpoints
+  - name: Ratings
+    description: Ratings-related endpoints
+  - name: ReadStats
+    description: ReadStats-related endpoints
+  - name: ReportArticles
+    description: ReportArticles-related endpoints
+  - name: Tags
+    description: Tags-related endpoints
 components:
   schemas:
     Error:
-      errors:
-        body:
-          - can't be empty
-
-    Profile:
-      title: User Profile
-      type: object
       properties:
-        bio:
+        message:
+          description: Error message
           type: string
-        image:
-          type: string
-      additionalProperties: false
     User:
-      title: User Schema
+      title: User
       properties:
-        username:
+        fullName:
+          type: string
+        userName:
           type: string
         email:
           type: string
@@ -45,146 +46,226 @@ components:
         password:
           type: string
           format: password
-        profile:
-          $ref: '#/components/schemas/Profile'
+        roleId:
+          type: string
+          default: 3ceb546e-054d-4c1d-8860-e27c209d4ae3
+        isVerified:
+          type: boolean
+        bio:
+          type: string
+        image:
+          type: string
+        getEmailsNotification:
+          type: boolean
+        getInAppNotification:
+          type: boolean
+        authTypeId:
+          type: string
       additionalProperties: false
       required:
+        - fullName
+        - userName
         - email
-        - username
         - password
+        - roleId
+        - authTypeId
       example:
-        email: me@mandela.mail
-        password:
-        profile:
-          bio: We run through mountainsa and walk on sea. Conquering the very depths and leaving glory in our wake.
-          image: https://picsum.photos/200/300/?random
-    Articles:
-      title: Articles
-      description: All User Articles
+        fullName: Olusola Ajayi
+        userName: ebzeal
+        email: olusola.ajayi@andela.com
+        password: Blahblah
+    Article:
+      title: Article
       properties:
+        slug:
+          type: string
         title:
           type: string
         content:
-          type: longtext
-        tags:
-          $ref: '#/components/schemas/Tags'
-        comments:
-          $ref: '#/components/schemas/Comments'
-        author:
-          $ref: '#/components/schemas/User'
+          type: string
+        banner:
+          type: string
+        timeToRead:
+          type: integer
+        isPublished:
+          type: boolean
+        isReported:
+          type: boolean
+        userId:
+          type: string
+        averageRating:
+          type: integer
       additionalProperties: false
-    Tags:
-      title: Tags
-      description: All User Tags
-      properties:
-        id:
-          type: string
-        tags:
-          type: string
-      additionalProperties: false
-    Comments:
-      title: Articles
-      description: All Usewr Articles
-      properties:
-        username:
-          type: string
-        comment:
-          type: string
-      additionalProperties: false
+      required:
+        - title
+        - content
+        - banner
+        - userId
+      example:
+        title: The Call
+        content: Sounds like an action movie right
+        banner: this image
+        userId: 3ceb546e-054d-4c1d-8860-e27c209d4ae3
   responses:
-    Success:
-      description: Success
-    UserCreated:
-      description: New User Created
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/User'
-    LoginSuccess:
-      description: Logged In Successfully
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/User'
-    OwnUserRetrieved:
-      description: User sees own profile
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/User'
-    UserRetrieved:
-      description: One User Retrieved
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/UserStripped'
-    UsersRetrieved:
-      description: All Users Retrieved from Search Operation
-      content:
-        application/json:
-          schema:
-            type: array
-            items:
-              $ref: '#/components/schemas/UserStripped'
-    UserFollowed:
-      description: One User Followed
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/UserStripped'
-    UserUnFollowed:
-      description: One User Unfollowed
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/UserStripped'
-    ErrorBadRequest:
-      description: Bad Request
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    ErrorUnauthorized:
-      description: Unauthorized
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    ErrorForbidden:
-      description: Forbidden
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    ErrorNotFound:
-      description: Not Found
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    ErrorUnsupportedMediaType:
-      description: Unsupported Media Type
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    ErrorInternalServer:
-      description: Internal Server Error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
+      Success:
+        description: Success
+      UserCreated:
+        description: New User Created
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      LoginSuccess:
+        description: Logged In Successfully
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      OwnUserRetrieved:
+        description: User sees own profile
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      ErrorBadRequest:
+        description: Bad Request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Error'
+      ErrorUnauthorized:
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Error'
+      ErrorForbidden:
+        description: Forbidden
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Error'
+      ErrorNotFound:
+        description: Not Found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Error'
+      ErrorUnsupportedMediaType:
+        description: Unsupported Media Type
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Error'
+      ErrorInternalServer:
+        description: Internal Server Error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Error'   
   securitySchemes:
-    token:
+    bearerAuth:            # arbitrary name for the security scheme
       type: http
       scheme: bearer
-      bearerFormat: JWT
+      bearerFormat: JWT 
 paths:
-  /users/login/:
+  /auth/signup:
     post:
       tags:
         - Authentication
-      summary: Perform password-based authentication
+      summary: Sends token to email for confirmation
+      description: Returns a JWT upon successful signup. Sends token to email
+      requestBody:
+        description: User Credentials
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                fullName:
+                  type: string
+                userName:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  format: password
+                confirmPassword:
+                  type: string
+                  format: password
+      responses:
+        '201':
+          $ref: '#/components/responses/LoginSuccess'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '500':
+          $ref: '#/components/responses/ErrorInternalServer'
+  /auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: Perform password-based authentication for login
+      description: Returns a JWT upon success
+      requestBody:
+        description: User Credentials
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                user:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '201':
+          $ref: '#/components/responses/LoginSuccess'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '500':
+          $ref: '#/components/responses/ErrorInternalServer'
+  /auth/verify/{token}:
+     post:
+      tags:
+        - Authentication
+      summary: Perform email token verification for signup
+      description: Returns a JWT upon success
+      parameters:
+        - name: token
+          in: path
+          description: The token in the authentication header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: User Credentials
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                email:
+                  type: string
+      responses:
+        '201':
+          $ref: '#/components/responses/LoginSuccess'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '500':
+          $ref: '#/components/responses/ErrorInternalServer'
+  /password/forgot:
+    post:
+      tags:
+        - Authentication
+      summary: Method to send password reset link
       description: Returns a JWT upon success
       requestBody:
         description: User Credentials
@@ -195,184 +276,1092 @@ paths:
               properties:
                 email:
                   type: string
-                  format: email
-                password:
+      responses:
+        '200':
+          $ref: '#/components/responses/Success'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '500':
+          $ref: '#/components/responses/ErrorInternalServer'
+  /password/reset/{token}:
+    post:
+      tags:
+        - Authentication
+      summary: Method to reset user's password.
+      description: Returns a JWT upon success
+      parameters:
+        - name: token
+          in: path
+          description: The token in the authentication header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: User Credentials
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                email:
+                  type: string
+                newPassword:
+                  type: string
+                confirmPassword:
                   type: string
       responses:
         '200':
-          $ref: '#/components/responses/LoginSuccess'
+          $ref: '#/components/responses/Success'
         '400':
           $ref: '#/components/responses/ErrorBadRequest'
-        '403':
-          $ref: '#/components/responses/ErrorNotFound'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
         '500':
           $ref: '#/components/responses/ErrorInternalServer'
-
+  /users/:
+    put:
+      security:
+        - bearerAuth: []
+      tags:
+        - Users
+      summary: Method to update user's profile
+      parameters:
+        - name: token
+          in: header
+          description: The token in the authentication header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: User Credentials
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                fullName:
+                  type: string
+                userName:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  format: password
+                confirmPassword:
+                  type: string
+                  format: password
+      responses:
+        '200':
+          $ref: '#/components/responses/Success'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '500':
+          $ref: '#/components/responses/ErrorInternalServer'
+  /upgrade/user/{userName}:
+    put:
+      tags:
+        - Users
+      summary: This method upgrades a user to admin. It accessible only to the superadmin.
+      parameters:
+        - name: userName
+          in: path
+          description: ID of the User to retrieve
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/Success'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '500':
+          $ref: '#/components/responses/ErrorInternalServer'
   /users/{userName}:
     get:
       tags:
         - Users
-      summary: Get User by username
-      security:
-        - token: []
-
+      summary: This method upgrades a user to admin. It accessible only to the superadmin.
       parameters:
         - name: userName
           in: path
-          description: Username of the user
+          description: ID of the User to retrieve
+          required: true
           schema:
             type: string
       responses:
         '200':
-          description: User Retrieved Successfully
-        '404':
-          description: User not found
+          $ref: '#/components/responses/Success'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
         '401':
-          description: Authentication Error
+          $ref: '#/components/responses/ErrorUnauthorized'
         '500':
-          description: Something went wrong on the server.
-
-  /user:
-    put:
+          $ref: '#/components/responses/ErrorInternalServer'
+  /users/{userName}/followers:
+    get:
       tags:
         - Users
-      summary: Edit User Profile
-      security:
-        - token: []
-      requestBody:
-        description: The New User object
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/User'
-      responses:
-        '201':
-          $ref: 'User Updated Successfully'
-        '400':
-          $ref: 'Bad Request'
-        '500':
-
-          $ref: 'Something went wrong on the server'
-
-
-  /users/{userName}/follow:
-    post:
-      tags:
-        - Profile
-      summary: Follow a User
-      security:
-        - token: []
+      summary: Method to get all followers.
       parameters:
-        - name: username
+        - name: userName
           in: path
-          description: username of the User
+          description: ID of the User to retrieve
           required: true
           schema:
             type: string
-      requestBody:
-        description: An object representing the fields in the requested Profile
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/User'
       responses:
         '200':
-          $ref: 'You followed {userName}'
+          $ref: '#/components/responses/Success'
         '400':
-          $ref: 'You cannot follow yourself'
+          $ref: '#/components/responses/ErrorBadRequest'
         '401':
-          $ref: 'User not authorized'
-        '404':
-          $ref: 'User not found'
+          $ref: '#/components/responses/ErrorUnauthorized'
         '500':
-          $ref: 'An error occured on the server'
+          $ref: '#/components/responses/ErrorInternalServer'
+  /users/{userName}/following:
+    get:
+      tags:
+        - Users
+      summary: Method to get all following.
+      parameters:
+        - name: userName
+          in: path
+          description: ID of the User to retrieve
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/Success'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '500':
+          $ref: '#/components/responses/ErrorInternalServer'
+  /users/{userName}/follow:
     delete:
       tags:
-        - Profile
-      summary: Unfollow a User
-      security:
-        - token: []
+        - Users
+      summary: This method upgrades a user to admin. It accessible only to the superadmin.
       parameters:
-        - name: username
+        - name: userName
           in: path
-          description: username of the User
+          description: ID of the User to retrieve
           required: true
           schema:
             type: string
-      requestBody:
-        description: An object representing the fields in the requested Profile
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/User'
       responses:
         '200':
-          $ref: 'You unfollowed {userName}'
+          $ref: '#/components/responses/Success'
         '400':
-          $ref: 'You cannot unfollow yourself'
+          $ref: '#/components/responses/ErrorBadRequest'
         '401':
-          $ref: 'User not authorized'
-        '404':
-          $ref: 'User not found'
+          $ref: '#/components/responses/ErrorUnauthorized'
         '500':
-          $ref: 'An error occured on the server'
-/users/{userName}/follower:
+          $ref: '#/components/responses/ErrorInternalServer'
+  /stats:
+     get:
+      tags:
+        - ReadStats
+      summary: Method to get user reading stats
+      description: Returns a JWT upon success
+      parameters:
+        - name: userId
+          in: query
+          description: The token in the authentication header
+          required: true
+          schema:
+            type: string
+        - name: slug
+          in: query
+          description: slug of article
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/Success'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '500':
+          $ref: '#/components/responses/ErrorInternalServer'
+  /myArticles:
     get:
       tags:
-        - Profile
-      summary: Get user followers
-      security:
-        - token: []
+        - Users
+      summary: This method upgrades a user to admin. It accessible only to the superadmin.
       parameters:
-        - name: username
+        - name: userId
           in: path
-          description: username of the User
+          description: ID of the User to retrieve
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/Success'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '500':
+          $ref: '#/components/responses/ErrorInternalServer'
+  /myArticles/{slug}:
+    get:
+      tags:
+        - Users
+      summary: This method upgrades a user to admin. It accessible only to the superadmin.
+      parameters:
+        - name: slug
+          in: path
+          description: ID of the User to retrieve
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/Success'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '500':
+          $ref: '#/components/responses/ErrorInternalServer'
+  /articles/{slug}/comments:
+    post:
+      tags:
+        - Comments
+      summary: Allow user to comment on an article
+      parameters:
+        - name: slug
+          in: path
+          description: slug of the article commenting on
           required: true
           schema:
             type: string
       requestBody:
-        description: An object representing the fields in the requested Profile
+        description: User Credentials
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
+              properties:
+                content:
+                  type: string
       responses:
         '200':
-          $ref: 'Followers returned successfully'
-        '404':
-          $ref: 'User not found'
+          $ref: '#/components/responses/Success'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
         '500':
-          $ref: 'An error occured on the server'
-    /users/{userName}/following:
+          $ref: '#/components/responses/ErrorInternalServer'
     get:
       tags:
-        - Profile
-      summary: Get user following
-      security:
-        - token: []
+        - Comments
+      summary: Retrive all comments for an article
       parameters:
-        - name: username
+        - name: slug
           in: path
-          description: username of the User
+          description: slug of the article commenting on
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/Success'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '500':
+          $ref: '#/components/responses/ErrorInternalServer'
+  /articles/{slug}/comments/{commentId}:
+    get:
+      tags:
+        - Comments
+      summary: Retrive single
+      parameters:
+        - name: slug
+          in: path
+          description: slug of the article commenting on
+          required: true
+          schema:
+            type: string
+        - name: commentId
+          in: path
+          description: Id of comment
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/Success'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '500':
+          $ref: '#/components/responses/ErrorInternalServer'
+    put:
+      tags:
+        - Comments
+      summary: Update a comment
+      parameters:
+        - name: slug
+          in: path
+          description: slug of the article commenting on
+          required: true
+          schema:
+            type: string
+        - name: commentId
+          in: path
+          description: Id of comment
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/Success'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '500':
+          $ref: '#/components/responses/ErrorInternalServer'
+    delete:
+      tags:
+        - Comments
+      summary: Delete a comment
+      parameters:
+        - name: slug
+          in: path
+          description: slug of the article commenting on
+          required: true
+          schema:
+            type: string
+        - name: commentId
+          in: path
+          description: Id of comment
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/Success'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '500':
+          $ref: '#/components/responses/ErrorInternalServer'
+  /articles/{slug}/likes:
+    post:
+      tags:
+        - Likes
+      summary: Method to like and unlike an article.
+      description: Returns a JWT upon success
+      parameters:
+        - name: slug
+          in: path
+          description: The token in the authentication header
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/Success'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '500':
+          $ref: '#/components/responses/ErrorInternalServer'
+    get:
+      tags:
+        - Likes
+      summary: Method to get all likes for an article.
+      description: Returns a JWT upon success
+      parameters:
+        - name: slug
+          in: path
+          description: The token in the authentication header
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/Success'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '500':
+          $ref: '#/components/responses/ErrorInternalServer'
+  /articles/{slug}/comments/{commentId}/likes:
+    post:
+      tags:
+        - Likes
+      summary: Method to like and unlike a comment.
+      description: Returns a JWT upon success
+      parameters:
+        - name: slug
+          in: path
+          description: article slug
+          required: true
+          schema:
+            type: string
+        - name: commentId
+          in: path
+          description: Id of comment
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/Success'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '500':
+          $ref: '#/components/responses/ErrorInternalServer'
+    get:
+      tags:
+        - Likes
+      summary: Method to get all likes for a comment.
+      description: Returns a JWT upon success
+      parameters:
+        - name: slug
+          in: path
+          description: article slug
+          required: true
+          schema:
+            type: string
+        - name: commentId
+          in: path
+          description: Id of comment
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/Success'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '500':
+          $ref: '#/components/responses/ErrorInternalServer'
+  /articles/{slug}/ratings:
+    get:
+      tags:
+        - Ratings
+      summary: Method to handle fetching of all ratings of an article.
+      description: Returns a JWT upon success
+      parameters:
+        - name: slug
+          in: path
+          description: slug of article
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/Success'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '500':
+          $ref: '#/components/responses/ErrorInternalServer'
+    put:
+      tags:
+        - Ratings
+      summary: Method to update a single user's rtating on an article.
+      description: Returns a JWT upon success
+      parameters:
+        - name: slug
+          in: path
+          description: slug of article
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/Success'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '500':
+          $ref: '#/components/responses/ErrorInternalServer'
+    delete:
+      tags:
+        - Ratings
+      summary: Method to delete a user's rating
+      description: Returns a JWT upon success
+      parameters:
+        - name: slug
+          in: path
+          description: slug of article
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/Success'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '500':
+          $ref: '#/components/responses/ErrorInternalServer'
+  /user/ratings:
+    get:
+      tags:
+        - Ratings
+      summary: Method to handle fetching of a single user's ratings
+      description: Returns a JWT upon success
+      parameters:
+        - name: userId
+          in: query
+          description: The token in the authentication header
+          required: true
+          schema:
+            type: string
+        - name: slug
+          in: query
+          description: slug of article
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/Success'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '500':
+          $ref: '#/components/responses/ErrorInternalServer'
+  /tags/{tagName}/follow:
+    get:
+      tags:
+        - Tags
+      summary: a function that handles following of a tag by user
+      description: Returns a JWT upon success
+      parameters:
+        - name: tagName
+          in: path
+          description: name of tag
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/Success'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '500':
+          $ref: '#/components/responses/ErrorInternalServer'
+  /tags/{tagName}/unfollow:
+    delete:
+      tags:
+        - Tags
+      summary: a function that handles following of a tag by user
+      description: Returns a JWT upon success
+      parameters:
+        - name: tagName
+          in: path
+          description: name of tag
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/Success'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '500':
+          $ref: '#/components/responses/ErrorInternalServer'
+  /tags/followedTags:
+    get:
+      tags:
+        - Tags
+      summary: a function that handles following of a tag by user
+      description: Returns a JWT upon success
+      parameters:
+        - name: userId
+          in: query
+          description: The token in the authentication header
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/Success'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '500':
+          $ref: '#/components/responses/ErrorInternalServer'
+  /articles/{slug}/reports:
+    post:
+      tags:
+        - ReportArticles
+      summary: Allow users to report articles that violate terms and agreement
+      parameters:
+        - name: slug
+          in: path
+          description: slug of the article being reported
           required: true
           schema:
             type: string
       requestBody:
-        description: An object representing the fields in the requested Profile
+        description: User Credentials
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
+              properties:
+                complaint:
+                  type: string
       responses:
         '200':
-          $ref: 'Following returned successfully'
-        '404':
-          $ref: 'User not found'
+          $ref: '#/components/responses/Success'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
         '500':
-          $ref: 'An error occured on the server'
-    
+          $ref: '#/components/responses/ErrorInternalServer' 
+    put:
+      tags:
+        - ReportArticles
+      summary: Allow users to update complaints against reported articles
+      parameters:
+        - name: slug
+          in: path
+          description: slug of the article being reported
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: User Credentials
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                complaint:
+                  type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/Success'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '500':
+          $ref: '#/components/responses/ErrorInternalServer'
+    get:
+      tags:
+        - ReportArticles
+      summary: Gets all reports for articles
+      parameters:
+        - name: slug
+          in: path
+          description: slug of the article commenting on
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/Success'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '500':
+          $ref: '#/components/responses/ErrorInternalServer'
+    delete:
+      tags:
+        - ReportArticles
+      summary: For user to delete logged reports
+      parameters:
+        - name: slug
+          in: path
+          description: slug of the article commenting on
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/Success'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '500':
+          $ref: '#/components/responses/ErrorInternalServer'
+  /reports:
+    get:
+      tags:
+        - ReportArticles
+      summary: Gets all reported articles
+      responses:
+        '200':
+          $ref: '#/components/responses/Success'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '500':
+          $ref: '#/components/responses/ErrorInternalServer'
+  /myreports:
+    get:
+      tags:
+        - ReportArticles
+      parameters:
+        - name: userId
+          in: query
+          description: The token in the authentication header
+          required: true
+          schema:
+            type: string
+      summary: Gets all reports by user
+      responses:
+        '200':
+          $ref: '#/components/responses/Success'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '500':
+          $ref: '#/components/responses/ErrorInternalServer'
+  /articles:
+    post:
+      tags:
+        - Articles
+      summary: a function that handles addition of new article to the db.
+      description: Returns a JWT upon success
+      parameters:
+        - name: userId
+          in: header
+          description: Id of author
+          required: true
+          schema:
+            type: string
+        - name: userName
+          in: header
+          description: Name of author
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Article Credentials
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                title:
+                  type: string
+                content:
+                  type: string
+                isPublished:
+                  type: boolean
+                banner:
+                  type: string
+                tagList:
+                  type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/Success'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '500':
+          $ref: '#/components/responses/ErrorInternalServer'
+    get:
+      tags:
+        - Articles
+      summary: this handles fetching of all available/published articles.
+      description: Returns a JWT upon success
+      parameters:
+        - name: page
+          in: query
+          description: Number of page
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/Success'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '500':
+          $ref: '#/components/responses/ErrorInternalServer'
+  /articles/{slug}:
+    put:
+      tags:
+        - Articles
+      summary: this handles the updating of an article.
+      description: Returns a JWT upon success
+      parameters:
+        - name: slug
+          in: path
+          description: slug of article
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Article Credentials
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                title:
+                  type: string
+                content:
+                  type: string
+                isPublished:
+                  type: boolean
+                banner:
+                  type: string
+                tagList:
+                  type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/Success'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '500':
+          $ref: '#/components/responses/ErrorInternalServer'
+    get:
+      tags:
+        - Articles
+      summary: this handles fetching of a particular article.
+      description: Returns a JWT upon success
+      parameters:
+        - name: slug
+          in: path
+          description: slug of article
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/Success'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '500':
+          $ref: '#/components/responses/ErrorInternalServer'
+    delete:
+      tags:
+        - Articles
+      summary: this handles deletion of an article.
+      description: Returns a JWT upon success
+      parameters:
+        - name: slug
+          in: path
+          description: slug of article
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/Success'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '500':
+          $ref: '#/components/responses/ErrorInternalServer'
+  /articles/share/{slug}:
+    get:
+      tags:
+        - Articles
+      summary: this handles the sharing of articles on social media
+      description: Returns a JWT upon success
+      parameters:
+        - name: slug
+          in: path
+          description: slug of article
+          required: true
+          schema:
+            type: string
+        - name: platform
+          in: query
+          description: Platform for sharing to
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/Success'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '500':
+          $ref: '#/components/responses/ErrorInternalServer'
+  /articles/feeds:
+    get:
+      tags:
+        - Articles
+      summary: Method get multiple articles created by followed users.
+      description: Returns a JWT upon success
+      parameters:
+        - name: limit
+          in: query
+          description: Number of articles to display
+          required: true
+          schema:
+            type: number
+        - name: Page
+          in: query
+          description: Page of articles to display
+          required: true
+          schema:
+            type: number
+        - name: userId
+          in: header
+          description: Id of User
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/Success'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '500':
+          $ref: '#/components/responses/ErrorInternalServer'
+  /search:
+    get:
+      tags:
+        - Articles
+      summary: this handles searching an article by author
+      description: Returns a JWT upon success
+      parameters:
+        - name: author
+          in: query
+          description: Author of articles to display
+          required: true
+          schema:
+            type: string
+        - name: tag
+          in: query
+          description: tag of articles to display
+          required: true
+          schema:
+            type: string
+        - name: title
+          in: query
+          description: title of article to display
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/Success'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '500':
+          $ref: '#/components/responses/ErrorInternalServer'
+  /articles/{slug}/bookmark:
+    post:
+      tags:
+        - Articles
+      summary: Method to create or delete bookmarks on an article
+      description: Returns a JWT upon success
+      parameters:
+        - name: slug
+          in: path
+          description: slug of articles to bookmark
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/Success'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '500':
+          $ref: '#/components/responses/ErrorInternalServer'
+    get:
+      tags:
+        - Articles
+      summary: Method to handle fetching of all bookmarks of an article
+      description: Returns a JWT upon success
+      parameters:
+        - name: slug
+          in: path
+          description: slug of articles to bookmark
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/Success'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '500':
+          $ref: '#/components/responses/ErrorInternalServer'
+  /user/bookmarks:
+    get:
+      tags:
+        - Articles
+      summary: Method to handle fetching of a single user's bookmarks
+      description: Returns a JWT upon success
+      parameters:
+        - name: userId
+          in: header
+          description: Id of User
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/Success'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '500':
+          $ref: '#/components/responses/ErrorInternalServer'

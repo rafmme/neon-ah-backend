@@ -110,7 +110,6 @@ class TagController {
 
       let { tagName } = req.params;
       tagName = tagName.toLowerCase();
-
       const tag = await Tag.findOne({
         where: { name: tagName }
       });

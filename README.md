@@ -20,7 +20,7 @@ The preferred JSON object to be returned by the API should be structured as foll
 
 ## Documentation
 
-Swagger (http://localhost:3000/docs/#/)
+Swagger (https://neon-ah-staging.herokuapp.com/api/v1/docs/#/)
 
 ### Users (for authentication)
 

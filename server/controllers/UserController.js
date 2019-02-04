@@ -429,7 +429,6 @@ class UserController {
       const {
         id, displayName, emails, photos, provider
       } = profile;
-
       const emailValue = emails[0].value.toLowerCase();
 
       const [user] = await User.findOrCreate({
