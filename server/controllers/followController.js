@@ -78,7 +78,12 @@ class FollowContoller {
         Util.sendInAppNotification([userToBeFollowed], notification.message);
       }
 
-      return response(res, 201, 'success', `You are now following ${userToBeFollowed.fullName}`);
+      return response(
+        res,
+        201,
+        'success',
+        `You are now following ${userToBeFollowed.fullName}`
+      );
     } catch (error) {
       response(res, 500, 'failure', error.name);
     }
@@ -120,7 +125,12 @@ class FollowContoller {
       });
 
       if (!userUnfollow) {
-        return response(res, 400, 'failure', `You are not following ${user.userName}`);
+        return response(
+          res,
+          400,
+          'failure',
+          `You are not following ${user.userName}`
+        );
       }
 
       userUnfollow.destroy();
@@ -164,7 +174,12 @@ class FollowContoller {
       });
 
       if (followers.length === 0) {
-        return response(res, 200, 'success', 'You currenly have no followers');
+        return response(
+          res,
+          200,
+          'success',
+          `${user.userName} currenly has no followers`
+        );
       }
 
       const payload = {
@@ -174,7 +189,14 @@ class FollowContoller {
         }
       };
 
-      response(res, 200, 'success', 'Followers returned successfully', null, payload);
+      response(
+        res,
+        200,
+        'success',
+        'Followers returned successfully',
+        null,
+        payload
+      );
     } catch (error) {
       response(res, 500, 'failure', error.name);
     }
@@ -215,7 +237,12 @@ class FollowContoller {
       });
 
       if (following.length === 0) {
-        return response(res, 200, 'success', 'You are not following anyone');
+        return response(
+          res,
+          200,
+          'success',
+          `${user.userName} currently has no following`
+        );
       }
       const payload = {
         following: following.map(followingUser => followingUser.followedUser),
@@ -224,7 +251,14 @@ class FollowContoller {
         }
       };
 
-      response(res, 200, 'success', 'Following returned successfully', null, payload);
+      response(
+        res,
+        200,
+        'success',
+        'Following returned successfully',
+        null,
+        payload
+      );
     } catch (error) {
       response(res, 500, 'failure', error.name);
     }
