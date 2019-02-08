@@ -27,7 +27,7 @@ const verifyEmailTemplate = (createdUser, token) => `<!DOCTYPE html>
          <br>
          Please note that this link expires in 24 hours.
         </p>
-        <a class="reset-btn" href="http://localhost:3000/auth/verify/${token}">
+        <a class="reset-btn" href="https://neon-ah-frontend-staging.herokuapp.com/auth/verify/${token}">
           Verify your email
         </a>
       </div>

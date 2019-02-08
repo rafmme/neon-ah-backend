@@ -2,7 +2,7 @@ import TokenManager from '../helpers/TokenManager';
 import MailManager from '../helpers/MailManager';
 import db from '../models';
 import PasswordManager from '../helpers/PasswordManager';
-
+import 'dotenv/config';
 import response from '../helpers/response';
 
 import passwordResetEmailTemplate from '../helpers/emailTemplates/resetPasswordTemplate';
@@ -467,8 +467,8 @@ class UserController {
       userEmail: req.user.email.toLowerCase(),
       roleId: req.user.roleId
     };
-    const token = TokenManager.sign(payload, '1y');
-    return res.redirect(`/?token=${token}`);
+    const token = TokenManager.sign(payload);
+    return res.redirect(`${process.env.FRONTEND_URL}/?token=${token}`);
   }
 
   /**

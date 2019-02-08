@@ -1,7 +1,5 @@
 {
-  "addons": [
-    "heroku-postgresql"
-  ],
+  "addons": ["heroku-postgresql"],
   "buildpacks": [
     {
       "url": "heroku/nodejs"
@@ -13,6 +11,72 @@
     },
     "JWT_SECRET": {
       "required": true
+    },
+    "GOOGLE_CLIENT_ID": {
+      "required": true
+    },
+    "GOOGLE_CLIENT_SECRET": {
+      "required": true
+    },
+    "FACEBOOK_CLIENT_ID": {
+      "required": true
+    },
+    "FACEBOOK_CLIENT_SECRET": {
+      "required": true
+    },
+    "LINKEDIN_CLIENT_ID": {
+      "required": true
+    },
+    "LINKEDIN_CLIENT_SECRET": {
+      "required": true
+    },
+    "TWITTER_CLIENT_ID": {
+      "required": true
+    },
+    "TWITTER_CLIENT_SECRET": {
+      "required": true
+    },
+    "SESSION_SECRET": {
+      "required": true
+    },
+    "PUSHER_APP_ID": {
+      "required": true
+    },
+    "PUSHER_KEY": {
+      "required": true
+    },
+    "PUSHER_SECRET": {
+      "required": true
+    },
+    "PUSHER_CLUSTER": {
+      "required": true
+    },
+    "SUPER_ADMIN_ROLE_ID": {
+      "required": true
+    },
+    "SUPER_ADMIN_FULLNAME": {
+      "required": true
+    },
+    "SUPER_ADMIN_USERNAME": {
+      "required": true
+    },
+    "SUPER_ADMIN_EMAIL": {
+      "required": true
+    },
+    "SUPER_ADMIN_PASSWORD": {
+      "required": true
+    },
+    "SUPER_ADMIN_AUTHTYPEID": {
+      "required": true
+    },
+    "BACKEND_URL": {
+      "required": true
+    },
+    "FRONTEND_URL": {
+      "required": true
+    },
+    "DATABASE_URL": {
+      "required": true
     }
   },
   "formation": {
@@ -21,7 +85,6 @@
     }
   },
   "name": "neon-ah-backend",
-  "scripts": {
-  },
+  "scripts": {},
   "stack": "heroku-18"
 }
