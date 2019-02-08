@@ -9,7 +9,7 @@ const linkedinStrategy = new LinkedInStrategy(
   {
     clientID: process.env.LINKEDIN_CLIENT_ID,
     clientSecret: process.env.LINKEDIN_CLIENT_SECRET,
-    callbackURL: 'http://localhost:3000/api/v1/auth/linkedin/callback',
+    callbackURL: `${process.env.BACKEND_URL}/api/v1/auth/linkedin/callback`,
     scope: ['r_emailaddress', 'r_basicprofile']
   },
   UserController.strategyCallback

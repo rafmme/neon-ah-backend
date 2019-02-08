@@ -32,6 +32,7 @@ describe('Authentication', () => {
       expect(response).to.redirect;
     });
   });
+
   describe('Social Authentication with Twitter', () => {
     it('should return a JWT when user successfully authenticates', async () => {
       user.emails = [{ value: 'jesseinit@now.com' }];

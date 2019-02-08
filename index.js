@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import env from 'dotenv';
 import expressValidator from 'express-validator';
+import session from 'express-session';
 import swaggerUi from 'swagger-ui-express';
 import passport from 'passport';
 import YAML from 'yamljs';
@@ -20,6 +21,7 @@ app.use(expressValidator());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(expressValidator());
+app.use(session({ secret: process.env.SESSION_SECRET, resave: true, saveUninitialized: true }));
 
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 

@@ -21,10 +21,12 @@ const newCommentTemplate = (author, article) => `<!DOCTYPE html>
         alt="logo"
       />
       <h3 class="username">Hi ${author.fullName},</h3>
-      <p class="message">You have a new comment on <a href=http://localhost:3000/articles/${
+      <p class="message">You have a new comment on <a href=https://neon-ah-frontend-staging.herokuapp.com/articles/${
   article.slug
 }>your article</a></p>
-      <a class="reset-btn" href=http://localhost:3000/articles/${article.slug}>
+      <a class="reset-btn" href=https://neon-ah-frontend-staging.herokuapp.com/articles/${
+  article.slug
+}>
         View Comment
       </a>
     </div>
