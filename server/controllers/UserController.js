@@ -429,6 +429,12 @@ class UserController {
       const {
         id, displayName, emails, photos, provider
       } = profile;
+
+      if (!emails) {
+        const userWithNoEmail = { hasNoEmail: true };
+        return done(null, userWithNoEmail);
+      }
+
       const emailValue = emails[0].value.toLowerCase();
 
       const [user] = await User.findOrCreate({
@@ -461,6 +467,9 @@ class UserController {
    * @memberof UserController
    */
   static handleSocialAuth(req, res) {
+    if (req.user.hasNoEmail) {
+      return res.redirect(`${process.env.FRONTEND_URL}/auth/social?error=${400}`);
+    }
     const payload = {
       userId: req.user.id,
       userName: req.user.userName.toLowerCase(),
@@ -468,7 +477,7 @@ class UserController {
       roleId: req.user.roleId
     };
     const token = TokenManager.sign(payload);
-    return res.redirect(`${process.env.FRONTEND_URL}/?token=${token}`);
+    return res.redirect(`${process.env.FRONTEND_URL}/auth/social?token=${token}`);
   }
 
   /**
