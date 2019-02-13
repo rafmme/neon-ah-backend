@@ -165,32 +165,29 @@ class UserController {
         fullName, userName, email, password
       } = req.body;
 
-      const foundUser = await User.findOne({ where: { email } });
+      const foundUser = await User.findOne({
+        where: {
+          [Op.or]: [{ email }, { userName }]
+        }
+      });
 
       if (foundUser) {
-        if (foundUser.isVerified === false) {
-          const initialToken = TokenManager.sign({ userEmail: foundUser.email }, '24h');
-          const sentEmail = await MailManager.sendVerificationEmail({
-            createdUser: foundUser,
-            token: initialToken
-          });
-          if (sentEmail) {
-            return res.status(200).send({
-              status: 'success',
-              data: {
-                statusCode: 200,
-                message:
-                  'You had started your registration process earlier. '
-                  + 'Kindly check your email to complete your registration'
-              }
-            });
-          }
-        }
-        if (foundUser.isVerified === true) {
-          return res.status(200).send({
-            status: 'success',
+        if (foundUser.userName === userName) {
+          return res.status(409).send({
+            status: 'failure',
             data: {
-              message: "You have already been registered on Author's Haven. Kindly proceed to login"
+              statusCode: 409,
+              message: 'Username has already been taken'
+            }
+          });
+        }
+
+        if (foundUser.email === email) {
+          return res.status(409).send({
+            status: 'failure',
+            data: {
+              statusCode: 409,
+              message: 'Email has already been taken'
             }
           });
         }
@@ -299,9 +296,22 @@ class UserController {
       const { email } = req.body;
       const foundUser = await User.findOne({ where: { email } });
 
+      if (!foundUser) {
+        return res.status(404).send({
+          status: 'failure',
+          data: {
+            statusCode: 404,
+            message: 'This email address does not exist. Kindly sign up'
+          }
+        });
+      }
+
       const token = TokenManager.sign({ userEmail: email }, '24h');
 
-      await MailManager.sendVerificationEmail({ createdUser: foundUser, token });
+      await MailManager.sendVerificationEmail({
+        createdUser: foundUser,
+        token
+      });
 
       return res.status(200).send({
         status: 'success',
@@ -311,7 +321,7 @@ class UserController {
         }
       });
     } catch (err) {
-      res.status(400).send({
+      res.status(500).send({
         status: 'failure',
         data: {
           error: err

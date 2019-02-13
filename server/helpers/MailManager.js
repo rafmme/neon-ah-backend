@@ -20,7 +20,9 @@ class MailManager {
    * @memberof MailManager
    */
   static sendMailNotification(message) {
-    return sgMail.send(message);
+    return process.env.NODE_ENV === 'test'
+      ? Promise.resolve()
+      : sgMail.send(message);
   }
 
   /**
@@ -38,7 +40,9 @@ class MailManager {
       subject: "Welcome to Author's Haven! Confirm your email",
       html: verifyEmailTemplate(createdUser, token)
     };
-    return sgMail.send(message);
+    return process.env.NODE_ENV === 'test'
+      ? Promise.resolve()
+      : sgMail.send(message);
   }
 }
 
