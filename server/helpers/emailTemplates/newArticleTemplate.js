@@ -25,7 +25,7 @@ const newArticleTemplate = (follower, article, userName) => `<!DOCTYPE html>
   article.slug
 }>new article</a> .
       </p>
-      <a class="reset-btn" href=https://neon-ah-frontend-staging.herokuapp.com//articles/${
+      <a class="reset-btn" href=https://neon-ah-frontend-staging.herokuapp.com/articles/${
   article.slug
 }>
         Read Article
