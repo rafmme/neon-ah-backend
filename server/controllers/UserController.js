@@ -7,7 +7,7 @@ import response from '../helpers/response';
 
 import passwordResetEmailTemplate from '../helpers/emailTemplates/resetPasswordTemplate';
 
-const { User, Sequelize } = db;
+const { User, Article, Sequelize } = db;
 const { Op } = Sequelize;
 
 /**
@@ -133,12 +133,16 @@ class UserController {
         }
       });
     } catch (error) {
-      if (error.name === 'TokenExpiredError' || error.name === 'JsonWebTokenError') {
+      if (
+        error.name === 'TokenExpiredError' ||
+        error.name === 'JsonWebTokenError'
+      ) {
         return res.status(401).send({
           status: 'failure',
           data: {
             statusCode: '401',
-            message: 'Sorry! Link has expired. Kindly re-initiate password reset.'
+            message:
+              'Sorry! Link has expired. Kindly re-initiate password reset.'
           }
         });
       }
@@ -503,14 +507,39 @@ class UserController {
       const { userName } = req.params;
       const userProfile = await User.findOne({
         where: { userName: userName.toLowerCase() },
-        attributes: ['id', 'fullName', 'userName', 'img', 'bio']
+        attributes: ['id', 'fullName', 'userName', 'img', 'bio', 'email'],
+        include: [
+          {
+            model: Article,
+            as: 'articles'
+          },
+          {
+            model: User,
+            through: 'Follow',
+            as: 'following',
+            attributes: ['id', 'fullName', 'userName', 'img', 'bio']
+          },
+          {
+            model: User,
+            through: 'Follow',
+            as: 'followers',
+            attributes: ['id', 'fullName', 'userName', 'img', 'bio']
+          }
+        ]
       });
 
       if (!userProfile) {
         response(res, 404, 'failure', 'User not found');
         return;
       }
-      response(res, 200, 'success', 'User retrieved successfully', null, userProfile);
+      response(
+        res,
+        200,
+        'success',
+        'User retrieved successfully',
+        null,
+        userProfile
+      );
     } catch (error) {
       response(res, 500, 'failure', 'An error occured on the server');
     }

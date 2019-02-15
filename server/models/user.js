@@ -149,12 +149,12 @@ export default (sequelize, DataTypes) => {
     });
     User.belongsToMany(User, {
       through: 'Follow',
-      as: 'followers',
+      as: 'following',
       foreignKey: 'followersId'
     });
     User.belongsToMany(User, {
       through: 'Follow',
-      as: 'following',
+      as: 'followers',
       foreignKey: 'userId'
     });
     User.hasMany(ReadingStats, {
