@@ -507,7 +507,7 @@ class UserController {
       const { userName } = req.params;
       const userProfile = await User.findOne({
         where: { userName: userName.toLowerCase() },
-        attributes: ['id', 'fullName', 'userName', 'img', 'bio', 'email'],
+        attributes: ['id', 'fullName', 'userName', 'img', 'bio', 'email', 'getEmailsNotification', 'getInAppNotification'],
         include: [
           {
             model: Article,
