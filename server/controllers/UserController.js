@@ -204,14 +204,16 @@ class UserController {
         email: email.toLowerCase(),
         password: hashedPassword,
         roleId: '{3ceb546e-054d-4c1d-8860-e27c209d4ae3}',
-        authTypeId: '{15745c60-7b1a-11e8-9c9c-2d42b21b1a3e}'
+        authTypeId: '{15745c60-7b1a-11e8-9c9c-2d42b21b1a3e}',
+        img: 'https://res.cloudinary.com/jesseinit/image/upload/v1550502499/neon-ah/user.svg'
       });
 
       const payload = {
         userId: createdUser.id,
         userName: createdUser.userName,
         userEmail: createdUser.email,
-        role: createdUser.roleId
+        role: createdUser.roleId,
+        img: createdUser.img
       };
 
       const token = await TokenManager.sign(payload, '1y');
