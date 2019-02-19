@@ -1,13 +1,19 @@
+/* eslint-disable max-len */
 import TokenManager from '../helpers/TokenManager';
 import MailManager from '../helpers/MailManager';
 import db from '../models';
 import PasswordManager from '../helpers/PasswordManager';
 import 'dotenv/config';
 import response from '../helpers/response';
-
+import pagination from '../helpers/pagination';
 import passwordResetEmailTemplate from '../helpers/emailTemplates/resetPasswordTemplate';
 
-const { User, Article, Sequelize } = db;
+const {
+  User,
+  Article,
+  Sequelize,
+  Notification
+} = db;
 const { Op } = Sequelize;
 
 /**
@@ -134,8 +140,8 @@ class UserController {
       });
     } catch (error) {
       if (
-        error.name === 'TokenExpiredError' ||
-        error.name === 'JsonWebTokenError'
+        error.name === 'TokenExpiredError'
+        || error.name === 'JsonWebTokenError'
       ) {
         return res.status(401).send({
           status: 'failure',
@@ -661,6 +667,99 @@ class UserController {
         'failure',
         null,
         'An error occured on the server. Please try again later'
+      );
+    }
+  }
+
+  /**
+   * @static
+   * @description this handles the fetching of all notifications for a user
+   * @param {object} req HTTP request object
+   * @param {object} res HTTP response object
+   * @returns {object} api route response with the user's notifications
+   */
+  static async fetchNotifications(req, res) {
+    try {
+      const { userId } = req.user;
+      const { read, unread, page } = req.query;
+      const limit = Number(req.query.limit) || 20;
+      const currentPage = Number(page) || 1;
+      const offset = (currentPage - 1) * limit;
+      const notifications = await Notification.findAll({
+        where: { receiverId: userId },
+        limit,
+        offset
+      });
+
+      if (notifications.length > 0) {
+        let notificationList = notifications;
+
+        if (read === '') {
+          notificationList = notifications.filter(notification => notification.isRead === true);
+        } else if (unread === '') {
+          notificationList = notifications.filter(notification => notification.isRead === false);
+        }
+
+        const paginatedData = pagination(notificationList.length, limit, currentPage, notificationList.length);
+        const data = {
+          notifications: notificationList,
+          paginatedData
+        };
+
+        return response(res, 200, 'success', 'All User notifications', null, data);
+      }
+      return response(res, 200, 'success', 'You have no notifications yet');
+    } catch (error) {
+      return response(
+        res,
+        500,
+        'failure',
+        'server error',
+        { message: 'Something went wrong on the server' },
+        null
+      );
+    }
+  }
+
+
+  /**
+   * @static
+   * @description this handles the update of a notification when read
+   * @param {object} req HTTP request object
+   * @param {object} res HTTP response object
+   * @returns {object} api route response with the user's notifications
+   */
+  static async updateNotification(req, res) {
+    try {
+      const { userId } = req.user;
+      const { notificationId } = req.params;
+      const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+      if (!notificationId.match(uuidPattern)) {
+        return response(res, 400, 'failure', 'Notification id is invalid');
+      }
+
+      const result = await Notification.findOne({
+        where: {
+          id: notificationId,
+          receiverId: userId
+        }
+      });
+
+      if (result) {
+        let notification = await result.update({ isRead: true }, { fields: Object.keys({ isRead: true }) });
+        notification = notification.toJSON();
+        return response(res, 200, 'success', 'Notification was updated successfully', null, notification);
+      }
+      return response(res, 404, 'failure', 'Notification does not exist');
+    } catch (error) {
+      return response(
+        res,
+        500,
+        'failure',
+        'server error',
+        { message: 'Something went wrong on the server' },
+        null
       );
     }
   }

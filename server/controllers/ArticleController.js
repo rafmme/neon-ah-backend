@@ -383,7 +383,7 @@ class ArticleController {
     }
 
     article = article.toJSON();
-    const url = `https://neon-ah-staging.herokuapp.com/articles/${slug}`;
+    const url = `https://neon-ah-frontend-staging.herokuapp.com/articles/${slug}`;
     const postContent = {
       platform,
       title: article.title,
