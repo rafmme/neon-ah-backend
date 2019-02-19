@@ -133,16 +133,12 @@ class UserController {
         }
       });
     } catch (error) {
-      if (
-        error.name === 'TokenExpiredError' ||
-        error.name === 'JsonWebTokenError'
-      ) {
+      if (error.name === 'TokenExpiredError' || error.name === 'JsonWebTokenError') {
         return res.status(401).send({
           status: 'failure',
           data: {
             statusCode: '401',
-            message:
-              'Sorry! Link has expired. Kindly re-initiate password reset.'
+            message: 'Sorry! Link has expired. Kindly re-initiate password reset.'
           }
         });
       }
@@ -509,7 +505,16 @@ class UserController {
       const { userName } = req.params;
       const userProfile = await User.findOne({
         where: { userName: userName.toLowerCase() },
-        attributes: ['id', 'fullName', 'userName', 'img', 'bio', 'email', 'getEmailsNotification', 'getInAppNotification'],
+        attributes: [
+          'id',
+          'fullName',
+          'userName',
+          'img',
+          'bio',
+          'email',
+          'getEmailsNotification',
+          'getInAppNotification'
+        ],
         include: [
           {
             model: Article,
@@ -534,14 +539,7 @@ class UserController {
         response(res, 404, 'failure', 'User not found');
         return;
       }
-      response(
-        res,
-        200,
-        'success',
-        'User retrieved successfully',
-        null,
-        userProfile
-      );
+      response(res, 200, 'success', 'User retrieved successfully', null, userProfile);
     } catch (error) {
       response(res, 500, 'failure', 'An error occured on the server');
     }
@@ -562,6 +560,7 @@ class UserController {
         'fullName',
         'img',
         'bio',
+        'email',
         'getEmailsNotification',
         'getInAppNotification',
         'userName'
@@ -569,7 +568,7 @@ class UserController {
 
       const findProfile = await User.findOne({
         where: { id: req.user.userId },
-        attributes: ['id', 'fullName', 'userName', 'img', 'bio']
+        attributes: ['id', 'fullName', 'userName', 'img', 'bio', 'email']
       });
 
       if (!findProfile) {
