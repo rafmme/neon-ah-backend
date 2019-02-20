@@ -133,7 +133,7 @@ class FollowContoller {
         );
       }
 
-      userUnfollow.destroy();
+      Follow.destroy({ where: { userId, followersId } });
       response(res, 200, 'success', `You unfollowed ${user.userName}`);
     } catch (error) {
       response(res, 500, 'failure', error.name);
