@@ -70,4 +70,18 @@ userRoutes.get(
   ArticleController.fetchOne
 );
 
+userRoutes.get(
+  '/notifications',
+  AuthMiddleware.checkIfUserIsAuthenticated,
+  ArticleValidation.verifyLimitParams,
+  ArticleValidation.verifyPageParams,
+  UserController.fetchNotifications
+);
+
+userRoutes.put(
+  '/notifications/:notificationId',
+  AuthMiddleware.checkIfUserIsAuthenticated,
+  UserController.updateNotification
+);
+
 export default userRoutes;
