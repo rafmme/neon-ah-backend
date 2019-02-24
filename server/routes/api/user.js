@@ -36,11 +36,7 @@ userRoutes.put(
   UserController.toggleUserToAdmin
 );
 
-userRoutes.get(
-  '/users/:userName',
-  AuthMiddleware.checkIfUserIsAuthenticated,
-  UserController.getProfile
-);
+userRoutes.get('/users/:userName', UserController.getProfile);
 
 userRoutes.get('/users/:userName/followers', FollowController.getFollowers);
 
