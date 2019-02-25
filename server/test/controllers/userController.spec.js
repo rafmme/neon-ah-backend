@@ -6,10 +6,14 @@ import app from '../../..';
 import db from '../../models';
 import TokenManager from '../../helpers/TokenManager';
 import {
-  userToken, invalidToken, nonExistingUserToken, superAdminToken
+  userToken,
+  userToken2,
+  invalidToken,
+  nonExistingUserToken,
+  superAdminToken
 } from '../mockData/tokens';
 
-const { User } = db;
+const { User, Notification } = db;
 
 chai.use(chaiHttp);
 
@@ -599,5 +603,111 @@ describe('User Model', () => {
       expect(response.body.status).to.eqls('success');
       expect(response.body.data.message).to.eqls('The User role has been downgraded to User');
     });
+  });
+});
+
+describe('API endpoint /notifications', () => {
+  describe('GET /notifications', () => {
+    it('should successfully get all notifications of a particular user', async () => {
+      const response = await chai
+        .request(app)
+        .get('/api/v1/notifications')
+        .set('Authorization', `Bearer ${userToken2}`);
+
+      expect(response.status).to.eqls(200);
+      expect(response.body.status).to.eqls('success');
+      expect(response.body.data.message).to.eqls('All User notifications');
+    });
+
+    it('should successfully get all unread notifications of a user', async () => {
+      const response = await chai
+        .request(app)
+        .get('/api/v1/notifications?unread')
+        .set('Authorization', `Bearer ${userToken2}`);
+
+      expect(response.status).to.eqls(200);
+      expect(response.body.status).to.eqls('success');
+      expect(response.body.data.message).to.eqls('All User notifications');
+    });
+
+    it('should successfully get all read notifications of a user', async () => {
+      const response = await chai
+        .request(app)
+        .get('/api/v1/notifications?read')
+        .set('Authorization', `Bearer ${userToken2}`);
+
+      expect(response.status).to.eqls(200);
+      expect(response.body.status).to.eqls('success');
+      expect(response.body.data.message).to.eqls('All User notifications');
+    });
+
+    it("It should be able to handle unexpected errors thrown when getting all user's notifications", async () => {
+      const stub = sinon
+        .stub(Notification, 'findAll')
+        .callsFake(() => Promise.reject(new Error('Internal Server Error')));
+
+      const response = await chai
+        .request(app)
+        .get('/api/v1/notifications')
+        .set('Authorization', `Bearer ${userToken}`);
+
+      expect(response.status).to.equal(500);
+      expect(response.body.status).to.eqls('failure');
+      expect(response.body.data.message).to.eqls('server error');
+      stub.restore();
+    });
+  });
+});
+
+describe('UPDATE a Notification', () => {
+  it('should successfully update a notification', async () => {
+    const response = await chai
+      .request(app)
+      .put('/api/v1/notifications/10a3e55b-30b2-4d0f-8f04-2d0838e6f44f')
+      .set({ authorization: `Bearer ${userToken2}` })
+      .send();
+
+    expect(response.status).to.eqls(200);
+    expect(response.body.status).to.eqls('success');
+    expect(response.body.data.message).to.eqls('Notification was updated successfully');
+  });
+
+  it("should give 400 error if notification id is invalid", async () => {
+    const response = await chai
+      .request(app)
+      .put(`/api/v1/notifications/fydh`)
+      .set({ authorization: `Bearer ${userToken2}` })
+      .send();
+
+    expect(response.status).to.eqls(400);
+    expect(response.body.status).to.eqls('failure');
+    expect(response.body.data.message).to.eqls('Notification id is invalid');
+  });
+
+  it('should return not found if notification does not exist', async () => {
+    const response = await chai
+      .request(app)
+      .put('/api/v1/notifications/aba396bd-7ac4-42c3-b442-cf10dd73e4f4')
+      .set({ authorization: `Bearer ${userToken2}` });
+
+    expect(response.status).to.eqls(404);
+    expect(response.body.status).to.eqls('failure');
+    expect(response.body.data.message).to.eqls('Notification does not exist');
+  });
+
+  it('It should be able to handle unexpected errors thrown when updating a notification', async () => {
+    const stub = sinon
+      .stub(Notification, 'findOne')
+      .callsFake(() => Promise.reject(new Error('Internal Server Error')));
+
+    const response = await chai
+      .request(app)
+      .put('/api/v1/notifications/aba396bd-7ac4-42c3-b442-cf10dd73e4f4')
+      .set({ authorization: `Bearer ${userToken2}` })
+      .send();
+    expect(response.status).to.equal(500);
+    expect(response.body.status).to.eqls('failure');
+    expect(response.body.data.message).to.eqls('server error');
+    stub.restore();
   });
 });

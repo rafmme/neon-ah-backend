@@ -43,7 +43,12 @@ class SearchController {
         offset
       });
       const totalAuthor = findAuthor.count;
-      const paginatedData = pagination(findAuthor.rows.length, limit, currentPage, totalAuthor);
+      const paginatedData = pagination(
+        findAuthor.rows.length,
+        limit,
+        currentPage,
+        totalAuthor
+      );
       const data = {
         authors: findAuthor,
         paginatedData
@@ -53,7 +58,14 @@ class SearchController {
       }
       return response(res, 404, 'failure', 'Author not found', null, null);
     } catch (error) {
-      return response(res, 500, 'failure', 'Something went wrong on the server', null, null);
+      return response(
+        res,
+        500,
+        'failure',
+        'Something went wrong on the server',
+        null,
+        null
+      );
     }
   }
 
@@ -92,7 +104,12 @@ class SearchController {
         offset
       });
       const totalTag = findTag.count;
-      const paginatedData = pagination(findTag.rows.length, limit, currentPage, totalTag);
+      const paginatedData = pagination(
+        findTag.rows.length,
+        limit,
+        currentPage,
+        totalTag
+      );
       const data = {
         tags: findTag,
         paginatedData
@@ -102,7 +119,14 @@ class SearchController {
       }
       return response(res, 404, 'failure', 'Tag not found', null, null);
     } catch (error) {
-      return response(res, 500, 'failure', 'Something went wrong on the server', null, error);
+      return response(
+        res,
+        500,
+        'failure',
+        'Something went wrong on the server',
+        null,
+        error
+      );
     }
   }
 
@@ -129,10 +153,9 @@ class SearchController {
         attributes: { exclude: ['userId'] },
         include: [
           {
-            model: Tag,
-            as: 'tags',
-            attributes: ['name'],
-            through: { attributes: [] }
+            model: User,
+            as: 'author',
+            attributes: ['userName', 'bio', 'img']
           }
         ],
         offset,
@@ -140,7 +163,12 @@ class SearchController {
       });
 
       const totalArticle = findArticles.count;
-      const paginatedData = pagination(findArticles.rows.length, limit, currentPage, totalArticle);
+      const paginatedData = pagination(
+        findArticles.rows.length,
+        limit,
+        currentPage,
+        totalArticle
+      );
       const data = {
         articles: findArticles,
         paginatedData
@@ -150,7 +178,14 @@ class SearchController {
       }
       return response(res, 404, 'failure', 'Article not found', null, null);
     } catch (error) {
-      return response(res, 500, 'failure', 'Something went wrong on the server', null, null);
+      return response(
+        res,
+        500,
+        'failure',
+        'Something went wrong on the server',
+        null,
+        null
+      );
     }
   }
 }
