@@ -169,7 +169,7 @@ class TagController {
       }
 
       return response(res, 200, 'success', 'All Tags', null, {
-        tags
+        tags: tags.rows
       });
     } catch (error) {
       return response(
