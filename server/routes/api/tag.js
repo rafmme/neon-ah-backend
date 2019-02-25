@@ -5,6 +5,8 @@ import AuthMiddleware from '../../middlewares/AuthMiddleware';
 
 const tagRoutes = Router();
 
+tagRoutes.get('/tags', TagController.getTags);
+
 tagRoutes.post(
   '/tags/:tagName/follow',
   AuthMiddleware.checkIfUserIsAuthenticated,
