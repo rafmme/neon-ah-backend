@@ -585,11 +585,11 @@ class UserController {
       }
 
       req.body.userName = req.body.userName.toLowerCase();
-      const checkUserName = await User.findAndCountAll({
+      const checkUserName = await User.findOne({
         where: { userName: req.body.userName }
       });
 
-      if (checkUserName.count > 0) {
+      if (checkUserName.dataValues.userName && checkUserName.dataValues.id !== req.user.userId) {
         return response(res, 409, 'failure', 'Username already exists');
       }
 

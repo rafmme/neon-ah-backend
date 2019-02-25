@@ -73,9 +73,7 @@ describe('User Model', () => {
       expect(response.body.data).to.be.an('object');
       expect(response.body.data).to.have.property('message');
       expect(response.body.data.message).to.be.a('string');
-      expect(response.body.data.message).to.be.eql(
-        'Username has already been taken'
-      );
+      expect(response.body.data.message).to.be.eql('Username has already been taken');
       expect(response.body).to.have.property('status');
       expect(response.body.status).to.be.a('string');
       expect(response.body.status).to.equal('failure');
@@ -99,9 +97,7 @@ describe('User Model', () => {
       expect(response.body.data).to.be.an('object');
       expect(response.body.data).to.have.property('message');
       expect(response.body.data.message).to.be.a('string');
-      expect(response.body.data.message).to.be.eql(
-        'Email has already been taken'
-      );
+      expect(response.body.data.message).to.be.eql('Email has already been taken');
       expect(response.body).to.have.property('status');
       expect(response.body.status).to.be.a('string');
       expect(response.body.status).to.equal('failure');
@@ -134,29 +130,21 @@ describe('User Model', () => {
         userEmail: 'jesseinit@now.com'
       });
 
-      const response = await chai
-        .request(app)
-        .post(`/api/v1/auth/verify/${generatedToken}`);
+      const response = await chai.request(app).post(`/api/v1/auth/verify/${generatedToken}`);
       expect(response.status).to.equal(200);
       expect(response.body.status).to.eqls('success');
-      expect(response.body.data.message).to.eqls(
-        'Your account has now been verified'
-      );
+      expect(response.body.data.message).to.eqls('Your account has now been verified');
     });
 
     it('should return error for a user whose has been verified before', async () => {
       const generatedToken = TokenManager.sign({
         userEmail: 'jesseinit@now.com'
       });
-      const response = await chai
-        .request(app)
-        .post(`/api/v1/auth/verify/${generatedToken}`);
+      const response = await chai.request(app).post(`/api/v1/auth/verify/${generatedToken}`);
 
       expect(response.status).to.eqls(409);
       expect(response.body.status).to.eqls('failure');
-      expect(response.body.data.error).to.eqls(
-        'Your account has already been activated.'
-      );
+      expect(response.body.data.error).to.eqls('Your account has already been activated.');
     });
 
     it('User should get an error token is malformed', async () => {
@@ -165,14 +153,10 @@ describe('User Model', () => {
       });
       const malformedToken = generatedToken.toUpperCase();
 
-      const response = await chai
-        .request(app)
-        .post(`/api/v1/auth/verify/${malformedToken}`);
+      const response = await chai.request(app).post(`/api/v1/auth/verify/${malformedToken}`);
 
       expect(response.status).to.eqls(400);
-      expect(response.body.data.error).to.eqls(
-        'The Verification link has expired.'
-      );
+      expect(response.body.data.error).to.eqls('The Verification link has expired.');
     });
   });
 
@@ -244,9 +228,7 @@ describe('User Model', () => {
         .send({ user: 'jesseinit@now.com', password: '123656745676' });
       expect(response.status).to.eql(401);
       expect(response.body.status).to.eqls('failure');
-      expect(response.body.data.message).to.eqls(
-        'Sorry!!, Your login information is not correct.'
-      );
+      expect(response.body.data.message).to.eqls('Sorry!!, Your login information is not correct.');
     });
 
     it('User should get an error for unverified account', async () => {
@@ -256,9 +238,7 @@ describe('User Model', () => {
         .send({ user: userInfo.email, password: userInfo.password });
       expect(response.status).to.eql(401);
       expect(response.body.status).to.eqls('failure');
-      expect(response.body.data.message).to.eqls(
-        'Your account has not been verified'
-      );
+      expect(response.body.data.message).to.eqls('Your account has not been verified');
     });
 
     it('User should get loggedIn and token returned when correct credentials are provided', async () => {
@@ -296,9 +276,7 @@ describe('User Model', () => {
 
       expect(response.status).to.equal(200);
       expect(response.body.status).to.eqls('success');
-      expect(response.body.data.message).to.eqls(
-        'Kindly check your mail to reset your password'
-      );
+      expect(response.body.data.message).to.eqls('Kindly check your mail to reset your password');
     });
 
     it('It should be able to handle unexpected DB errors thrown when sending reset link', async () => {
@@ -457,7 +435,7 @@ describe('User Model', () => {
         .put('/api/v1/users')
         .set('Authorization', `Bearer ${userToken}`)
         .send({
-          userName: 'jesseinit',
+          userName: 'kabir',
           fullName: 'Jesse',
           email: 'jesseinit@now.com',
           password: 'Blahblah',
@@ -504,9 +482,7 @@ describe('User Model', () => {
         });
       expect(response.status).to.eqls(422);
       expect(response.body.status).to.eqls('failure');
-      expect(response.body.data.error[0]).to.eqls(
-        'In-app notification settings must be a Boolean'
-      );
+      expect(response.body.data.error[0]).to.eqls('In-app notification settings must be a Boolean');
     });
 
     it('User should show proper error when user tries to edit profile with invalid username data', async () => {
@@ -525,9 +501,7 @@ describe('User Model', () => {
       expect(response.status).to.eqls(422);
       expect(response.body.status).to.eqls('failure');
       expect(response.body.data.error).to.be.an('Array');
-      expect(response.body.data.error[0]).to.eqls(
-        'Username has to be a string'
-      );
+      expect(response.body.data.error[0]).to.eqls('Username has to be a string');
     });
 
     it('User should show proper error when user tries to edit profile with empty Fullname', async () => {
@@ -548,18 +522,14 @@ describe('User Model', () => {
         .request(app)
         .put('/api/v1/users')
         .set('Authorization', `Bearer ${userToken}`)
-        .send({ userName: 'john' });
+        .send({ userName: 'jesseinit' });
       expect(response.status).to.eqls(200);
       expect(response.body.status).to.eqls('success');
-      expect(response.body.data.message).to.eqls(
-        'Profile updated successfully'
-      );
+      expect(response.body.data.message).to.eqls('Profile updated successfully');
     });
 
     it('Should should handle DB errors when updating the profile of the user', async () => {
-      const stub = sinon
-        .stub(User, 'findOne')
-        .rejects(new Error('Internal server error!'));
+      const stub = sinon.stub(User, 'findOne').rejects(new Error('Internal server error!'));
 
       const response = await chai
         .request(app)
@@ -568,9 +538,7 @@ describe('User Model', () => {
         .send({ userName: 'john' });
       expect(response.status).to.eqls(500);
       expect(response.body.status).to.eqls('failure');
-      expect(response.body.data.message).to.eqls(
-        'An error occured on the server'
-      );
+      expect(response.body.data.message).to.eqls('An error occured on the server');
       stub.restore();
     });
   });
@@ -603,9 +571,7 @@ describe('User Model', () => {
         .set('Authorization', `Bearer ${userToken}`);
       expect(response.status).to.eqls(403);
       expect(response.body.status).to.eqls('failure');
-      expect(response.body.data.message).to.eqls(
-        'You are unauthorised to access this page.'
-      );
+      expect(response.body.data.message).to.eqls('You are unauthorised to access this page.');
     });
 
     it('Should throw an error if the User is not found', async () => {
@@ -625,9 +591,7 @@ describe('User Model', () => {
         .set('Authorization', `Bearer ${superAdminToken}`);
       expect(response.status).to.eqls(200);
       expect(response.body.status).to.eqls('success');
-      expect(response.body.data.message).to.eqls(
-        'The User role has been upgraded to Admin'
-      );
+      expect(response.body.data.message).to.eqls('The User role has been upgraded to Admin');
     });
 
     it('Should downgrade an admin to user', async () => {
@@ -637,9 +601,7 @@ describe('User Model', () => {
         .set('Authorization', `Bearer ${superAdminToken}`);
       expect(response.status).to.eqls(200);
       expect(response.body.status).to.eqls('success');
-      expect(response.body.data.message).to.eqls(
-        'The User role has been downgraded to User'
-      );
+      expect(response.body.data.message).to.eqls('The User role has been downgraded to User');
     });
   });
 });
