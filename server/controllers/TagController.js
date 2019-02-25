@@ -1,7 +1,7 @@
 import db from '../models';
 import response from '../helpers/response';
 
-const { FollowedTags, Tag } = db;
+const { FollowedTags, Tag, Article } = db;
 
 /**
  * @class TagController
@@ -144,6 +144,41 @@ class TagController {
         500,
         'failure',
         'Something went wrong on the server'
+      );
+    }
+  }
+  /**
+   *
+   * @static
+   * @description this handles fetching of all tags
+   * @param {*} req
+   * @param {*} res
+   * @returns {object} api route response with the tags
+   * @memberof TagController
+   */
+  static async getTags(req, res) {
+    try {
+      const tags = await Tag.findAndCountAll({
+        include: [{ model: Article, as: 'articles' }]
+      });
+
+      if (tags.count === 0) {
+        return response(res, 200, 'success', 'All Tags', null, {
+          message: 'No Tags yet'
+        });
+      }
+
+      return response(res, 200, 'success', 'All Tags', null, {
+        tags
+      });
+    } catch (error) {
+      return response(
+        res,
+        500,
+        'failure',
+        'server error',
+        { message: 'Something went wrong on the server' },
+        null
       );
     }
   }
