@@ -27,7 +27,14 @@ class ReadingStatsController {
         include: [
           {
             model: Article,
-            attributes: ['slug', 'title', 'content', 'banner']
+            attributes: [
+              'slug',
+              'title',
+              'content',
+              'banner',
+              'timeToRead',
+              'createdAt'
+            ]
           }
         ]
       });
