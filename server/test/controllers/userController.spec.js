@@ -425,25 +425,6 @@ describe('User Model', () => {
       expect(response.body.data.message).to.eqls('You need to log in again.');
     });
 
-    it('User should show conflict error when user tries to edit profile with username that exists', async () => {
-      const response = await chai
-        .request(app)
-        .put('/api/v1/users')
-        .set('Authorization', `Bearer ${userToken}`)
-        .send({
-          userName: 'kabir',
-          fullName: 'Jesse',
-          email: 'jesseinit@now.com',
-          password: 'Blahblah',
-          bio: '',
-          img: ''
-        });
-      expect(response.status).to.eqls(409);
-      expect(response.body.status).to.eqls('failure');
-      expect(response.body.data.message).to.eqls('Username already exists');
-      expect(response.body.data.statusCode).to.eqls(409);
-    });
-
     it('User should show proper error when user tries to edit profile with invalid bio data', async () => {
       const response = await chai
         .request(app)

@@ -577,7 +577,7 @@ class UserController {
 
       req.body.userName = req.body.userName.toLowerCase();
       const checkUserName = await User.findOne({
-        where: { userName: req.body.userName }
+        where: { id: req.user.userId }
       });
 
       if (checkUserName.dataValues.userName && checkUserName.dataValues.id !== req.user.userId) {
