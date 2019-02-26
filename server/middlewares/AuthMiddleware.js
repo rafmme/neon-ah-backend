@@ -34,7 +34,13 @@ class AuthMiddleware {
       if (name === 'TokenExpiredError' || name === 'JsonWebTokenError') {
         return response(res, 401, 'failure', 'You need to log in again.');
       }
-      return response(res, 500, 'failure', 'An error occured on the server', error.message);
+      return response(
+        res,
+        500,
+        'failure',
+        'An error occured on the server',
+        error.message
+      );
     }
   }
 
@@ -62,10 +68,15 @@ class AuthMiddleware {
 
       const { roleId } = req.user;
       if (
-        roleId !== '3ceb546e-054d-4c1d-8860-e27c209d4ae4'
-        && roleId !== '2023afbb-7072-4759-8161-3d149c9589f2'
+        roleId !== '3ceb546e-054d-4c1d-8860-e27c209d4ae4' &&
+        roleId !== '2023afbb-7072-4759-8161-3d149c9589f2'
       ) {
-        return response(res, 401, 'failure', 'You are unauthorised to access this page.');
+        return response(
+          res,
+          401,
+          'failure',
+          'You are unauthorised to access this page.'
+        );
       }
       return next();
     } catch (error) {
@@ -74,7 +85,13 @@ class AuthMiddleware {
         return response(res, 401, 'failure', 'You need to log in again.');
       }
 
-      return response(res, 500, 'failure', 'An error occured on the server', error);
+      return response(
+        res,
+        500,
+        'failure',
+        'An error occured on the server',
+        error
+      );
     }
   }
 
@@ -102,7 +119,12 @@ class AuthMiddleware {
       }
 
       if (req.user.roleId !== '2023afbb-7072-4759-8161-3d149c9589f2') {
-        return response(res, 403, 'failure', 'You are unauthorised to access this page.');
+        return response(
+          res,
+          403,
+          'failure',
+          'You are unauthorised to access this page.'
+        );
       }
       return next();
     } catch (error) {
@@ -111,7 +133,13 @@ class AuthMiddleware {
         return response(res, 401, 'failure', 'You need to log in again.');
       }
 
-      return response(res, 500, 'failure', 'An error occured on the server', error);
+      return response(
+        res,
+        500,
+        'failure',
+        'An error occured on the server',
+        error
+      );
     }
   }
 }

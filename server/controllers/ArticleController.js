@@ -10,9 +10,17 @@ import ReadingStatsContoller from './ReadingStatsController';
 import eventHandler from '../helpers/eventsHandler';
 import MailManager from '../helpers/MailManager';
 import newArticleTemplate from '../helpers/emailTemplates/newArticleTemplate';
+import TokenManager from '../helpers/TokenManager';
 
 const {
-  Article, Tag, User, Follow, Comment, Notification, Sequelize, Highlight
+  Article,
+  Tag,
+  User,
+  Follow,
+  Comment,
+  Notification,
+  Sequelize,
+  Highlight
 } = db;
 const { Op } = Sequelize;
 const { createReadingStats } = ReadingStatsContoller;
@@ -42,8 +50,8 @@ class ArticleController {
         title,
         content,
         banner:
-          banner
-          || 'https://res.cloudinary.com/jesseinit/image/upload/v1548941969/photo-1476242906366-d8eb64c2f661.jpg',
+          banner ||
+          'https://res.cloudinary.com/jesseinit/image/upload/v1548941969/photo-1476242906366-d8eb64c2f661.jpg',
         tagsList: tagsArray,
         isPublished: Boolean(isPublished),
         isReported: false
@@ -57,12 +65,20 @@ class ArticleController {
           {
             model: User,
             as: 'followingUser',
-            attributes: ['id', 'fullName', 'email', 'getEmailsNotification', 'getInAppNotification']
+            attributes: [
+              'id',
+              'fullName',
+              'email',
+              'getEmailsNotification',
+              'getInAppNotification'
+            ]
           }
         ]
       });
 
-      const myFollowers = myFollowersList.map(user => user.dataValues.followingUser.dataValues);
+      const myFollowers = myFollowersList.map(
+        user => user.dataValues.followingUser.dataValues
+      );
 
       if (articleData.isPublished) {
         myFollowers.forEach(async (follower) => {
@@ -85,7 +101,10 @@ class ArticleController {
           }
 
           if (follower.getInAppNotification) {
-            Util.sendInAppNotification([follower], `${userName} just published a new article`);
+            Util.sendInAppNotification(
+              [follower],
+              `${userName} just published a new article`
+            );
           }
         });
       }
@@ -132,7 +151,9 @@ class ArticleController {
       const currentPage = Number(query.page) || 1;
       const offset = (currentPage - 1) * limit;
 
-      const totalArticlesPromise = Article.count({ where: { isPublished: true } });
+      const totalArticlesPromise = Article.count({
+        where: { isPublished: true }
+      });
 
       const articlesPromise = Article.findAndCountAll({
         where: { isPublished: true },
@@ -153,7 +174,10 @@ class ArticleController {
         offset
       });
 
-      const [totalArticles, articles] = await Promise.all([totalArticlesPromise, articlesPromise]);
+      const [totalArticles, articles] = await Promise.all([
+        totalArticlesPromise,
+        articlesPromise
+      ]);
 
       if (articles.count > 0) {
         const articleList = articles.rows.map((article) => {
@@ -163,7 +187,12 @@ class ArticleController {
           return article;
         });
 
-        const paginatedData = pagination(articleList.length, limit, currentPage, totalArticles);
+        const paginatedData = pagination(
+          articleList.length,
+          limit,
+          currentPage,
+          totalArticles
+        );
 
         return response(res, 200, 'success', 'All articles', null, {
           articles: articleList,
@@ -196,6 +225,7 @@ class ArticleController {
   static async fetchOne(req, res) {
     try {
       const { slug } = req.params;
+      const { authorization } = req.headers;
       const userId = req.user !== undefined ? req.user.userId : null;
 
       let article = await Article.findOne({
@@ -233,7 +263,16 @@ class ArticleController {
       });
 
       if (!article) {
-        return response(res, 404, 'failure', 'not found error', { message: 'Article not found' });
+        return response(res, 404, 'failure', 'not found error', {
+          message: 'Article not found'
+        });
+      }
+
+      if (authorization) {
+        const token = authorization.split(' ')[1];
+        const decoded = TokenManager.verify(token);
+        req.user = decoded;
+        await createReadingStats(req, res);
       }
 
       article = article.toJSON();
@@ -250,11 +289,14 @@ class ArticleController {
       article.createdAt = Util.formatDate(article.createdAt);
       article.updatedAt = Util.formatDate(article.updatedAt);
 
-      if (req.user) {
-        await createReadingStats(req, res);
-      }
-
-      return response(res, 200, 'success', 'Article was fetched successfully', null, article);
+      return response(
+        res,
+        200,
+        'success',
+        'Article was fetched successfully',
+        null,
+        article
+      );
     } catch (error) {
       return response(res, 500, 'failure', 'server error', {
         message: 'Something went wrong on the server'
@@ -282,9 +324,10 @@ class ArticleController {
       });
 
       if (result) {
-        const articleSlug = result.title.toLowerCase() === req.body.title.toLowerCase()
-          ? result.slug
-          : ArticleHelper.generateArticleSlug(req.body.title);
+        const articleSlug =
+          result.title.toLowerCase() === req.body.title.toLowerCase()
+            ? result.slug
+            : ArticleHelper.generateArticleSlug(req.body.title);
 
         req.body.slug = articleSlug;
         let article = await result.update(req.body);
@@ -292,7 +335,14 @@ class ArticleController {
         article.timeToRead = TimeToRead.readTime(article);
         article.createdAt = Util.formatDate(article.createdAt);
         article.updatedAt = Util.formatDate(article.updatedAt);
-        return response(res, 200, 'success', 'Article was updated successfully', null, article);
+        return response(
+          res,
+          200,
+          'success',
+          'Article was updated successfully',
+          null,
+          article
+        );
       }
     } catch (error) {
       return response(
@@ -325,7 +375,14 @@ class ArticleController {
       });
       if (article) {
         await article.destroy();
-        return response(res, 200, 'success', 'Article was deleted successfully', null, null);
+        return response(
+          res,
+          200,
+          'success',
+          'Article was deleted successfully',
+          null,
+          null
+        );
       }
     } catch (error) {
       return response(
@@ -355,7 +412,14 @@ class ArticleController {
     } else if (title) {
       SearchController.byTitle(title, req, res);
     } else {
-      return response(res, 400, 'failure', 'No search parameters supplied', null, null);
+      return response(
+        res,
+        400,
+        'failure',
+        'No search parameters supplied',
+        null,
+        null
+      );
     }
   }
 
@@ -464,14 +528,29 @@ class ArticleController {
         });
 
         if (tag) {
-          articleList = ArticleHelper.filterAuthorArticle(articleList, 'tag', tag);
+          articleList = ArticleHelper.filterAuthorArticle(
+            articleList,
+            'tag',
+            tag
+          );
         } else if (drafts === '') {
-          articleList = ArticleHelper.filterAuthorArticle(articleList, 'drafts');
+          articleList = ArticleHelper.filterAuthorArticle(
+            articleList,
+            'drafts'
+          );
         } else if (published === '') {
-          articleList = ArticleHelper.filterAuthorArticle(articleList, 'published');
+          articleList = ArticleHelper.filterAuthorArticle(
+            articleList,
+            'published'
+          );
         }
 
-        const paginatedData = pagination(articleList.length, limit, currentPage, totalArticles);
+        const paginatedData = pagination(
+          articleList.length,
+          limit,
+          currentPage,
+          totalArticles
+        );
         const data = {
           articles: articleList,
           paginatedData
