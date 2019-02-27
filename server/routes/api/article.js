@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import ArticleController from '../../controllers/ArticleController';
 import ArticleValidation from '../../middlewares/validations/ArticleValidation';
 import AuthMiddleware from '../../middlewares/AuthMiddleware';
 import FollowFeedContoller from '../../controllers/FollowFeedController';
+import ArticleController from '../../controllers/ArticleController';
 
 const articleRoutes = Router();
 articleRoutes.get('/search', ArticleController.search);
