@@ -210,7 +210,7 @@ class UserController {
         password: hashedPassword,
         roleId: '{3ceb546e-054d-4c1d-8860-e27c209d4ae3}',
         authTypeId: '{15745c60-7b1a-11e8-9c9c-2d42b21b1a3e}',
-        img: 'https://res.cloudinary.com/jesseinit/image/upload/v1550502499/neon-ah/user.svg'
+        img: 'https://res.cloudinary.com/jesseinit/image/upload/v1551253945/neon-ah/defaultUserProfileImage.svg'
       });
 
       const payload = {
