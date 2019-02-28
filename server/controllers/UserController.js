@@ -546,6 +546,59 @@ class UserController {
   }
 
   /**
+   *@description Method to get users by username
+   * @static
+   * @param {*} req express Request object
+   * @param {*} res express Response object
+   * @returns {object} Json response
+   * @memberof UserController
+   */
+  static async getProfileById(req, res) {
+    try {
+      const id = req.user.userId;
+      const userProfile = await User.findOne({
+        where: { id },
+        attributes: [
+          'id',
+          'fullName',
+          'userName',
+          'img',
+          'bio',
+          'email',
+          'getEmailsNotification',
+          'getInAppNotification'
+        ],
+        include: [
+          {
+            model: Article,
+            as: 'articles'
+          },
+          {
+            model: User,
+            through: 'Follow',
+            as: 'following',
+            attributes: ['id', 'fullName', 'userName', 'img', 'bio']
+          },
+          {
+            model: User,
+            through: 'Follow',
+            as: 'followers',
+            attributes: ['id', 'fullName', 'userName', 'img', 'bio']
+          }
+        ]
+      });
+
+      if (!userProfile) {
+        response(res, 404, 'failure', 'User not found');
+        return;
+      }
+      response(res, 200, 'success', 'User retrieved successfully', null, userProfile);
+    } catch (error) {
+      response(res, 500, 'failure', 'An error occured on the server');
+    }
+  }
+
+  /**
    *
    *@description Method to update user's profile
    * @static

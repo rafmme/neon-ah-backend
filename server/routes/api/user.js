@@ -37,6 +37,7 @@ userRoutes.put(
 );
 
 userRoutes.get('/users/:userName', UserController.getProfile);
+userRoutes.get('/users', AuthMiddleware.checkIfUserIsAuthenticated, UserController.getProfileById);
 
 userRoutes.get('/users/:userName/followers', FollowController.getFollowers);
 
