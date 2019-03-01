@@ -398,7 +398,8 @@ class UserController {
         userId: foundUser.id,
         userName: foundUser.userName,
         userEmail: foundUser.email,
-        roleId: foundUser.roleId
+        roleId: foundUser.roleId,
+        img: foundUser.img
       };
 
       const token = TokenManager.sign(payload);
@@ -495,7 +496,8 @@ class UserController {
       userId: req.user.id,
       userName: req.user.userName.toLowerCase(),
       userEmail: req.user.email.toLowerCase(),
-      roleId: req.user.roleId
+      roleId: req.user.roleId,
+      img: req.user.img
     };
     const token = TokenManager.sign(payload);
     return res.redirect(`${process.env.FRONTEND_URL}/auth/social?token=${token}`);
