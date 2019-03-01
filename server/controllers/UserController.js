@@ -398,7 +398,8 @@ class UserController {
         userId: foundUser.id,
         userName: foundUser.userName,
         userEmail: foundUser.email,
-        roleId: foundUser.roleId
+        roleId: foundUser.roleId,
+        img: foundUser.img
       };
 
       const token = TokenManager.sign(payload);
