@@ -513,7 +513,7 @@ class UserController {
     try {
       const { userName } = req.params;
       const userProfile = await User.findOne({
-        where: { userName: userName.toLowerCase() },
+        where: { userName },
         attributes: [
           'id',
           'fullName',
