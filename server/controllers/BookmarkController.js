@@ -26,16 +26,29 @@ class BookmarkController {
       if (!article) return response(res, 404, 'failure', 'Article not found');
 
       await Bookmark.findOrCreate({
-        where: { userId, articleId: article.dataValues.id },
+        where: { userId, articleId: article.dataValues.id }
       }).spread((bookmark, created) => {
         if (created) {
-          return response(res, 201, 'success', 'You have successfully bookmarked this article', null, bookmark);
+          return response(
+            res,
+            201,
+            'success',
+            'You have successfully bookmarked this article',
+            null,
+            bookmark
+          );
         }
         bookmark.destroy();
         return response(res, 200, 'success', 'Bookmark removed successfully');
       });
     } catch (error) {
-      return response(res, 500, 'failure', 'Something went wrong on the server', `server error: ${error.message}`);
+      return response(
+        res,
+        500,
+        'failure',
+        'Something went wrong on the server',
+        `server error: ${error.message}`
+      );
     }
   }
 
@@ -58,22 +71,33 @@ class BookmarkController {
 
       const bookmarksQuery = await Bookmark.findAll({
         attributes: { exclude: ['userId'] },
-        include: [{
-          model: User,
-          attributes: ['userName', 'bio', 'img']
-        }],
+        include: [
+          {
+            model: User,
+            attributes: ['userName', 'bio', 'img']
+          }
+        ],
         where: {
           articleId: article.dataValues.id
-        },
+        }
       });
       if (bookmarksQuery.length === 0) {
         return response(res, 200, 'success', 'This article has not been bookmarked yet');
       }
       const bookmarks = [];
       bookmarksQuery.map(bookmark => bookmarks.push(bookmark.dataValues));
-      return response(res, 200, 'success', 'Bookmarks successfully found', null, { bookmarks, bookmarkCount: bookmarks.length });
+      return response(res, 200, 'success', 'Bookmarks successfully found', null, {
+        bookmarks,
+        bookmarkCount: bookmarks.length
+      });
     } catch (error) {
-      return response(res, 500, 'failure', 'Something went wrong on the server', `server error: ${error.message}`);
+      return response(
+        res,
+        500,
+        'failure',
+        'Something went wrong on the server',
+        `server error: ${error.message}`
+      );
     }
   }
 
@@ -94,15 +118,30 @@ class BookmarkController {
         where: {
           userId: user.dataValues.id
         },
+        include: [
+          {
+            model: Article,
+            attributes: ['slug', 'title', 'content', 'banner', 'timeToRead', 'createdAt']
+          }
+        ]
       });
       if (bookmarksQuery.length === 0) {
         return response(res, 200, 'success', 'You have not bookmarked any article yet');
       }
       const bookmarks = [];
       bookmarksQuery.map(bookmark => bookmarks.push(bookmark.dataValues));
-      return response(res, 200, 'success', 'Bookmarks successfully found', null, { bookmarks, bookmarkCount: bookmarks.length });
+      return response(res, 200, 'success', 'Bookmarks successfully found', null, {
+        bookmarks,
+        bookmarkCount: bookmarks.length
+      });
     } catch (error) {
-      return response(res, 500, 'failure', 'Something went wrong on the server', `server error: ${error.message}`);
+      return response(
+        res,
+        500,
+        'failure',
+        'Something went wrong on the server',
+        `server error: ${error.message}`
+      );
     }
   }
 }
