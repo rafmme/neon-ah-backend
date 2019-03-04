@@ -150,17 +150,16 @@ class CommentController {
         include: [
           {
             model: User,
-            attributes: ['userName', 'img']
+            attributes: ['userName', 'img', 'fullName']
           }
         ],
         where: {
           articleId: articleFound.dataValues.id
-        },
-        attributes: []
+        }
       });
 
       if (commentsQuery.length === 0) {
-        return response(res, 404, 'failure', 'Comment with the articleId not found', null, null);
+        return response(res, 200, 'success', 'No comment yet on the article', null, []);
       }
 
       const comments = [];
