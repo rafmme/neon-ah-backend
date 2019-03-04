@@ -49,12 +49,8 @@ class FollowContoller {
       });
 
       if (!isCreated) {
-        return response(
-          res,
-          400,
-          'failure',
-          `You are already following ${userToBeFollowed.userName}`
-        );
+        Follow.destroy({ where: { userId, followersId } });
+        return response(res, 200, 'success', `You unfollowed ${userName}`);
       }
       const { dataValues: notification } = await Notification.create({
         message: `${followersUserName} just followed you.`,
@@ -84,57 +80,6 @@ class FollowContoller {
         'success',
         `You are now following ${userToBeFollowed.fullName}`
       );
-    } catch (error) {
-      response(res, 500, 'failure', error.name);
-    }
-  }
-
-  /**
-   *
-   * @description Method to unfollow user
-   * @static
-   * @param {*} req
-   * @param {*} res
-   * @returns {object} Json response
-   * @memberof followContoller
-   */
-  static async unfollowUser(req, res) {
-    try {
-      const { userName } = req.params;
-
-      const user = await User.findOne({
-        where: {
-          userName
-        }
-      });
-
-      if (!user) {
-        return response(res, 404, 'failure', 'User not found');
-      }
-
-      const userId = user.id;
-
-      const followersId = req.user.userId;
-
-      if (user.id === req.user.userId) {
-        return response(res, 400, 'failure', 'You cannot unfollow yourself');
-      }
-
-      const userUnfollow = await Follow.findOne({
-        where: { userId, followersId }
-      });
-
-      if (!userUnfollow) {
-        return response(
-          res,
-          400,
-          'failure',
-          `You are not following ${user.userName}`
-        );
-      }
-
-      Follow.destroy({ where: { userId, followersId } });
-      response(res, 200, 'success', `You unfollowed ${user.userName}`);
     } catch (error) {
       response(res, 500, 'failure', error.name);
     }

@@ -17,9 +17,22 @@ userRoutes.post('/password/forgot', UserController.forgotPassword);
 
 userRoutes.post('/password/reset/:token', UserController.passwordReset);
 userRoutes.post('/auth/verify/:token', UserController.verifyEmail);
-userRoutes.post('/auth/resend-verification-link', UserController.resendVerificationEmail);
-userRoutes.post('/auth/signup', signUpSchema, handleValidationErrors, UserController.signUp);
-userRoutes.post('/auth/login', logInSchema, handleValidationErrors, UserController.logIn);
+userRoutes.post(
+  '/auth/resend-verification-link',
+  UserController.resendVerificationEmail
+);
+userRoutes.post(
+  '/auth/signup',
+  signUpSchema,
+  handleValidationErrors,
+  UserController.signUp
+);
+userRoutes.post(
+  '/auth/login',
+  logInSchema,
+  handleValidationErrors,
+  UserController.logIn
+);
 
 userRoutes.put(
   '/users',
@@ -37,7 +50,11 @@ userRoutes.put(
 );
 
 userRoutes.get('/users/:userName', UserController.getProfile);
-userRoutes.get('/users', AuthMiddleware.checkIfUserIsAuthenticated, UserController.getProfileById);
+userRoutes.get(
+  '/users',
+  AuthMiddleware.checkIfUserIsAuthenticated,
+  UserController.getProfileById
+);
 
 userRoutes.get('/users/:userName/followers', FollowController.getFollowers);
 
@@ -49,11 +66,11 @@ userRoutes.post(
   FollowController.followUser
 );
 
-userRoutes.delete(
-  '/users/:userName/unfollow',
-  AuthMiddleware.checkIfUserIsAuthenticated,
-  FollowController.unfollowUser
-);
+// userRoutes.delete(
+//   '/users/:userName/unfollow',
+//   AuthMiddleware.checkIfUserIsAuthenticated,
+//   FollowController.unfollowUser
+// );
 userRoutes.get(
   '/myArticles',
   AuthMiddleware.checkIfUserIsAuthenticated,
