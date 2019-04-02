@@ -7,9 +7,6 @@
     "type": "git",
     "url": "git+https://github.com/andela/neon-ah-backend.git"
   },
-  "engines": {
-    "node": "10.14.1"
-  },
   "scripts": {
     "undomigrate": "babel-node node_modules/.bin/sequelize db:migrate:undo:all",
     "migrate": "npm run undomigrate && babel-node node_modules/.bin/sequelize db:migrate",
