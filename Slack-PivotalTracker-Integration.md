@@ -17,6 +17,6 @@ The following steps were taken to setup the integration:
 
 **PS: Ensure you have Owner/Admin access on the Project's Pivotal Tracker Board**
 
-## Reference:
+## References:
 
 https://sparksolutions.co/2016/01/slack-integrations-guide-github-pivotal-tracker-circle-ci-heroku-rollbar/
