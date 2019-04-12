@@ -3,6 +3,7 @@ pipeline {
     
   tools {nodejs "NodeJS"}
 
+
   environment {
       CI = 'true'
   }
