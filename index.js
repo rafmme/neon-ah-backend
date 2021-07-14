@@ -4,13 +4,13 @@ import env from 'dotenv';
 import expressValidator from 'express-validator';
 import session from 'express-session';
 import swaggerUi from 'swagger-ui-express';
-import passport from 'passport';
+// import passport from 'passport';
 import YAML from 'yamljs';
 import routes from './server/routes';
-import googleStrategy from './server/config/passportConfigs/googleStrategy';
+/* import googleStrategy from './server/config/passportConfigs/googleStrategy';
 import facebookStrategy from './server/config/passportConfigs/facebookStragegy';
 import linkedinStrategy from './server/config/passportConfigs/linkednStrategy';
-import twitterStrategy from './server/config/passportConfigs/twitterStrategy';
+import twitterStrategy from './server/config/passportConfigs/twitterStrategy'; */
 
 env.config();
 const swaggerDocument = YAML.load('swagger.yaml');
@@ -25,11 +25,11 @@ app.use(session({ secret: process.env.SESSION_SECRET, resave: true, saveUninitia
 
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-passport.use(googleStrategy);
+/* passport.use(googleStrategy);
 passport.use(facebookStrategy);
 passport.use(linkedinStrategy);
 passport.use(twitterStrategy);
-app.use(passport.initialize());
+app.use(passport.initialize()); */
 
 app.use('/api/v1', routes);
 

@@ -1,4 +1,4 @@
-import { Strategy as TwitterStrategy } from 'passport-twitter';
+/* import { Strategy as TwitterStrategy } from 'passport-twitter';
 import env from 'dotenv';
 import UserController from '../../controllers/UserController';
 import { MockStrategy } from '../../helpers/MockStrategy';
@@ -15,8 +15,8 @@ const twitterStategy = new TwitterStrategy(
   UserController.strategyCallback
 );
 
-const mockStrategy = new MockStrategy('twitter', UserController.strategyCallback);
+const mockStrategy = new MockStrategy('twitter', UserController.strategyCallback); */
 /* istanbul ignore next */
-const twitter = process.env.NODE_ENV === 'test' ? mockStrategy : twitterStategy;
+/* const twitter = process.env.NODE_ENV === 'test' ? mockStrategy : twitterStategy;
 
-export default twitter;
+export default twitter; */

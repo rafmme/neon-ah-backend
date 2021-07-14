@@ -1,4 +1,4 @@
-import { Strategy as LinkedInStrategy } from 'passport-linkedin-oauth2';
+/* import { Strategy as LinkedInStrategy } from 'passport-linkedin-oauth2';
 import env from 'dotenv';
 import UserController from '../../controllers/UserController';
 import { MockStrategy } from '../../helpers/MockStrategy';
@@ -15,8 +15,9 @@ const linkedinStrategy = new LinkedInStrategy(
   UserController.strategyCallback
 );
 
-const mockStrategy = new MockStrategy('linkedin', UserController.strategyCallback);
+const mockStrategy = new MockStrategy('linkedin', UserController.strategyCallback); */
 /* istanbul ignore next */
-const linkedin = process.env.NODE_ENV === 'test' ? mockStrategy : linkedinStrategy;
+/* const linkedin = process.env.NODE_ENV === 'test' ? mockStrategy : linkedinStrategy;
 
 export default linkedin;
+ */
