@@ -178,6 +178,7 @@ class ArticleController {
         message: 'No articles posted yet'
       });
     } catch (error) {
+      console.log(error);
       return response(
         res,
         500,
